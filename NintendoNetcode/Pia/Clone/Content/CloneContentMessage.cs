@@ -4,13 +4,13 @@ namespace NintendoNetcode.Pia.Clone.Content
 {
     abstract class CloneContentMessage : CloneContent
     {
-        public byte CmhUnknownOne
+        public CloneType CloneType
         {
             get;
             set;
         }
 
-        public byte CmhUnknownTwo
+        public byte StationIdx
         {
             get;
             set;
@@ -22,7 +22,7 @@ namespace NintendoNetcode.Pia.Clone.Content
             set;
         }
 
-        public uint CmhUnknownFour
+        public uint CloneId
         {
             get;
             set;
@@ -30,10 +30,10 @@ namespace NintendoNetcode.Pia.Clone.Content
 
         public CloneContentMessage(BinaryDataReader reader) : base(reader)
         {
-            CmhUnknownOne = reader.ReadByte();
-            CmhUnknownTwo = reader.ReadByte();
+            CloneType = (CloneType)reader.ReadByte();
+            StationIdx = reader.ReadByte();
             CmhUnknownThree = reader.ReadUInt16();
-            CmhUnknownFour = reader.ReadUInt32();
+            CloneId = reader.ReadUInt32();
         }
 
     }
