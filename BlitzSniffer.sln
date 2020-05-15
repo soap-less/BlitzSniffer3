@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29209.62
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlitzSniffer", "BlitzSniffer\BlitzSniffer.csproj", "{B1300428-4A76-4DCB-AB96-64B1E6F97AEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitzSniffer", "BlitzSniffer\BlitzSniffer.csproj", "{B1300428-4A76-4DCB-AB96-64B1E6F97AEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NintendoNetcode", "NintendoNetcode\NintendoNetcode.csproj", "{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NintendoNetcode", "NintendoNetcode\NintendoNetcode.csproj", "{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDecryptor", "PcapDecryptor\PcapDecryptor.csproj", "{3B1F76E7-012A-42D9-B555-0168F296BF7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
