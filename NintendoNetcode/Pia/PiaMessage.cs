@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using NintendoNetcode.Pia.Clone;
+using Syroot.BinaryData;
 using System;
 using System.IO;
 
@@ -57,6 +58,8 @@ namespace NintendoNetcode.Pia
         {
             switch (protocol)
             {
+                case PiaProtocol.Clone:
+                    return typeof(CloneMessage);
                 default:
                     return typeof(GenericMessage);
             }

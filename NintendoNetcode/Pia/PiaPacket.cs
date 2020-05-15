@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using NintendoNetcode.Util;
+using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -114,7 +115,27 @@ namespace NintendoNetcode.Pia
 
             if (deserializeMessages)
             {
-                // TODO
+                Messages = new List<PiaMessage>();
+
+                using (MemoryStream memoryStream = new MemoryStream(plaintext))
+                using (BinaryDataReader innerReader = new BinaryDataReader(memoryStream))
+                {
+                    innerReader.ByteOrder = ByteOrder.BigEndian;
+
+                    while (innerReader.Position != innerReader.Length)
+                    {
+                        PiaProtocol protocol;
+                        using (innerReader.TemporarySeek(19))
+                        {
+                            protocol = (PiaProtocol)innerReader.ReadByte();
+                        }
+
+                        Messages.Add((PiaMessage)Activator.CreateInstance(PiaMessage.PiaMessageForProtocol(protocol), innerReader));
+
+                        long toSeek = MathUtil.RoundUpToMultiple((int)innerReader.Position, 4) - innerReader.Position;
+                        innerReader.Seek(toSeek);
+                    }
+                }
             }
             else
             {
