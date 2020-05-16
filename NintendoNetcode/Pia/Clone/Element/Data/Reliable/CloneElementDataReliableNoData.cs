@@ -7,7 +7,7 @@ namespace NintendoNetcode.Pia.Clone.Element.Data.Reliable
     {
         public CloneElementDataReliableNoData(BinaryDataReader reader) : base(reader)
         {
-            reader.Seek(1, SeekOrigin.Begin); // padding
+            reader.Seek(1, SeekOrigin.Current); // padding
         }
 
     }
