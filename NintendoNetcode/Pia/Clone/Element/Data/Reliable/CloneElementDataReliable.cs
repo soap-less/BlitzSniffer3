@@ -1,9 +1,8 @@
 ﻿using Syroot.BinaryData;
-using System.IO;
 
 namespace NintendoNetcode.Pia.Clone.Element.Data.Reliable
 {
-    abstract class CloneElementDataReliable : CloneElementData
+    public abstract class CloneElementDataReliable : CloneElementData
     {
         private byte Type
         {

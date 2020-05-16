@@ -1,6 +1,6 @@
 ﻿namespace NintendoNetcode.Pia.Clone
 {
-    enum CloneType : byte
+    public enum CloneType : byte
     {
         Send = 0x1,
         Receive = 0x2,

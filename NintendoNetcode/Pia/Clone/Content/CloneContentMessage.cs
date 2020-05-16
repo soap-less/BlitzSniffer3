@@ -2,7 +2,7 @@
 
 namespace NintendoNetcode.Pia.Clone.Content
 {
-    abstract class CloneContentMessage : CloneContent
+    public abstract class CloneContentMessage : CloneContent
     {
         public CloneType CloneType
         {

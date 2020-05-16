@@ -2,7 +2,7 @@
 
 namespace NintendoNetcode.Pia.Clone.Element.Data.Event
 {
-    abstract class CloneElementDataEvent : CloneElementData
+    public abstract class CloneElementDataEvent : CloneElementData
     {
         private byte Type
         {

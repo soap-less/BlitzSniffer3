@@ -2,7 +2,7 @@
 
 namespace NintendoNetcode.Pia.Clone.Element.Data.Reliable
 {
-    class CloneElementDataReliableData : CloneElementDataReliable
+    public class CloneElementDataReliableData : CloneElementDataReliable
     {
         public byte SetterStationIdx
         {

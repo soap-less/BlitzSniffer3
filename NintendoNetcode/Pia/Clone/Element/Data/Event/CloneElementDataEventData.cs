@@ -2,7 +2,7 @@
 
 namespace NintendoNetcode.Pia.Clone.Element.Data.Event
 {
-    class CloneElementDataEventData : CloneElementDataEvent
+    public class CloneElementDataEventData : CloneElementDataEvent
     {
         public ushort Index
         {

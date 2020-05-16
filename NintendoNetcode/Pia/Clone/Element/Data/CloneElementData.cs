@@ -1,9 +1,8 @@
 ﻿using Syroot.BinaryData;
-using System;
 
 namespace NintendoNetcode.Pia.Clone.Element.Data
 {
-    abstract class CloneElementData
+    public abstract class CloneElementData
     {
         public int DataSize
         {

@@ -3,7 +3,7 @@ using System.IO;
 
 namespace NintendoNetcode.Pia.Clone.Element.Data.Unreliable
 {
-    class CloneElementDataUnreliable : CloneElementData
+    public class CloneElementDataUnreliable : CloneElementData
     {
         public uint Clock
         {
