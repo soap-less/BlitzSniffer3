@@ -21,6 +21,13 @@ namespace NintendoNetcode.Pia.Clone
                 contentType = (CloneContentType)(reader.ReadByte() & 0xF0);
             }
 
+            Type type = CloneContent.CloneContentClassTypeForType(contentType);
+            if (type == null)
+            {
+                reader.Seek(PayloadSize, SeekOrigin.Current);
+                return;
+            }
+
             byte[] data = reader.ReadBytes(PayloadSize);
 
             using (MemoryStream memoryStream = new MemoryStream(data))
@@ -28,7 +35,7 @@ namespace NintendoNetcode.Pia.Clone
             {
                 innerReader.ByteOrder = ByteOrder.BigEndian;
 
-                Content = (CloneContent)Activator.CreateInstance(CloneContent.CloneContentClassTypeForType(contentType), innerReader);
+                Content = (CloneContent)Activator.CreateInstance(type, innerReader);
             }
         }
 
