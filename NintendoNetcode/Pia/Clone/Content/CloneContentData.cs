@@ -10,7 +10,7 @@ using System.IO;
 
 namespace NintendoNetcode.Pia.Clone.Content
 {
-    abstract class CloneContentData : CloneContentMessage
+    public abstract class CloneContentData : CloneContentMessage
     {
         public List<CloneElementData> ElementData
         {
@@ -25,7 +25,7 @@ namespace NintendoNetcode.Pia.Clone.Content
 
         protected void DeserializeData(BinaryDataReader reader)
         {
-            bool isCompressed = (MhUnknownTwo & 0xF) >= 0x3;
+            bool isCompressed = (RawContentType & 0xF) >= 0x3;
 
             int dataLength = (int)(reader.Length - reader.Position);
             byte[] data = reader.ReadBytes(dataLength);
