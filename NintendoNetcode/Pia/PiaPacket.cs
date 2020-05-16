@@ -85,7 +85,7 @@ namespace NintendoNetcode.Pia
                 throw new PiaException("Invalid packet magic number");
             }
 
-            IsEncrypted = reader.ReadByte() == 0x2;
+            IsEncrypted = reader.ReadByte() != 0x1;
             ConnectionId = reader.ReadByte();
             PacketId = reader.ReadUInt16();
             SessionTimer = reader.ReadUInt16();
