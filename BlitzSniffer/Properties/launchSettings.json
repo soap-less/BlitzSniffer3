@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BlitzSniffer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\Julian\\Documents\\Switch\\Splatoon2\\LAN\\New\\tower-control-the-reef-ko-death420.pcap\""
+    }
+  }
+}
