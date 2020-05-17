@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 
 namespace PcapDecryptor
 {
@@ -46,7 +47,6 @@ namespace PcapDecryptor
             }
 
             writerDevice.Close();
-
         }
 
         private static void device_OnPacketArrival(object sender, CaptureEventArgs e)
@@ -96,9 +96,17 @@ namespace PcapDecryptor
                     }
 
                     byte[] address = ipPacket.SourceAddress.GetAddressBytes();
-                    PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(ipPacket.SourceAddress.GetAddressBytes()), false);
-                    piaPacket.IsEncrypted = false;
-                    udpPacket.PayloadData = piaPacket.Serialize();
+                    try
+                    {
+                        PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(ipPacket.SourceAddress.GetAddressBytes()), false);
+                        piaPacket.IsEncrypted = false;
+                        udpPacket.PayloadData = piaPacket.Serialize();
+                    }
+                    catch (CryptographicException)
+                    {
+                        Console.WriteLine($"WARN: decryption failure on packet with length {udpPacket.PayloadData.Length}");
+                        return;
+                    }
                 }
             }
             RawCapture cap = new RawCapture(e.Packet.LinkLayerType, e.Packet.Timeval, packet.Bytes);
