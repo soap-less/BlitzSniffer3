@@ -23,7 +23,7 @@ namespace BlitzSniffer.Receiver
     {
         static byte[] BlitzGameKey = { 0xee, 0x18, 0x2a, 0x63, 0xe2, 0x16, 0xcd, 0xb1, 0xf5, 0x1a, 0xd4, 0xbe, 0xd8, 0xcf, 0x65, 0x08 };
 
-        protected PcapDevice Device
+        protected ICaptureDevice Device
         {
             get;
             set;
@@ -43,9 +43,14 @@ namespace BlitzSniffer.Receiver
 
         public virtual void Start()
         {
-            //Device.Filter = "udp";
+            Device.Filter = "ip and udp and (udp portrange 40000-49160 or udp port 30000)";
             Device.OnPacketArrival += OnPacketArrival;
-            Device.Capture();
+            Device.StartCapture();
+
+            while (true)
+            {
+                System.Threading.Thread.Sleep(1000);
+            }
         }
 
         public virtual void Dispose()
@@ -57,23 +62,8 @@ namespace BlitzSniffer.Receiver
         {
             Packet packet = Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
 
-            IPPacket ipPacket=  packet.Extract<IPPacket>();
             UdpPacket udpPacket = packet.Extract<UdpPacket>();
-
-            if (udpPacket == null || ipPacket == null)
-            {
-                return;
-            }
-
-            if (udpPacket.DestinationPort != 30000 && !(udpPacket.DestinationPort <= 49160 && udpPacket.DestinationPort >= 40000))
-            {
-                return;
-            }
-
-            if (udpPacket.DestinationPort == 12345)
-            {
-                return;
-            }
+            IPPacket ipPacket = packet.Extract<IPPacket>();
 
             if (HostAddress != null && (ipPacket.SourceAddress != HostAddress && ipPacket.DestinationAddress != HostAddress))
             {
