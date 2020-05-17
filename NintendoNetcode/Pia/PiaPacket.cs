@@ -122,7 +122,7 @@ namespace NintendoNetcode.Pia
                 {
                     innerReader.ByteOrder = ByteOrder.BigEndian;
 
-                    while (innerReader.Position + 20 innerReader.Length)
+                    while (innerReader.Position + 20 < innerReader.Length)
                     {
                         PiaProtocol protocol;
                         using (innerReader.TemporarySeek(19))
