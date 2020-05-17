@@ -60,7 +60,7 @@ namespace PcapDecryptor
                 return;
             }
 
-            if (udpPacket.DestinationPort != 30000 && !(udpPacket.DestinationPort <= 49160 && udpPacket.DestinationPort >= 49150))
+            if (udpPacket.DestinationPort != 30000 && !(udpPacket.DestinationPort <= 49160 && udpPacket.DestinationPort >= 40000))
             {
                 return;
             }
