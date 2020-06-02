@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitzSniffer", "BlitzSniffe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NintendoNetcode", "NintendoNetcode\NintendoNetcode.csproj", "{152CFA9B-F4B9-4368-BD53-D9F44DBB7223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PcapDecryptor", "PcapDecryptor\PcapDecryptor.csproj", "{3B1F76E7-012A-42D9-B555-0168F296BF7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PcapDecryptor", "PcapDecryptor\PcapDecryptor.csproj", "{3B1F76E7-012A-42D9-B555-0168F296BF7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blitz", "Blitz\Blitz.csproj", "{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B1F76E7-012A-42D9-B555-0168F296BF7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
