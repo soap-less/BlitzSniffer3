@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 
 namespace BlitzSniffer.Receiver
 {
@@ -49,7 +50,7 @@ namespace BlitzSniffer.Receiver
 
             while (true)
             {
-                System.Threading.Thread.Sleep(1000);
+                Thread.Sleep(1000);
             }
         }
 
@@ -64,11 +65,6 @@ namespace BlitzSniffer.Receiver
 
             UdpPacket udpPacket = packet.Extract<UdpPacket>();
             IPPacket ipPacket = packet.Extract<IPPacket>();
-
-            if (HostAddress != null && (ipPacket.SourceAddress != HostAddress && ipPacket.DestinationAddress != HostAddress))
-            {
-                //return;
-            }
 
             using (MemoryStream memoryStream = new MemoryStream(udpPacket.PayloadData))
             using (BinaryDataReader reader = new BinaryDataReader(memoryStream))
