@@ -50,16 +50,38 @@ namespace BlitzSniffer.Util
             return (CurrentByte & (1 << BitPosition++)) > 0;
         }
 
-        public byte ReadByte()
+        public void Seek(int bits)
         {
-            byte b = 0;
-            for (int i = 0; i < 8; i++)
+            int bytesToSeek = bits / 8;
+            int bitsToSeek = bits % 8;
+
+            BitPosition += bitsToSeek;
+            if (BitPosition >= 8)
             {
-                int bit = ReadBit() ? 1 : 0;
-                b = (byte)(b | (bit << i));
+                bytesToSeek++;
+                BitPosition -= 8;
             }
 
-            return b;
+            InnerReader.Seek(bytesToSeek - 1);
+            CurrentByte = InnerReader.ReadByte();
+            ReaderPosition = InnerReader.Position;
+        }
+
+        public uint ReadVariableBits(int bits)
+        {
+            uint u = 0;
+            for (int i = 0; i < bits; i++)
+            {
+                int bit = ReadBit() ? 1 : 0;
+                u |= (uint)(bit << i);
+            }
+
+            return u;
+        }
+
+        public byte ReadByte()
+        {
+            return (byte)ReadVariableBits(8);
         }
 
         public ushort ReadUInt16()
@@ -67,6 +89,16 @@ namespace BlitzSniffer.Util
             byte one = ReadByte();
             byte two = ReadByte();
             return (ushort)(one | two << 8);
+        }
+
+        public uint ReadUInt32()
+        {
+            byte one = ReadByte();
+            byte two = ReadByte();
+            byte three = ReadByte();
+            byte four = ReadByte();
+
+            return (uint)(one | two << 8 | three << 16 | four << 24);
         }
 
     }
