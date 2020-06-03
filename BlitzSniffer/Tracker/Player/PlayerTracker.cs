@@ -125,6 +125,7 @@ namespace BlitzSniffer.Tracker.Player
 
                 Player player = Players[playerId];
 
+                // from Game::PlayerCloneHandle::unpackStateEvent()
                 switch (eventId)
                 {
                     case 1: // Killed
@@ -141,53 +142,7 @@ namespace BlitzSniffer.Tracker.Player
                         string cause = "Unknown";
                         if (eventId == 1)
                         {
-                            uint type = (unk8 & 0xFF0000) >> 16;
-                            uint id = unk8 & 0xFFFF;
-
-                            cause = $"Unknown ({type} - {id})";
-                            switch (type)
-                            {
-                                case 0:
-                                case 1:
-                                case 2:
-                                    cause = $"type {type} id {unk8 & 0x0000FFFF}";
-                                    break;
-                                case 3:
-                                    switch (id)
-                                    {
-                                        case 4:
-                                        case 5:
-                                        case 6:
-                                        case 7:
-                                            cause = "Wsp_Shachihoko";
-                                            break;
-                                        case 8:
-                                            cause = "Wot_PCFan";
-                                            break;
-                                        case 11:
-                                            cause = "Wot_Geyser";
-                                            break;
-                                        case 12:
-                                            cause = "Wot_Takodozer";
-                                            break;
-                                        case 13:
-                                            cause = "Wot_RollingBarrel";
-                                            break;
-                                        case 14:
-                                            cause = "Wot_Blowouts";
-                                            break;
-                                        case 15:
-                                            cause = "Wsp_BigLaser";
-                                            break;
-                                        case 16:
-                                            cause = "Wot_IidaBomb";
-                                            break;
-                                    }
-                                    break;
-                                default:
-                                    cause = $"kind {type}";
-                                    break;
-                            }
+                            cause = GetDeathCauseForAttackedPlayer((unk8 & 0xFF0000) >> 16, unk8 & 0xFFFF);
                         }
                         else if (eventId == 2)
                         {
@@ -227,6 +182,78 @@ namespace BlitzSniffer.Tracker.Player
                         break;
                 }
             }
+        }
+
+        // from Game::VersusBeatenPage::start()
+        private string GetDeathCauseForAttackedPlayer(uint type, uint id)
+        {
+            string cause = $"Unknown ({type} - {id})";
+            switch (type)
+            {
+                case 0:
+                case 1:
+                case 2:
+                    cause = $"type {type} id {id}";
+                    break;
+                case 3:
+                    switch (id)
+                    {
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                            cause = "Wsp_Shachihoko";
+                            break;
+                        case 8:
+                            cause = "Wot_PCFan";
+                            break;
+                        case 11:
+                            cause = "Wot_Geyser";
+                            break;
+                        case 12:
+                            cause = "Wot_Takodozer";
+                            break;
+                        case 13:
+                            cause = "Wot_RollingBarrel";
+                            break;
+                        case 14:
+                            cause = "Wot_Blowouts";
+                            break;
+                        case 15:
+                            cause = "Wsp_BigLaser";
+                            break;
+                        case 16:
+                            cause = "Wot_IidaBomb";
+                            break;
+                    }
+                    break;
+                case 4:
+                    cause = $"type crushed (main) id {id}";
+                    break;
+                case 5:
+                    cause = $"Wsp_Jetpack_Exhaust";
+                    break;
+                case 6:
+                    cause = $"type squished (main) id {id}";
+                    break;
+                case 7:
+                    cause = $"Wsp_Shachihoko_Explosion";
+                    break;
+                case 9:
+                case 13:
+                case 14:
+                    cause = $"type main id {id}";
+                    break;
+                case 10:
+                    cause = $"type sub id {id}";
+                    break;
+                case 11:
+                case 12:
+                    cause = $"type special id {id}";
+                    break;
+            }
+
+            return cause;
         }
 
     }
