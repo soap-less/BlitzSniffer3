@@ -1,4 +1,5 @@
-﻿using BlitzSniffer.Clone;
+﻿using Blitz.Cmn.Def;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
@@ -97,7 +98,7 @@ namespace BlitzSniffer.Tracker
                 Color4f bravo = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 0);
 
                 // TODO ranked
-                GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
+                GameStateTracker = new GenericVersusGameStateTracker(stage, (VersusRule)rule, alpha, bravo);
 
                 EventTracker.Instance.AddEvent(new SetupEvent());
 
