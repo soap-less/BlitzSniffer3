@@ -34,25 +34,25 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
-        public int SpecialGaugeCharge
+        public uint SpecialGaugeCharge
         {
             get;
             set;
         }
 
-        public int Kills
+        public uint Kills
         {
             get;
             set;
         }
 
-        public int Deaths
+        public uint Deaths
         {
             get;
             set;
         }
 
-        public int Assists
+        public uint Assists
         {
             get;
             set;
