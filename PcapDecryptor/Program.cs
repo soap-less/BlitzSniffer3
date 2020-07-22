@@ -95,6 +95,14 @@ namespace PcapDecryptor
                         return;
                     }
 
+                    using (reader.TemporarySeek())
+                    {
+                        if (reader.ReadUInt32() != 0x32ab9864)
+                        {
+                            return;
+                        }
+                    }
+
                     byte[] address = ipPacket.SourceAddress.GetAddressBytes();
                     try
                     {
