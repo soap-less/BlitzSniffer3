@@ -1,10 +1,9 @@
-﻿using Blitz.Cmn.Def;
-using Blitz.Sead;
-using BlitzSniffer.Clone;
+﻿using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Versus;
+using Nintendo.Sead;
 using Syroot.BinaryData;
 using System;
 using System.IO;

@@ -1,4 +1,4 @@
-﻿namespace Blitz.Sead
+﻿namespace Nintendo.Sead
 {
     public class Color4f
     {

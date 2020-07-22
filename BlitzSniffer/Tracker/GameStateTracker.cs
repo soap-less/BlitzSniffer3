@@ -1,4 +1,4 @@
-﻿using Blitz.Sead;
+﻿using Nintendo.Sead;
 using System;
 
 namespace BlitzSniffer.Tracker

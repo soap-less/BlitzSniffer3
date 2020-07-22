@@ -1,5 +1,5 @@
 ﻿using Blitz.Cmn.Def;
-using Blitz.Sead;
+using Nintendo.Sead;
 
 namespace BlitzSniffer.Tracker.Versus
 {
