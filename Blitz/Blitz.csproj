@@ -1,11 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibHac" Version="0.3.1" />
     <PackageReference Include="Syroot.Maths" Version="1.5.1" />
+    <PackageReference Include="Syroot.NintenTools.Yaz0" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
