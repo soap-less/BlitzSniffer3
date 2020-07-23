@@ -1,9 +1,15 @@
-﻿using Nintendo.Sead;
+﻿using Blitz.Cmn.Def;
+using Nintendo.Sead;
 
 namespace BlitzSniffer.Tracker.Versus
 {
     abstract class VersusGameStateTracker : GameStateTracker
     {
+        public abstract VersusRule Rule
+        {
+            get;
+        }
+
         public VersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
         }

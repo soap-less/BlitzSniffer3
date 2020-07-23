@@ -1,5 +1,4 @@
-﻿using Blitz.Cmn.Def;
-using BlitzSniffer.Resources;
+﻿using BlitzSniffer.Resources;
 using Nintendo.Sead;
 using System;
 
@@ -17,11 +16,6 @@ namespace BlitzSniffer.Tracker
         {
             get;
             private set;
-        }
-
-        public abstract VersusRule Rule
-        {
-            get;
         }
 
         public Color4f AlphaColor
