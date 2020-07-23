@@ -49,8 +49,8 @@ namespace BlitzSniffer.Resources
         public dynamic LoadStageForId(int id)
         {
             using (Stream stream = RomResourceLoader.Instance.GetRomFile($"/Map/{Stages[id]}.szs"))
+            using (Sarc sarc = new Sarc(stream))
             {
-                Sarc sarc = new Sarc(stream);
                 return ByamlLoader.LoadByamlDynamic(sarc[$"{Stages[id]}.byaml"]);
             }
         }

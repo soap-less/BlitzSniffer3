@@ -18,15 +18,15 @@ namespace Blitz
         public static RomResourceLoader Instance = null;
 
         private NcaWrapper NcaWrapper;
-        private Dictionary<string, byte[]> PackFiles;
+        private Dictionary<string, Sarc> PackFiles;
 
         internal RomResourceLoader(Keyset keyset, string baseNca, string updateNca)
         {
             // Load the base and update NCAs
             NcaWrapper = new NcaWrapper(keyset, baseNca, updateNca);
 
-            // Create a new pack files  dictionary
-            PackFiles = new Dictionary<string, byte[]>();
+            // Create dictionary to hold pack files
+            PackFiles = new Dictionary<string, Sarc>();
 
             // Load the pack directory
             IDirectory packDirectory = NcaWrapper.Romfs.OpenDirectory("/Pack", OpenDirectoryMode.Files);
@@ -38,10 +38,10 @@ namespace Blitz
                 Sarc sarc = new Sarc(GetRomFileFromRomfs(directoryEntry.FullPath));
 
                 // Loop over every file
-                foreach (KeyValuePair<string, byte[]> pair in sarc)
+                foreach (string file in sarc)
                 {
                     // Add this file to the pack files dictionary
-                    PackFiles.Add("/" + pair.Key, pair.Value);
+                    PackFiles.Add("/" + file, sarc);
                 }
             }
         }
@@ -59,10 +59,13 @@ namespace Blitz
 
         public void Dispose()
         {
-            // Dispose of the NcaWrapper
             NcaWrapper.Dispose();
 
-            // Dispose the pack files
+            foreach (Sarc sarc in PackFiles.Values)
+            {
+                sarc.Dispose();
+            }
+
             PackFiles = null;
         }
 
@@ -70,10 +73,12 @@ namespace Blitz
         {
             // Attempt to load from the packs first
             Stream stream;
-            if (PackFiles.TryGetValue(romPath, out byte[] file))
+            if (PackFiles.TryGetValue(romPath, out Sarc sarc))
             {
+                string gamePath = romPath.StartsWith('/') ? romPath.Substring(1) : romPath;
+
                 // Create a MemoryStream
-                stream = new MemoryStream(file);
+                stream = new MemoryStream(sarc[gamePath]);
             }
             else
             {

@@ -6,7 +6,7 @@ using Syroot.BinaryData;
 
 namespace Nintendo.Archive
 {
-    public class Sarc : IEnumerable<KeyValuePair<string, byte[]>>
+    public class Sarc : IEnumerable<string>, IDisposable
     {
         struct SfatNode
         {
@@ -17,13 +17,15 @@ namespace Nintendo.Archive
             public uint DataLength;
         }
 
-        private Dictionary<string, byte[]> Files;
+        private uint DataStartOfs;
+        private Dictionary<string, SfatNode> Files;
+        private BinaryDataReader Reader;
 
         public byte[] this[string key]
         {
             get
             {
-                return Files[key];
+                return ReadFile(key);
             }
             set
             {
@@ -47,135 +49,141 @@ namespace Nintendo.Archive
         private void Read(Stream stream)
         {
             // Create a dictionary to hold the files
-            Files = new Dictionary<string, byte[]>();
+            Files = new Dictionary<string, SfatNode>();
 
-            using (BinaryDataReader reader = new BinaryDataReader(stream, true))
+            Reader = new BinaryDataReader(stream);
+
+            // Set endianness to big by default
+            Reader.ByteOrder = ByteOrder.BigEndian;
+
+            // Verify the magic numbers
+            if (Reader.ReadString(4) != "SARC")
             {
-                // Set endianness to big by default
-                reader.ByteOrder = ByteOrder.BigEndian;
+                throw new Exception("Not a SARC file");
+            }
 
-                // Verify the magic numbers
-                if (reader.ReadString(4) != "SARC")
+            // Skip the header length
+            Reader.Seek(2);
+
+            // Check the byte order mark to see if this file is little endian
+            if (Reader.ReadUInt16() == 0xFFFE)
+            {
+                // Set the endiannes to little
+                Reader.ByteOrder = ByteOrder.LittleEndian;
+            }
+
+            // Check the file length
+            if (Reader.ReadUInt32() != Reader.Length)
+            {
+                throw new Exception("SARC is possibly corrupt, invalid length");
+            }
+
+            // Read the beginning of data offset
+            DataStartOfs = Reader.ReadUInt32();
+
+            // Verify the version
+            if (Reader.ReadUInt16() != 0x0100)
+            {
+                throw new Exception("Unsupported SARC version");
+            }
+
+            // Seek past the reserved area
+            Reader.Seek(2);
+
+            // Verify the SFAT magic numbers
+            if (Reader.ReadString(4) != "SFAT")
+            {
+                throw new Exception("Could not find SFAT section");
+            }
+
+            // Skip the header length
+            Reader.Seek(2);
+
+            // Read the node count and hash key
+            ushort nodeCount = Reader.ReadUInt16();
+            uint hashKey = Reader.ReadUInt32();
+
+            // Read every node
+            List<SfatNode> nodes = new List<SfatNode>();
+            for (ushort i = 0; i < nodeCount; i++)
+            {
+                // Read the node details
+                uint hash = Reader.ReadUInt32();
+                uint fileAttrs = Reader.ReadUInt32();
+                uint nodeDataBeginOfs = Reader.ReadUInt32();
+                uint nodeDataEndOfs = Reader.ReadUInt32();
+
+                // Create a new SfatNode
+                nodes.Add(new SfatNode()
                 {
-                    throw new Exception("Not a SARC file");
-                }
+                    Hash = hash,
+                    HasName = (fileAttrs & 0x01000000) == 0x01000000, // check for name flag
+                    NameOfs = (int)(fileAttrs & 0x0000FFFF) * 4, // mask upper bits and multiply by 4
+                    DataOfs = nodeDataBeginOfs,
+                    DataLength = nodeDataEndOfs - nodeDataBeginOfs
+                });
+            }
 
-                // Skip the header length
-                reader.Seek(2);
+            // Verify the SFNT magic numbers
+            if (Reader.ReadString(4) != "SFNT")
+            {
+                throw new Exception("Could not find SFNT section");
+            }
 
-                // Check the byte order mark to see if this file is little endian
-                if (reader.ReadUInt16() == 0xFFFE)
+            // SKip header length and reserved area
+            Reader.Seek(4);
+
+            // Get the file name beginning offset
+            long nameBeginOfs = Reader.Position;
+
+            // Read each file using its SfatNode
+            foreach (SfatNode node in nodes)
+            {
+                // Read the filename
+                string filename;
+
+                // Check if there is a name offset
+                if (node.HasName)
                 {
-                    // Set the endiannes to little
-                    reader.ByteOrder = ByteOrder.LittleEndian;
-                }
-
-                // Check the file length
-                if (reader.ReadUInt32() != reader.Length)
-                {
-                    throw new Exception("SARC is possibly corrupt, invalid length");
-                }
-
-                // Read the beginning of data offset
-                uint dataBeginOfs = reader.ReadUInt32();
-
-                // Verify the version
-                if (reader.ReadUInt16() != 0x0100)
-                {
-                    throw new Exception("Unsupported SARC version");
-                }
-
-                // Seek past the reserved area
-                reader.Seek(2);
-
-                // Verify the SFAT magic numbers
-                if (reader.ReadString(4) != "SFAT")
-                {
-                    throw new Exception("Could not find SFAT section");
-                }
-
-                // Skip the header length
-                reader.Seek(2);
-
-                // Read the node count and hash key
-                ushort nodeCount = reader.ReadUInt16();
-                uint hashKey = reader.ReadUInt32();
-
-                // Read every node
-                List<SfatNode> nodes = new List<SfatNode>();
-                for (ushort i = 0; i < nodeCount; i++)
-                {
-                    // Read the node details
-                    uint hash = reader.ReadUInt32();
-                    uint fileAttrs = reader.ReadUInt32();
-                    uint nodeDataBeginOfs = reader.ReadUInt32();
-                    uint nodeDataEndOfs = reader.ReadUInt32();
-
-                    // Create a new SfatNode
-                    nodes.Add(new SfatNode()
+                    // Read the name at this position
+                    using (Reader.TemporarySeek(nameBeginOfs + node.NameOfs, SeekOrigin.Begin))
                     {
-                        Hash = hash,
-                        HasName = (fileAttrs & 0x01000000) == 0x01000000, // check for name flag
-                        NameOfs = (int)(fileAttrs & 0x0000FFFF) * 4, // mask upper bits and multiply by 4
-                        DataOfs = nodeDataBeginOfs,
-                        DataLength = nodeDataEndOfs - nodeDataBeginOfs
-                    });
-                }
-
-                // Verify the SFNT magic numbers
-                if (reader.ReadString(4) != "SFNT")
-                {
-                    throw new Exception("Could not find SFNT section");
-                }
-
-                // SKip header length and reserved area
-                reader.Seek(4);
-
-                // Get the file name beginning offset
-                long nameBeginOfs = reader.Position;
-
-                // Read each file using its SfatNode
-                foreach (SfatNode node in nodes)
-                {
-                    // Read the filename
-                    string filename;
-
-                    // Check if there is a name offset
-                    if (node.HasName)
-                    {
-                        // Read the name at this position
-                        using (reader.TemporarySeek(nameBeginOfs + node.NameOfs, SeekOrigin.Begin))
-                        {
-                            filename = reader.ReadString(BinaryStringFormat.ZeroTerminated);
-                        }
+                        filename = Reader.ReadString(BinaryStringFormat.ZeroTerminated);
                     }
-                    else
-                    {
-                        // Use the hash as the name
-                        filename = node.Hash.ToString("X8") + ".bin";
-                    }
-
-                    // Read the file data
-                    byte[] fileData;
-                    using (reader.TemporarySeek(dataBeginOfs + node.DataOfs, SeekOrigin.Begin))
-                    {
-                        fileData = reader.ReadBytes((int)node.DataLength);
-                    }
-
-                    // Add the file to the dictionary
-                    Files.Add(filename, fileData);
                 }
+                else
+                {
+                    // Use the hash as the name
+                    filename = node.Hash.ToString("X8") + ".bin";
+                }
+
+                // Add the file to the dictionary
+                Files.Add(filename, node);
             }
         }
 
-        public IEnumerator<KeyValuePair<string, byte[]>> GetEnumerator()
+        private byte[] ReadFile(string str)
         {
-            return Files.GetEnumerator();
+            SfatNode node = Files[str];
+            using (Reader.TemporarySeek(DataStartOfs + node.DataOfs, SeekOrigin.Begin))
+            {
+                return Reader.ReadBytes((int)node.DataLength);
+            }
+        }
+
+        public IEnumerator<string> GetEnumerator()
+        {
+            return Files.Keys.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public void Dispose()
+        {
+            Reader.Dispose();
         }
 
     }
