@@ -275,9 +275,13 @@ namespace BlitzSniffer.Tracker.Player
             switch (type)
             {
                 case 0:
+                    cause = WeaponResource.Instance.GetMainWeapon((int)id);
+                    break;
                 case 1:
+                    cause = WeaponResource.Instance.GetSubWeapon((int)id);
+                    break;
                 case 2:
-                    cause = $"type {type} id {id}";
+                    cause = WeaponResource.Instance.GetSpecialWeapon((int)id);
                     break;
                 case 3:
                     switch (id)
@@ -311,14 +315,14 @@ namespace BlitzSniffer.Tracker.Player
                             break;
                     }
                     break;
-                case 4:
-                    cause = $"type crushed (main) id {id}";
+                case 4: // Crushed
+                    cause = WeaponResource.Instance.GetMainWeapon((int)id);
                     break;
                 case 5:
                     cause = $"Wsp_Jetpack_Exhaust";
                     break;
-                case 6:
-                    cause = $"type squished (main) id {id}";
+                case 6: // Squished
+                    cause = WeaponResource.Instance.GetMainWeapon((int)id);
                     break;
                 case 7:
                     cause = $"Wsp_Shachihoko_Explosion";
@@ -326,14 +330,14 @@ namespace BlitzSniffer.Tracker.Player
                 case 9:
                 case 13:
                 case 14:
-                    cause = $"type main id {id}";
+                    cause = WeaponResource.Instance.GetMainWeapon((int)id);
                     break;
                 case 10:
-                    cause = $"type sub id {id}";
+                    cause = WeaponResource.Instance.GetSubWeapon((int)id);
                     break;
                 case 11:
                 case 12:
-                    cause = $"type special id {id}";
+                    cause = WeaponResource.Instance.GetSpecialWeapon((int)id);
                     break;
             }
 
