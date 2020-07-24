@@ -24,6 +24,7 @@ namespace BlitzSniffer.Tracker.Player
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandlePlayerName;
             holder.CloneChanged += HandlePlayerEvent;
+            holder.CloneChanged += HandlePlayerNetState;
 
             for (uint i = 0; i < 10; i++)
             {
@@ -39,6 +40,7 @@ namespace BlitzSniffer.Tracker.Player
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandlePlayerName;
             holder.CloneChanged -= HandlePlayerEvent;
+            holder.CloneChanged -= HandlePlayerNetState;
         }
 
         public Player GetPlayer(uint idx)
@@ -180,6 +182,88 @@ namespace BlitzSniffer.Tracker.Player
                         break;
                     default:
                         break;
+                }
+            }
+        }
+
+        private void HandlePlayerNetState(object sender, CloneChangedEventArgs args)
+        {
+            uint playerId = args.CloneId - 111;
+            if (playerId >= 10)
+            {
+                return;
+            }
+
+            if (args.ElementId != 0)
+            {
+                return;
+            }
+
+            Player player = Players[playerId];
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                BitReader bitReader = new BitReader(reader);
+
+                // TODO: clean up
+
+                // mPos
+                bitReader.Seek(16 * 3);
+                bitReader.Seek(1 * 3);
+
+                // mMoveVel
+                bitReader.Seek(11);
+                bitReader.Seek(12);
+                bitReader.Seek(12);
+
+                // mJumpVel
+                bitReader.Seek(12);
+
+                // mJumpVel_Leak
+                bitReader.Seek(12);
+
+                // mPosY_Leap
+                bitReader.Seek(17);
+
+                // mReactVel
+                bitReader.Seek(11);
+                bitReader.Seek(12);
+                bitReader.Seek(12);
+
+                // mGndNrm_Raw
+                bitReader.Seek(11);
+                bitReader.Seek(12);
+
+                // mAttDirZ
+                bitReader.Seek(11);
+                bitReader.Seek(12);
+
+                // mShotDirXZ
+                bitReader.Seek(14);
+
+                // mUnk4
+                bitReader.Seek(6);
+
+                // mUnk5
+                bitReader.Seek(2 + 10);
+
+                // mUnk6
+                bitReader.Seek(8);
+
+                // special gauge
+                uint charge = bitReader.ReadVariableBits(7);
+                if (player.SpecialGaugeCharge != charge)
+                {
+                    player.SpecialGaugeCharge = charge;
+
+                    EventTracker.Instance.AddEvent(new PlayerGaugeUpdateEvent()
+                    {
+                        PlayerIdx = playerId,
+                        Charge = player.SpecialGaugeCharge
+                    });
                 }
             }
         }
