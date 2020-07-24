@@ -1,6 +1,7 @@
 ﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.Tracker.Versus;
+using BlitzSniffer.Tracker.Versus.VLift;
 using System.Collections.Generic;
 
 namespace BlitzSniffer.Event.Setup
@@ -27,6 +28,8 @@ namespace BlitzSniffer.Event.Setup
             set;
         }
 
+        public List<List<uint>> VLiftCheckpoints;
+
         public SetupEvent()
         {
             Teams = new List<SetupTeam>();
@@ -42,6 +45,19 @@ namespace BlitzSniffer.Event.Setup
             Rule = stateTracker.Rule;
             Teams[0].Color = stateTracker.AlphaColor;
             Teams[1].Color = stateTracker.BravoColor;
+
+            if (Rule == VersusRule.Vlf)
+            {
+                VLiftCheckpoints = (session.GameStateTracker as VLiftVersusGameStateTracker).BuildCheckpointListForSetup();
+            }
+            else
+            {
+                VLiftCheckpoints = new List<List<uint>>()
+                {
+                    new List<uint>(),
+                    new List<uint>()
+                };
+            }
 
             for (uint i = 0; i != 10; i++)
             {

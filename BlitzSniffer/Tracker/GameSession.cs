@@ -4,6 +4,7 @@ using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Versus;
+using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
 using Syroot.BinaryData;
 using System;
@@ -83,7 +84,7 @@ namespace BlitzSniffer.Tracker
 
                 reader.Seek(2);
                 ushort stage = reader.ReadUInt16();
-                ushort rule = reader.ReadUInt16();
+                VersusRule rule = (VersusRule)reader.ReadUInt16();
 
                 reader.Seek(14, SeekOrigin.Begin);
                 uint teamBits = reader.ReadUInt32();
@@ -97,8 +98,15 @@ namespace BlitzSniffer.Tracker
                 reader.Seek(72, SeekOrigin.Begin);
                 Color4f bravo = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 0);
 
-                // TODO ranked
-                GameStateTracker = new GenericVersusGameStateTracker(stage, (VersusRule)rule, alpha, bravo);
+                switch (rule)
+                {
+                    case VersusRule.Vlf:
+                        GameStateTracker = new VLiftVersusGameStateTracker(stage, alpha, bravo);
+                        break;
+                    default:
+                        GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
+                        break;
+                }
 
                 EventTracker.Instance.AddEvent(new SetupEvent());
 
