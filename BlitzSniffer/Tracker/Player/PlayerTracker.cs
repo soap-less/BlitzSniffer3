@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -100,7 +100,7 @@ namespace BlitzSniffer.Tracker.Player
         private void HandlePlayerEvent(object sender, CloneChangedEventArgs args)
         {
             uint playerId = args.CloneId - 111;
-            if (playerId > 10)
+            if (playerId >= 10)
             {
                 return;
             }
