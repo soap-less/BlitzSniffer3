@@ -25,7 +25,7 @@ namespace BlitzSniffer.Resources
 
         private Dictionary<int, string> Stages = new Dictionary<int, string>();
 
-        public StageResource()
+        private StageResource()
         {
             dynamic mapInfo;
             using (Stream mapInfoStream = RomResourceLoader.Instance.GetRomFile("/Mush/MapInfo.release.byml"))
