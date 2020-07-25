@@ -1,9 +1,11 @@
 using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
+using BlitzSniffer.Enl;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using BlitzSniffer.Resources;
 using BlitzSniffer.Util;
+using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
@@ -15,11 +17,13 @@ namespace BlitzSniffer.Tracker.Player
     class PlayerTracker : IDisposable
     {
         private readonly Dictionary<uint, Player> Players;
+        private readonly Dictionary<uint, uint> EnlMapping;
         private readonly PlayerOffenseTracker OffenseTracker;
 
         public PlayerTracker()
         {
             Players = new Dictionary<uint, Player>();
+            EnlMapping = new Dictionary<uint, uint>();
             OffenseTracker = new PlayerOffenseTracker();
 
             CloneHolder holder = CloneHolder.Instance;
@@ -34,6 +38,8 @@ namespace BlitzSniffer.Tracker.Player
 
                 Players[i] = new Player($"Player {i}");
             }
+
+            EnlHolder.Instance.SystemInfoReceived += HandleEnlSystemInfo;
         }
 
         public void Dispose()
@@ -42,6 +48,8 @@ namespace BlitzSniffer.Tracker.Player
             holder.CloneChanged -= HandlePlayerName;
             holder.CloneChanged -= HandlePlayerEvent;
             holder.CloneChanged -= HandlePlayerNetState;
+
+            EnlHolder.Instance.SystemInfoReceived -= HandleEnlSystemInfo;
         }
 
         public Player GetPlayer(uint idx)
@@ -70,10 +78,19 @@ namespace BlitzSniffer.Tracker.Player
             }
         }
 
+        private void HandleEnlSystemInfo(object sender, SystemInfoReceivedEventArgs args)
+        {
+            EnlSystemInfoRecord record = args.Record;
+            for (uint i = 0; i < record.PlayerIds.Count; i++)
+            {
+                EnlMapping[i] = record.PlayerIds[(int)i];
+            }
+        }
+
         private void HandlePlayerName(object sender, CloneChangedEventArgs args)
         {
-            uint playerId = args.CloneId - 3;
-            if (playerId > 10)
+            uint enlId = args.CloneId - 3;
+            if (enlId >= 10)
             {
                 return;
             }
@@ -83,11 +100,17 @@ namespace BlitzSniffer.Tracker.Player
                 return;
             }
 
+            uint playerId = EnlMapping[enlId];
+            if (playerId == 255)
+            {
+                // Haven't had an update from enl yet, delay
+                return;
+            }
+
             using (MemoryStream stream = new MemoryStream(args.Data))
             using (BinaryDataReader reader = new BinaryDataReader(stream))
             {
                 string name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
-
                 Players[playerId].Name = name;
 
                 if (!Players[playerId].IsActive)
@@ -95,7 +118,7 @@ namespace BlitzSniffer.Tracker.Player
                     Players[playerId].IsActive = true;
                     Players[playerId].IsAlive = true;
 
-                    Console.WriteLine($"[PlayerTracker] registered {name}");
+                    Console.WriteLine($"[PlayerTracker] registered {name} as {playerId}");
                 }
             }
         }
