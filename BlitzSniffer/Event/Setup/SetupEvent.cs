@@ -28,7 +28,11 @@ namespace BlitzSniffer.Event.Setup
             set;
         }
 
-        public List<List<uint>> VLiftCheckpoints;
+        public List<List<uint>> VLiftCheckpoints
+        {
+            get;
+            set;
+        }
 
         public SetupEvent()
         {
