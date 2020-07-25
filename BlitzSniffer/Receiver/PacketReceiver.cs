@@ -1,4 +1,6 @@
 ﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Enl;
+using NintendoNetcode.Enl;
 using NintendoNetcode.Pia;
 using NintendoNetcode.Pia.Clone;
 using NintendoNetcode.Pia.Clone.Content;
@@ -7,6 +9,7 @@ using NintendoNetcode.Pia.Clone.Element.Data.Event;
 using NintendoNetcode.Pia.Clone.Element.Data.Reliable;
 using NintendoNetcode.Pia.Clone.Element.Data.Unreliable;
 using NintendoNetcode.Pia.Lan.Content.Browse;
+using NintendoNetcode.Pia.Unreliable;
 using PacketDotNet;
 using SharpPcap;
 using SharpPcap.LibPcap;
@@ -127,6 +130,19 @@ namespace BlitzSniffer.Receiver
                                 {
                                     CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataUnreliable).Data);
                                 }
+                            }
+                        }
+                        else if (message.ProtocolId == PiaProtocol.Unreliable && message.ProtocolPort == 0x01) // Enl
+                        {
+                            UnreliableMessage unreliableMessage = message as UnreliableMessage;
+
+                            using (MemoryStream innerStream = new MemoryStream(unreliableMessage.Data))
+                            using (BinaryDataReader innerReader = new BinaryDataReader(innerStream))
+                            {
+                                innerReader.ByteOrder = ByteOrder.LittleEndian;
+
+                                EnlMessage enlMessage = new EnlMessage(innerReader, 10, 0);
+                                EnlHolder.Instance.EnlMessageReceived(enlMessage);
                             }
                         }
                     }
