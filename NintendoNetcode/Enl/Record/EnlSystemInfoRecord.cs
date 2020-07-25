@@ -96,7 +96,7 @@ namespace NintendoNetcode.Enl.Record
             ConnectedPlayers = reader.ReadByte();
 
             PlayerIds = new List<uint>();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < p; i++)
             {
                 PlayerIds.Add(reader.ReadByte());
             }
