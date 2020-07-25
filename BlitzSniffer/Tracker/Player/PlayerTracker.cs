@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -152,6 +152,18 @@ namespace BlitzSniffer.Tracker.Player
                     case 6: // Assist
                         PlayerDeathEvent assistDeathEvent = OffenseTracker.GetDeathEventForVictim(unk10);
                         assistDeathEvent.AssisterIdx = (int)playerId;
+
+                        break;
+                    case 21:
+                        // TODO: why does this sometimes fire when charge != 100?
+                        // TODO: what happens when internal specials like BigLaser are activated?
+                        if (player.SpecialGaugeCharge == 100)
+                        {
+                            EventTracker.Instance.AddEvent(new PlayerSpecialActivateEvent()
+                            {
+                                PlayerIdx = playerId
+                            });
+                        }
 
                         break;
                     default:
