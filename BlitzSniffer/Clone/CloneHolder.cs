@@ -35,9 +35,9 @@ namespace BlitzSniffer.Clone
 
         public void RegisterClone(uint id)
         {
-            if (Clones.ContainsKey(id))
+            if (IsCloneRegistered(id))
             {
-                throw new SnifferException($"Clone {id} already registered");
+                return;
             }
 
             Clones[id] = new Dictionary<uint, byte[]>();
