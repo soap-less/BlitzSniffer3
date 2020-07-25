@@ -2,6 +2,7 @@ using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using BlitzSniffer.Resources;
 using BlitzSniffer.Util;
 using Syroot.BinaryData;
 using System;
