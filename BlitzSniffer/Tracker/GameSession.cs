@@ -1,5 +1,7 @@
 ﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
+using BlitzSniffer.Event;
+using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
@@ -36,6 +38,8 @@ namespace BlitzSniffer.Tracker
             private set;
         }
 
+        private bool DidSetupEventFire = false;
+
         private GameSession()
         {
             PlayerTracker = new PlayerTracker();
@@ -63,6 +67,20 @@ namespace BlitzSniffer.Tracker
                 GameStateTracker.Dispose();
                 GameStateTracker = null;
             }
+
+            DidSetupEventFire = false;
+        }
+
+        public void FireSetupEvent()
+        {
+            if (DidSetupEventFire)
+            {
+                return;
+            }
+
+            EventTracker.Instance.AddEvent(new SetupEvent());
+
+            DidSetupEventFire = true;
         }
 
         private void HandleSeqEventVersusSetting(object sender, CloneChangedEventArgs args)

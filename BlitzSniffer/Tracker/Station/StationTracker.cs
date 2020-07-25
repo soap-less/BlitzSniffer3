@@ -102,7 +102,7 @@ namespace BlitzSniffer.Tracker.Station
                     // Previously this was done on receiving Cnet::PacketSeqEventVersusSetting, but SeqState 7 isn't
                     // fired until the game is ready to proceed into synchronizing the clocks and waiting for the
                     // game to start (VS intro demo), so this is probably the best place to do this
-                    EventTracker.Instance.AddEvent(new SetupEvent());
+                    GameSession.Instance.FireSetupEvent();
                 }
             }
         }
