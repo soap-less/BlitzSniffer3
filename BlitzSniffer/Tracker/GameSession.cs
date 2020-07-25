@@ -1,33 +1,21 @@
 ﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
-using BlitzSniffer.Event;
-using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
 using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
 using Syroot.BinaryData;
-using System;
 using System.IO;
 
 namespace BlitzSniffer.Tracker
 {
-    class GameSession : IDisposable
+    class GameSession
     {
-        public static GameSession _currentSession = null;
-
-        public static GameSession CurrentSession
+        public static GameSession Instance
         {
-            get
-            {
-                if (_currentSession == null)
-                {
-                    _currentSession = new GameSession();
-                }
-
-                return _currentSession;
-            }
+            get;
+            private set;
         }
 
         public StationTracker StationTracker
@@ -48,7 +36,7 @@ namespace BlitzSniffer.Tracker
             private set;
         }
 
-        public GameSession()
+        private GameSession()
         {
             PlayerTracker = new PlayerTracker();
             StationTracker = new StationTracker(); 
@@ -60,16 +48,20 @@ namespace BlitzSniffer.Tracker
             holder.RegisterClone(2);
         }
 
-        public void Dispose()
+        public static void Initialize()
         {
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleSeqEventVersusSetting;
+            Instance = new GameSession();
+        }
 
+        public void Reset()
+        {
             PlayerTracker.Dispose();
+            PlayerTracker = new PlayerTracker();
 
             if (GameStateTracker != null)
             {
                 GameStateTracker.Dispose();
+                GameStateTracker = null;
             }
         }
 
@@ -116,20 +108,6 @@ namespace BlitzSniffer.Tracker
                         break;
                 }
             }
-        }
-
-        public static void Initialize()
-        {
-            if (_currentSession == null)
-            {
-                _currentSession = new GameSession();
-            }
-        }
-
-        public static void ResetSession()
-        {
-            _currentSession.Dispose();
-            _currentSession = new GameSession();
         }
 
     }

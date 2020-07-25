@@ -85,7 +85,7 @@ namespace BlitzSniffer.Tracker.Station
                 IEnumerable<Station> connectedStations = Stations.Values.Where(s => s.PlayerId != 0xFF);
                 if (connectedStations.Count() > 0 && connectedStations.All(s => s.SeqState == 7))
                 {
-                    PlayerTracker playerTracker = GameSession.CurrentSession.PlayerTracker;
+                    PlayerTracker playerTracker = GameSession.Instance.PlayerTracker;
 
                     // Set default values for PlayerTracker
                     foreach (Station station in connectedStations)

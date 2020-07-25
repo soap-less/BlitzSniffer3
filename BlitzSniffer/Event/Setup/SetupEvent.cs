@@ -42,7 +42,7 @@ namespace BlitzSniffer.Event.Setup
                 Teams.Add(new SetupTeam());
             }
 
-            GameSession session = GameSession.CurrentSession;
+            GameSession session = GameSession.Instance;
             VersusGameStateTracker stateTracker = session.GameStateTracker as VersusGameStateTracker;
 
             StageId = stateTracker.StageId;
