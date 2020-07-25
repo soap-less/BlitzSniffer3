@@ -54,12 +54,12 @@ namespace BlitzSniffer.Tracker.Player
 
         public void ApplyTeamBits()
         {
-            ushort neutralBits = (ushort)(TeamBits >> 16);
-            ushort actualTeamBits = (ushort)(TeamBits & 0xFFFF);
+            uint neutralBits = TeamBits >> 16;
+            uint actualTeamBits = TeamBits & 0xFFFF;
 
             for (uint i = 0; i != 10; i++)
             {
-                ushort mask = (ushort)(1 << (int)i);
+                uint mask = (uint)(1 << (int)i);
 
                 Player player = Players[i];
                 if ((neutralBits & mask) != 0 || !player.IsActive)
