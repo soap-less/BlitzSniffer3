@@ -1,55 +1,45 @@
 using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
-using BlitzSniffer.Enl;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using BlitzSniffer.Resources;
 using BlitzSniffer.Util;
-using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace BlitzSniffer.Tracker.Player
 {
     class PlayerTracker : IDisposable
     {
         private readonly Dictionary<uint, Player> Players;
-        private readonly Dictionary<uint, uint> EnlMapping;
         private readonly PlayerOffenseTracker OffenseTracker;
+
+        private uint TeamBits;
 
         public PlayerTracker()
         {
             Players = new Dictionary<uint, Player>();
-            EnlMapping = new Dictionary<uint, uint>();
             OffenseTracker = new PlayerOffenseTracker();
 
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged += HandlePlayerName;
             holder.CloneChanged += HandlePlayerEvent;
             holder.CloneChanged += HandlePlayerNetState;
 
             for (uint i = 0; i < 10; i++)
             {
-                holder.RegisterClone(i + 3);
                 holder.RegisterClone(i + 111);
 
                 Players[i] = new Player($"Player {i}");
             }
-
-            EnlHolder.Instance.SystemInfoReceived += HandleEnlSystemInfo;
         }
 
         public void Dispose()
         {
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandlePlayerName;
             holder.CloneChanged -= HandlePlayerEvent;
             holder.CloneChanged -= HandlePlayerNetState;
-
-            EnlHolder.Instance.SystemInfoReceived -= HandleEnlSystemInfo;
         }
 
         public Player GetPlayer(uint idx)
@@ -57,10 +47,15 @@ namespace BlitzSniffer.Tracker.Player
             return Players[idx];
         }
 
-        public void SetTeams(uint teamBits)
+        public void SetTeamBits(uint teamBits)
         {
-            ushort neutralBits = (ushort)(teamBits >> 16);
-            ushort actualTeamBits = (ushort)(teamBits & 0xFFFF);
+            TeamBits = teamBits;
+        }
+
+        public void ApplyTeamBits()
+        {
+            ushort neutralBits = (ushort)(TeamBits >> 16);
+            ushort actualTeamBits = (ushort)(TeamBits & 0xFFFF);
 
             for (uint i = 0; i != 10; i++)
             {
@@ -74,51 +69,6 @@ namespace BlitzSniffer.Tracker.Player
                 else
                 {
                     player.Team = (actualTeamBits & mask) != 0 ? Team.Bravo : Team.Alpha;
-                }
-            }
-        }
-
-        private void HandleEnlSystemInfo(object sender, SystemInfoReceivedEventArgs args)
-        {
-            EnlSystemInfoRecord record = args.Record;
-            for (uint i = 0; i < record.PlayerIds.Count; i++)
-            {
-                EnlMapping[i] = record.PlayerIds[(int)i];
-            }
-        }
-
-        private void HandlePlayerName(object sender, CloneChangedEventArgs args)
-        {
-            uint enlId = args.CloneId - 3;
-            if (enlId >= 10)
-            {
-                return;
-            }
-
-            if (args.ElementId != 1)
-            {
-                return;
-            }
-
-            uint playerId = EnlMapping[enlId];
-            if (playerId == 255)
-            {
-                // Haven't had an update from enl yet, delay
-                return;
-            }
-
-            using (MemoryStream stream = new MemoryStream(args.Data))
-            using (BinaryDataReader reader = new BinaryDataReader(stream))
-            {
-                string name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
-                Players[playerId].Name = name;
-
-                if (!Players[playerId].IsActive)
-                {
-                    Players[playerId].IsActive = true;
-                    Players[playerId].IsAlive = true;
-
-                    Console.WriteLine($"[PlayerTracker] registered {name} as {playerId}");
                 }
             }
         }

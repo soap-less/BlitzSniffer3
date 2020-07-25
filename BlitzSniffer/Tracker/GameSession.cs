@@ -3,6 +3,7 @@ using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
+using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
 using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
@@ -29,6 +30,12 @@ namespace BlitzSniffer.Tracker
             }
         }
 
+        public StationTracker StationTracker
+        {
+            get;
+            private set;
+        }
+
         public PlayerTracker PlayerTracker
         {
             get;
@@ -44,6 +51,7 @@ namespace BlitzSniffer.Tracker
         public GameSession()
         {
             PlayerTracker = new PlayerTracker();
+            StationTracker = new StationTracker(); 
             GameStateTracker = null;
 
             CloneHolder holder = CloneHolder.Instance;
@@ -89,7 +97,7 @@ namespace BlitzSniffer.Tracker
                 reader.Seek(14, SeekOrigin.Begin);
                 uint teamBits = reader.ReadUInt32();
 
-                PlayerTracker.SetTeams(teamBits);
+                PlayerTracker.SetTeamBits(teamBits);
 
                 // TODO verify these
                 reader.Seek(52, SeekOrigin.Begin);
@@ -107,10 +115,6 @@ namespace BlitzSniffer.Tracker
                         GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
                         break;
                 }
-
-                EventTracker.Instance.AddEvent(new SetupEvent());
-
-                return;
             }
         }
 
