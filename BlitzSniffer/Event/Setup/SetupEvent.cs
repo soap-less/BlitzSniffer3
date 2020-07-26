@@ -1,8 +1,9 @@
 ﻿using Blitz.Cmn.Def;
+using BlitzSniffer.Event.Setup.Rule;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.Tracker.Versus;
-using BlitzSniffer.Tracker.Versus.VLift;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace BlitzSniffer.Event.Setup
 {
@@ -22,13 +23,27 @@ namespace BlitzSniffer.Event.Setup
             set;
         }
 
-        public List<SetupTeam> Teams
+        // Hack: Serialization of a polymorphic type hierarchy not supported, but can be forced if the type is
+        // object. So, the actual SetupRuleConfiguration is stored in a private variable, and a property with
+        // type object is exposed to the serializer.
+        // https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-how-to#serialize-properties-of-derived-classes
+        private SetupRuleConfiguration _RuleConfiguration;
+
+        public object RuleConfiguration
         {
-            get;
-            set;
+            get
+            {
+                return _RuleConfiguration;
+            }
+            set
+            {
+                Trace.Assert(value is SetupRuleConfiguration);
+
+                _RuleConfiguration = value as SetupRuleConfiguration;
+            }
         }
 
-        public List<List<uint>> VLiftCheckpoints
+        public List<SetupTeam> Teams
         {
             get;
             set;
@@ -50,17 +65,14 @@ namespace BlitzSniffer.Event.Setup
             Teams[0].Color = stateTracker.AlphaColor;
             Teams[1].Color = stateTracker.BravoColor;
 
-            if (Rule == VersusRule.Vlf)
+            switch (Rule)
             {
-                VLiftCheckpoints = (session.GameStateTracker as VLiftVersusGameStateTracker).BuildCheckpointListForSetup();
-            }
-            else
-            {
-                VLiftCheckpoints = new List<List<uint>>()
-                {
-                    new List<uint>(),
-                    new List<uint>()
-                };
+                case VersusRule.Vlf:
+                    RuleConfiguration = new SetupVLiftRuleConfiguration();
+                    break;
+                default:
+                    RuleConfiguration = new SetupGenericRuleConfiguration();
+                    break;
             }
 
             for (uint i = 0; i != 10; i++)
