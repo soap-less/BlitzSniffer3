@@ -1,8 +1,7 @@
 {
   "profiles": {
     "BlitzSniffer": {
-      "commandName": "Project",
-      "commandLineArgs": "--replay-file=C:\\Users\\Julian\\Documents\\Switch\\Splatoon2\\LAN\\New\\smh3-all.pcap --replay-in-real-time --real-time-start-offset=120"
+      "commandName": "Project"
     }
   }
 }
