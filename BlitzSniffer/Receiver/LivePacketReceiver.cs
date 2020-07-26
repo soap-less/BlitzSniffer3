@@ -6,7 +6,7 @@ namespace BlitzSniffer.Receiver
 {
     public class LivePacketReceiver : PacketReceiver
     {
-        private static readonly int ReadTimeout = 10000;
+        private static readonly int ReadTimeout = 1;
 
         public LivePacketReceiver(ICaptureDevice device)
         {
