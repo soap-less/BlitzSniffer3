@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Nintendo.Switch
 {
-    internal class NcaWrapper : IDisposable
+    public class NcaWrapper : IDisposable
     {
         private FileStream fileStream;
         private FileStream updateFileStream;

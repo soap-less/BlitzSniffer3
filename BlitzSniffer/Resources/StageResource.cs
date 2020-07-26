@@ -1,4 +1,5 @@
 ﻿using Blitz;
+using BlitzSniffer.Resources.Source;
 using Nintendo;
 using Nintendo.Archive;
 using System.Collections.Generic;
@@ -28,7 +29,7 @@ namespace BlitzSniffer.Resources
         private StageResource()
         {
             dynamic mapInfo;
-            using (Stream mapInfoStream = RomResourceLoader.Instance.GetRomFile("/Mush/MapInfo.release.byml"))
+            using (Stream mapInfoStream = GameResourceSource.Instance.GetFile("/Mush/MapInfo.release.byml"))
             {
                 mapInfo = ByamlLoader.LoadByamlDynamic(mapInfoStream);
             }
@@ -48,7 +49,7 @@ namespace BlitzSniffer.Resources
 
         public dynamic LoadStageForId(int id)
         {
-            using (Stream stream = RomResourceLoader.Instance.GetRomFile($"/Map/{Stages[id]}.szs"))
+            using (Stream stream = GameResourceSource.Instance.GetFile($"/Map/{Stages[id]}.szs"))
             using (Sarc sarc = new Sarc(stream))
             {
                 return ByamlLoader.LoadByamlDynamic(sarc[$"{Stages[id]}.byaml"]);

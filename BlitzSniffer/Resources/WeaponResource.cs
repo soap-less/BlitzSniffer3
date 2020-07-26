@@ -1,4 +1,5 @@
 ﻿using Blitz;
+using BlitzSniffer.Resources.Source;
 using Nintendo;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace BlitzSniffer.Resources
 
         private void LoadInfo(string bymlName, string namePrefix, Dictionary<int, string> targetDict)
         {
-            using (Stream infoStream = RomResourceLoader.Instance.GetRomFile($"/Mush/WeaponInfo_{bymlName}.byml"))
+            using (Stream infoStream = GameResourceSource.Instance.GetFile($"/Mush/WeaponInfo_{bymlName}.byml"))
             {
                 dynamic infoByml = ByamlLoader.LoadByamlDynamic(infoStream);
 
