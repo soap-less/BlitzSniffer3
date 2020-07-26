@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="SharpPcap" Version="5.1.0" />
+    <PackageReference Include="System.CommandLine.DragonFruit" Version="0.3.0-alpha.20371.2" />
     <PackageReference Include="WebSocketSharp-netstandard" Version="1.0.1" />
   </ItemGroup>
 
