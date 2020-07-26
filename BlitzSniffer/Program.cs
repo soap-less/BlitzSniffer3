@@ -1,9 +1,10 @@
-﻿using BlitzSniffer.Config;
+using BlitzSniffer.Config;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.WebSocket;
 using LibHac;
+using Serilog;
 using SharpPcap;
 using System;
 using System.IO;
@@ -56,6 +57,11 @@ namespace BlitzSniffer
             SnifferConfig.Instance.Save();
 
             Console.Clear();
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console()
+                .CreateLogger();
 
             if (useRom)
             {
