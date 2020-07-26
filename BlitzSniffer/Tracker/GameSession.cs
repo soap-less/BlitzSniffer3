@@ -78,6 +78,8 @@ namespace BlitzSniffer.Tracker
             }
 
             IsSetup = false;
+
+            EventTracker.Instance.AddEvent(new SessionResetEvent());
         }
 
         public void FireSetupEvent()
