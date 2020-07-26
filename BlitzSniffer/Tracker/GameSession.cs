@@ -38,7 +38,11 @@ namespace BlitzSniffer.Tracker
             private set;
         }
 
-        private bool DidSetupEventFire = false;
+        public bool IsSetup
+        {
+            get;
+            private set;
+        }
 
         private GameSession()
         {
@@ -59,6 +63,11 @@ namespace BlitzSniffer.Tracker
 
         public void Reset()
         {
+            if (!IsSetup)
+            {
+                return;
+            }
+
             PlayerTracker.Dispose();
             PlayerTracker = new PlayerTracker();
 
@@ -68,19 +77,19 @@ namespace BlitzSniffer.Tracker
                 GameStateTracker = null;
             }
 
-            DidSetupEventFire = false;
+            IsSetup = false;
         }
 
         public void FireSetupEvent()
         {
-            if (DidSetupEventFire)
+            if (IsSetup)
             {
                 return;
             }
 
-            EventTracker.Instance.AddEvent(new SetupEvent());
+            IsSetup = true;
 
-            DidSetupEventFire = true;
+            EventTracker.Instance.AddEvent(new SetupEvent());
         }
 
         private void HandleSeqEventVersusSetting(object sender, CloneChangedEventArgs args)

@@ -1,7 +1,5 @@
 ﻿using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
-using BlitzSniffer.Event;
-using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
@@ -34,6 +32,45 @@ namespace BlitzSniffer.Tracker.Station
             }
 
              EnlHolder.Instance.SystemInfoReceived += HandleEnlSystemInfo;
+        }
+
+        private void HandleSeqStateAllSame(byte seqState)
+        {
+            switch (seqState)
+            {
+                case 7: // Apparently this is "ready for game start" - Game::OnlineStartGameExe::stateWaitForSeqState()
+                    PlayerTracker playerTracker = GameSession.Instance.PlayerTracker;
+
+                    // Set default values for PlayerTracker
+                    foreach (Station station in Stations.Values)
+                    {
+                        if (station.PlayerId == 0xFF)
+                        {
+                            continue;
+                        }
+
+                        Player.Player player = playerTracker.GetPlayer(station.PlayerId);
+                        player.Name = station.Name;
+                        player.IsActive = true;
+                        player.IsAlive = true;
+                    }
+
+                    playerTracker.ApplyTeamBits();
+
+                    // Everything should be ready now, so fire SetupEvent
+                    // Previously this was done on receiving Cnet::PacketSeqEventVersusSetting, but SeqState 7 isn't
+                    // fired until the game is ready to proceed into synchronizing the clocks and waiting for the
+                    // game to start (VS intro demo), so this is probably the best place to do this
+                    GameSession.Instance.FireSetupEvent();
+                    
+                    break;
+                case 12: // Results screen start - Game::SeqVersusResult::stateEnterStartResult()
+                    GameSession.Instance.Reset();
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         private void HandleEnlSystemInfo(object sender, SystemInfoReceivedEventArgs args)
@@ -78,31 +115,14 @@ namespace BlitzSniffer.Tracker.Station
             {
                 reader.Seek(2);
 
-                Stations[enlId].SeqState = reader.ReadByte();
+                byte seqState = reader.ReadByte();
+                Stations[enlId].SeqState = seqState;
 
-                // Check for SeqState 7
-                // Apparently this is "ready for game start" - Game::OnlineStartGameExe::stateWaitForSeqState()
+                // Check if all the stations have the same Cnet::Def::SeqState
                 IEnumerable<Station> connectedStations = Stations.Values.Where(s => s.PlayerId != 0xFF);
-                if (connectedStations.Count() > 0 && connectedStations.All(s => s.SeqState == 7))
+                if (connectedStations.Count() > 0 && connectedStations.All(s => s.SeqState == seqState))
                 {
-                    PlayerTracker playerTracker = GameSession.Instance.PlayerTracker;
-
-                    // Set default values for PlayerTracker
-                    foreach (Station station in connectedStations)
-                    {
-                        Player.Player player = playerTracker.GetPlayer(station.PlayerId);
-                        player.Name = station.Name;
-                        player.IsActive = true;
-                        player.IsAlive = true;
-                    }
-
-                    playerTracker.ApplyTeamBits();
-
-                    // Everything should be ready now, so fire SetupEvent
-                    // Previously this was done on receiving Cnet::PacketSeqEventVersusSetting, but SeqState 7 isn't
-                    // fired until the game is ready to proceed into synchronizing the clocks and waiting for the
-                    // game to start (VS intro demo), so this is probably the best place to do this
-                    GameSession.Instance.FireSetupEvent();
+                    HandleSeqStateAllSame(seqState);
                 }
             }
         }
