@@ -16,6 +16,7 @@ using Serilog.Core;
 using SharpPcap;
 using Syroot.BinaryData;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -69,19 +70,26 @@ namespace BlitzSniffer.Receiver
             {
                 reader.ByteOrder = ByteOrder.BigEndian;
 
-                if (udpPacket.DestinationPort == 30000)
+                try
                 {
-                    HandleLanSearchPacket(reader);
-                }
-                else
-                {
-                    if (SessionKey == null)
+                    if (udpPacket.DestinationPort == 30000)
                     {
-                        LogContext.Warning("Skipping packet with length {Length}, no session key", udpPacket.PayloadData.Length);
-                        return;
+                        HandleLanSearchPacket(reader);
                     }
+                    else
+                    {
+                        if (SessionKey == null)
+                        {
+                            LogContext.Warning("Skipping packet with length {Length}, no session key", udpPacket.PayloadData.Length);
+                            return;
+                        }
 
-                    HandlePiaPacket(reader, ipPacket.SourceAddress.GetAddressBytes());
+                        HandlePiaPacket(reader, ipPacket.SourceAddress.GetAddressBytes());
+                    }
+                }
+                catch (Exception ex) when (!Debugger.IsAttached)
+                {
+                    LogContext.Error(ex, "Exception while processing packet");
                 }
             }
         }
