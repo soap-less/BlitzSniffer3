@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus;
@@ -15,18 +15,6 @@ namespace BlitzSniffer.Tracker.Versus.VLift
         public override VersusRule Rule => VersusRule.Vlf;
 
         private VLiftRail Rail;
-
-        public uint AlphaVLiftPosition
-        {
-            get;
-            private set;
-        }
-
-        public uint BravoVLiftPosition
-        {
-            get;
-            private set;
-        }
 
         public VLiftVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
@@ -100,22 +88,9 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                     return (uint)(reader.ReadSingle() * 100);
                 }
 
-                uint alphaCurrentPosition = ReadScore();
-                uint bravoCurrentPosition = ReadScore();
+                reader.Seek(8); // skip best VLift position
                 uint alphaBestScore = ReadScore();
                 uint bravoBestScore = ReadScore();
-
-                if (alphaCurrentPosition != AlphaVLiftPosition || bravoCurrentPosition != BravoVLiftPosition)
-                {
-                    AlphaVLiftPosition = alphaCurrentPosition;
-                    BravoVLiftPosition = bravoCurrentPosition;
-
-                    EventTracker.Instance.AddEvent(new VLiftPositionUpdateEvent()
-                    {
-                        AlphaPosition = AlphaVLiftPosition,
-                        BravoPosition = BravoVLiftPosition
-                    });
-                }
 
                 if (alphaBestScore != AlphaScore || bravoBestScore != BravoScore)
                 {
