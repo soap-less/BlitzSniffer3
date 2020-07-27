@@ -11,6 +11,8 @@ using NintendoNetcode.Pia.Clone.Element.Data.Unreliable;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using NintendoNetcode.Pia.Unreliable;
 using PacketDotNet;
+using Serilog;
+using Serilog.Core;
 using SharpPcap;
 using Syroot.BinaryData;
 using System;
@@ -22,7 +24,9 @@ namespace BlitzSniffer.Receiver
 {
     public abstract class PacketReceiver : IDisposable
     {
-        static byte[] BlitzGameKey = { 0xee, 0x18, 0x2a, 0x63, 0xe2, 0x16, 0xcd, 0xb1, 0xf5, 0x1a, 0xd4, 0xbe, 0xd8, 0xcf, 0x65, 0x08 };
+        private static byte[] BlitzGameKey = { 0xee, 0x18, 0x2a, 0x63, 0xe2, 0x16, 0xcd, 0xb1, 0xf5, 0x1a, 0xd4, 0xbe, 0xd8, 0xcf, 0x65, 0x08 };
+
+        private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "PacketReceiver");
 
         protected ICaptureDevice Device
         {
@@ -73,7 +77,7 @@ namespace BlitzSniffer.Receiver
                 {
                     if (SessionKey == null)
                     {
-                        Console.WriteLine($"WARN: skipping packet with length {udpPacket.PayloadData.Length} because there is no session key yet");
+                        LogContext.Warning("Skipping packet with length {Length}, no session key", udpPacket.PayloadData.Length);
                         return;
                     }
 
