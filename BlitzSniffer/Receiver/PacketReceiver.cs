@@ -12,13 +12,10 @@ using NintendoNetcode.Pia.Lan.Content.Browse;
 using NintendoNetcode.Pia.Unreliable;
 using PacketDotNet;
 using SharpPcap;
-using SharpPcap.LibPcap;
 using Syroot.BinaryData;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading;
 
 namespace BlitzSniffer.Receiver
@@ -34,12 +31,6 @@ namespace BlitzSniffer.Receiver
         }
 
         private byte[] SessionKey
-        {
-            get;
-            set;
-        } = null;
-
-        private IPAddress HostAddress
         {
             get;
             set;
@@ -76,21 +67,7 @@ namespace BlitzSniffer.Receiver
 
                 if (udpPacket.DestinationPort == 30000)
                 {
-                    byte firstByte = reader.ReadByte();
-
-                    if (firstByte == 0x1)
-                    {
-                        LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
-                        byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, BlitzGameKey);
-
-                        if (SessionKey != null && !newKey.SequenceEqual(SessionKey))
-                        {
-                            throw new SnifferException("Session key mismatch - are there two sessions running at once?");
-                        }
-
-                        SessionKey = newKey;
-                        HostAddress = ipPacket.SourceAddress;
-                    }
+                    HandleLanSearchPacket(reader);
                 }
                 else
                 {
@@ -100,53 +77,82 @@ namespace BlitzSniffer.Receiver
                         return;
                     }
 
-                    byte[] address = ipPacket.SourceAddress.GetAddressBytes();
-                    PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(address));
-
-                    foreach (PiaMessage message in piaPacket.Messages)
-                    {
-                        if (message.ProtocolId == PiaProtocol.Clone)
-                        {
-                            CloneMessage cloneMessage = message as CloneMessage;
-                            CloneContentData cloneContentData = cloneMessage.Content as CloneContentData;
-
-                            if (cloneContentData == null || !CloneHolder.Instance.IsCloneRegistered(cloneContentData.CloneId))
-                            {
-                                continue;
-                            }
-
-                            foreach (CloneElementData cloneElementData in cloneContentData.ElementData)
-                            {
-                                Type type = cloneElementData.GetType();
-                                if (type == typeof(CloneElementDataEventData))
-                                {
-                                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataEventData).Data);
-                                }
-                                else if (type == typeof(CloneElementDataReliableData))
-                                {
-                                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataReliableData).Data);
-                                }
-                                else if (type == typeof(CloneElementDataUnreliable))
-                                {
-                                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataUnreliable).Data);
-                                }
-                            }
-                        }
-                        else if (message.ProtocolId == PiaProtocol.Unreliable && message.ProtocolPort == 0x01) // Enl
-                        {
-                            UnreliableMessage unreliableMessage = message as UnreliableMessage;
-
-                            using (MemoryStream innerStream = new MemoryStream(unreliableMessage.Data))
-                            using (BinaryDataReader innerReader = new BinaryDataReader(innerStream))
-                            {
-                                innerReader.ByteOrder = ByteOrder.LittleEndian;
-
-                                EnlMessage enlMessage = new EnlMessage(innerReader, 10, 0);
-                                EnlHolder.Instance.EnlMessageReceived(enlMessage);
-                            }
-                        }
-                    }
+                    HandlePiaPacket(reader, ipPacket.SourceAddress.GetAddressBytes());
                 }
+            }
+        }
+
+        private void HandleLanSearchPacket(BinaryDataReader reader)
+        {
+            byte firstByte = reader.ReadByte();
+
+            if (firstByte == 0x1)
+            {
+                LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
+                byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, BlitzGameKey);
+
+                if (SessionKey != null && !newKey.SequenceEqual(SessionKey))
+                {
+                    throw new SnifferException("Session key mismatch - are there two sessions running at once?");
+                }
+
+                SessionKey = newKey;
+            }
+        }
+
+        private void HandlePiaPacket(BinaryDataReader reader, byte[] sourceAddress)
+        {
+            PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(sourceAddress));
+
+            foreach (PiaMessage message in piaPacket.Messages)
+            {
+                if (message.ProtocolId == PiaProtocol.Clone)
+                {
+                    HandleCloneData(message as CloneMessage);
+                }
+                else if (message.ProtocolId == PiaProtocol.Unreliable && message.ProtocolPort == 0x01) // Enl
+                {
+                    HandleEnlPacket(message as UnreliableMessage);
+                }
+            }
+        }
+
+        private void HandleCloneData(CloneMessage cloneMessage)
+        {
+            CloneContentData cloneContentData = cloneMessage.Content as CloneContentData;
+
+            if (cloneContentData == null || !CloneHolder.Instance.IsCloneRegistered(cloneContentData.CloneId))
+            {
+                return;
+            }
+
+            foreach (CloneElementData cloneElementData in cloneContentData.ElementData)
+            {
+                Type type = cloneElementData.GetType();
+                if (type == typeof(CloneElementDataEventData))
+                {
+                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataEventData).Data);
+                }
+                else if (type == typeof(CloneElementDataReliableData))
+                {
+                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataReliableData).Data);
+                }
+                else if (type == typeof(CloneElementDataUnreliable))
+                {
+                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataUnreliable).Data);
+                }
+            }
+        }
+
+        private void HandleEnlPacket(UnreliableMessage unreliableMessage)
+        {
+            using (MemoryStream innerStream = new MemoryStream(unreliableMessage.Data))
+            using (BinaryDataReader innerReader = new BinaryDataReader(innerStream))
+            {
+                innerReader.ByteOrder = ByteOrder.LittleEndian;
+
+                EnlMessage enlMessage = new EnlMessage(innerReader, 10, 0);
+                EnlHolder.Instance.EnlMessageReceived(enlMessage);
             }
         }
 
