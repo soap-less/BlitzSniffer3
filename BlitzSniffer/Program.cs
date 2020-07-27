@@ -13,6 +13,13 @@ namespace BlitzSniffer
 {
     class Program
     {
+        /// <summary>
+        /// Sniffs Splatoon 2 LAN sessions.
+        /// </summary>
+        /// <param name="useRom">If a Splatoon 2 ROM should be used instead of the GameData file.</param>
+        /// <param name="replayFile">A pcap file to replay.</param>
+        /// <param name="replayInRealTime">If the replay file should be replayed in real-time.</param>
+        /// <param name="realTimeStartOffset">When to fast-forward to in the replay file.</param>
         static void Main(bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
         {
             SnifferConfig.Load();
