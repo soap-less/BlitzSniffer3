@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus;
@@ -129,9 +129,9 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                     });
                 }
 
+                reader.Seek(8); // skip best total checkpoint HP since we keep track of this internally
                 uint alphaCurrentTotalCheckpointHp = (uint)reader.ReadSingle();
                 uint bravoCurrentTotalCheckpointHp = (uint)reader.ReadSingle();
-                reader.Seek(8);
 
                 Rail.UpdateCheckpoints(alphaCurrentTotalCheckpointHp, Team.Alpha);
                 Rail.UpdateCheckpoints(bravoCurrentTotalCheckpointHp, Team.Bravo);
