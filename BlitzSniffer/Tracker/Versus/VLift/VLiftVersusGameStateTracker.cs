@@ -51,13 +51,18 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                 }
             }
 
-            CloneHolder.Instance.RegisterClone(121);
-            CloneHolder.Instance.CloneChanged += HandleVLiftState;
+            CloneHolder holder = CloneHolder.Instance;
+            holder.RegisterClone(121);
+            holder.RegisterClone(100);
+            holder.CloneChanged += HandleVLiftState;
+            holder.CloneChanged += HandleSystemEvent;
         }
 
         public override void Dispose()
         {
-            CloneHolder.Instance.CloneChanged -= HandleVLiftState;
+            CloneHolder holder = CloneHolder.Instance;
+            holder.CloneChanged -= HandleVLiftState;
+            holder.CloneChanged -= HandleSystemEvent;
         }
 
         public List<List<uint>> BuildCheckpointListForSetup()
@@ -110,6 +115,31 @@ namespace BlitzSniffer.Tracker.Versus.VLift
 
                 Rail.UpdateCheckpoints(alphaCurrentTotalCheckpointHp, Team.Alpha);
                 Rail.UpdateCheckpoints(bravoCurrentTotalCheckpointHp, Team.Bravo);
+            }
+        }
+
+        private void HandleSystemEvent(object sender, CloneChangedEventArgs args)
+        {
+            if (args.CloneId != 100 || args.ElementId != 1)
+            {
+                return;
+            }
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                uint eventType = reader.ReadUInt32();
+                if (eventType == 1) // VLift finish
+                {
+                    // These bytes are the "result left count", so convert them to score
+                    EventTracker.Instance.AddEvent(new GachiFinishEvent()
+                    {
+                        AlphaScore = (uint)100 - reader.ReadByte(),
+                        BravoScore = (uint)100 - reader.ReadByte()
+                    });
+                }
             }
         }
 
