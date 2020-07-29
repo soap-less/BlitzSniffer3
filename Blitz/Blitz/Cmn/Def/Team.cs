@@ -1,8 +1,8 @@
 ﻿namespace Blitz.Cmn.Def
 {
-    public enum Team
+    public enum Team : uint
     {
-        Alpha,
+        Alpha = 0,
         Bravo,
         Neutral
     }
