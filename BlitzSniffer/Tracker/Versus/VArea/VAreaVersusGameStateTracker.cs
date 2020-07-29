@@ -95,8 +95,6 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
                 reader.Seek(4);
 
-                Debug.Assert(reader.Position == 12);
-
                 sbyte[] paintPercent = reader.ReadSBytes(4);
                 byte[] unk2 = reader.ReadBytes(4);
                 sbyte[] unk3 = reader.ReadSBytes(4);
