@@ -1,4 +1,6 @@
 ﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Event;
+using BlitzSniffer.Event.Versus;
 using Nintendo.Sead;
 using Syroot.BinaryData;
 using System.IO;
@@ -29,6 +31,7 @@ namespace BlitzSniffer.Tracker.Versus
         {
             AlphaScore = 0;
             BravoScore = 0;
+            InOvertime = false;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(100);
@@ -54,7 +57,17 @@ namespace BlitzSniffer.Tracker.Versus
                 reader.ByteOrder = ByteOrder.LittleEndian;
 
                 uint eventType = reader.ReadUInt32();
-                HandleSystemEvent(eventType, reader);
+
+                if (eventType == 7) // Overtime start
+                {
+                    InOvertime = true;
+
+                    EventTracker.Instance.AddEvent(new GachiOvertimeStartEvent());
+                }
+                else
+                {
+                    HandleSystemEvent(eventType, reader);
+                }
             }
         }
 
