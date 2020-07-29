@@ -16,5 +16,17 @@
             set;
         }
 
+        public uint AlphaPenalty
+        {
+            get;
+            set;
+        }
+
+        public uint BravoPenalty
+        {
+            get;
+            set;
+        }
+
     }
 }
