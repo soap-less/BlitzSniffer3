@@ -53,16 +53,15 @@ namespace BlitzSniffer.Tracker.Versus.VLift
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(121);
-            holder.RegisterClone(100);
             holder.CloneChanged += HandleVLiftState;
-            holder.CloneChanged += HandleSystemEvent;
         }
 
         public override void Dispose()
         {
+            base.Dispose();
+
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandleVLiftState;
-            holder.CloneChanged -= HandleSystemEvent;
         }
 
         public List<List<uint>> BuildCheckpointListForSetup()
@@ -118,28 +117,16 @@ namespace BlitzSniffer.Tracker.Versus.VLift
             }
         }
 
-        private void HandleSystemEvent(object sender, CloneChangedEventArgs args)
+        protected override void HandleSystemEvent(uint eventType, BinaryDataReader reader)
         {
-            if (args.CloneId != 100 || args.ElementId != 1)
+            if (eventType == 1) // VLift finish
             {
-                return;
-            }
-
-            using (MemoryStream stream = new MemoryStream(args.Data))
-            using (BinaryDataReader reader = new BinaryDataReader(stream))
-            {
-                reader.ByteOrder = ByteOrder.LittleEndian;
-
-                uint eventType = reader.ReadUInt32();
-                if (eventType == 1) // VLift finish
+                // These bytes are the "result left count", so convert them to score
+                EventTracker.Instance.AddEvent(new GachiFinishEvent()
                 {
-                    // These bytes are the "result left count", so convert them to score
-                    EventTracker.Instance.AddEvent(new GachiFinishEvent()
-                    {
-                        AlphaScore = (uint)100 - reader.ReadByte(),
-                        BravoScore = (uint)100 - reader.ReadByte()
-                    });
-                }
+                    AlphaScore = (uint)100 - reader.ReadByte(),
+                    BravoScore = (uint)100 - reader.ReadByte()
+                });
             }
         }
 

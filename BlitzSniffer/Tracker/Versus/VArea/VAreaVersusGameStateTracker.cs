@@ -5,7 +5,6 @@ using BlitzSniffer.Event.Versus;
 using Nintendo.Sead;
 using Syroot.BinaryData;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace BlitzSniffer.Tracker.Versus.VArea
@@ -45,14 +44,14 @@ namespace BlitzSniffer.Tracker.Versus.VArea
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(100);
             holder.CloneChanged += HandleVAreaState;
-            holder.CloneChanged += HandleSystemEvent;
         }
 
         public override void Dispose()
         {
+            base.Dispose();
+
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandleVAreaState;
-            holder.CloneChanged -= HandleSystemEvent;
         }
 
         public int GetPaintTargetAreasCount()
@@ -123,156 +122,138 @@ namespace BlitzSniffer.Tracker.Versus.VArea
             }
         }
 
-        private void HandleSystemEvent(object sender, CloneChangedEventArgs args)
+        protected override void HandleSystemEvent(uint eventType, BinaryDataReader reader)
         {
-            if (args.CloneId != 100 || args.ElementId != 1)
+            if (eventType == 3) // VArea change team
             {
-                return;
-            }
+                uint rawTeams = reader.ReadUInt32();
 
-            using (MemoryStream stream = new MemoryStream(args.Data))
-            using (BinaryDataReader reader = new BinaryDataReader(stream))
-            {
-                reader.ByteOrder = ByteOrder.LittleEndian;
-
-                uint eventType = reader.ReadUInt32();
-
-                switch (eventType)
+                for (int i = 0; i < PaintTargetAreas.Count; i++)
                 {
-                    case 3: // VArea team change
-                        uint rawTeams = reader.ReadUInt32();
-
-                        for (int i = 0; i < PaintTargetAreas.Count; i++)
-                        {
-                            uint team = ((rawTeams >> (i * 2)) & 3) - 1;
-                            PaintTargetAreas[i].ChangeControl((Team)team);
-                        }
-
-                        break;
-                    case 4: // VArea finish
-                        ushort alphaTicks = reader.ReadUInt16();
-                        ushort bravoTicks = reader.ReadUInt16();
-
-                        uint alphaSeconds = VAreaTicksToSeconds(alphaTicks);
-                        uint bravoSeconds = VAreaTicksToSeconds(bravoTicks);
-
-                        // These calculations come from Game::RefereeVersusVArea::invokeEventFinish().
-                        //
-                        // The decompiled version is an absolute mess and I'm too lazy to figure out
-                        // what it does exactly (probably corrections for KO and if the seconds happen
-                        // to be equal). The below is basically a straight port of the decompiled code,
-                        // Hex-Rays automatic variable names and all.
-
-                        uint v14;
-                        if (alphaSeconds != 0)
-                        {
-                            v14 = alphaSeconds;
-                        }
-                        else
-                        {
-                            v14 = 1;
-                        }
-
-                        uint v15;
-                        if (alphaSeconds != 0)
-                        {
-                            v15 = alphaSeconds - 1;
-                        }
-                        else
-                        {
-                            v15 = 0;
-                        }
-
-                        uint v16;
-                        if (alphaSeconds != 0)
-                        {
-                            v16 = alphaSeconds - 1;
-                        }
-                        else
-                        {
-                            v16 = 0;
-                        }
-
-                        uint v17;
-                        if (alphaSeconds != 0)
-                        {
-                            v17 = alphaSeconds;
-                        }
-                        else
-                        {
-                            v17 = 1;
-                        }
-
-                        uint v18;
-                        if (alphaTicks <= bravoTicks)
-                        {
-                            v18 = v16;
-                        }
-                        else
-                        {
-                            v18 = v14;
-                        }
-
-                        uint v19;
-                        if (alphaTicks <= bravoTicks)
-                        {
-                            v19 = v17;
-                        }
-                        else
-                        {
-                            v19 = v15;
-                        }
-
-                        if (alphaSeconds != bravoSeconds)
-                        {
-                            v19 = bravoSeconds;
-                        }
-                        
-                        if (alphaSeconds != bravoSeconds)
-                        {
-                            v18 = alphaSeconds;
-                        }
-
-                        uint v20;
-                        if (v19 != 0)
-                        {
-                            v20 = v18;
-                        }
-                        else
-                        {
-                            v20 = 100;
-                        }
-
-                        uint alphaFinalScore;
-                        if (v18 != 0)
-                        {
-                            alphaFinalScore = v20;
-                        }
-                        else
-                        {
-                            alphaFinalScore = 0;
-                        }
-
-                        uint bravoFinalScore;
-                        if (v18 != 0)
-                        {
-                            bravoFinalScore = v19;
-                        }
-                        else
-                        {
-                            bravoFinalScore = 100;
-                        }
-
-                        EventTracker.Instance.AddEvent(new GachiFinishEvent()
-                        {
-                            AlphaScore = 100 - alphaFinalScore,
-                            BravoScore = 100 - bravoFinalScore
-                        });
-
-                        break;
-                    default:
-                        break;
+                    uint team = ((rawTeams >> (i * 2)) & 3) - 1;
+                    PaintTargetAreas[i].ChangeControl((Team)team);
                 }
+            }
+            else if (eventType == 4) // VArea finish
+            {
+                ushort alphaTicks = reader.ReadUInt16();
+                ushort bravoTicks = reader.ReadUInt16();
+
+                uint alphaSeconds = VAreaTicksToSeconds(alphaTicks);
+                uint bravoSeconds = VAreaTicksToSeconds(bravoTicks);
+
+                // These calculations come from Game::RefereeVersusVArea::invokeEventFinish().
+                //
+                // The decompiled version is an absolute mess and I'm too lazy to figure out
+                // what it does exactly (probably corrections for KO and if the seconds happen
+                // to be equal). The below is basically a straight port of the decompiled code,
+                // Hex-Rays automatic variable names and all.
+
+                uint v14;
+                if (alphaSeconds != 0)
+                {
+                    v14 = alphaSeconds;
+                }
+                else
+                {
+                    v14 = 1;
+                }
+
+                uint v15;
+                if (alphaSeconds != 0)
+                {
+                    v15 = alphaSeconds - 1;
+                }
+                else
+                {
+                    v15 = 0;
+                }
+
+                uint v16;
+                if (alphaSeconds != 0)
+                {
+                    v16 = alphaSeconds - 1;
+                }
+                else
+                {
+                    v16 = 0;
+                }
+
+                uint v17;
+                if (alphaSeconds != 0)
+                {
+                    v17 = alphaSeconds;
+                }
+                else
+                {
+                    v17 = 1;
+                }
+
+                uint v18;
+                if (alphaTicks <= bravoTicks)
+                {
+                    v18 = v16;
+                }
+                else
+                {
+                    v18 = v14;
+                }
+
+                uint v19;
+                if (alphaTicks <= bravoTicks)
+                {
+                    v19 = v17;
+                }
+                else
+                {
+                    v19 = v15;
+                }
+
+                if (alphaSeconds != bravoSeconds)
+                {
+                    v19 = bravoSeconds;
+                }
+
+                if (alphaSeconds != bravoSeconds)
+                {
+                    v18 = alphaSeconds;
+                }
+
+                uint v20;
+                if (v19 != 0)
+                {
+                    v20 = v18;
+                }
+                else
+                {
+                    v20 = 100;
+                }
+
+                uint alphaFinalScore;
+                if (v18 != 0)
+                {
+                    alphaFinalScore = v20;
+                }
+                else
+                {
+                    alphaFinalScore = 0;
+                }
+
+                uint bravoFinalScore;
+                if (v18 != 0)
+                {
+                    bravoFinalScore = v19;
+                }
+                else
+                {
+                    bravoFinalScore = 100;
+                }
+
+                EventTracker.Instance.AddEvent(new GachiFinishEvent()
+                {
+                    AlphaScore = 100 - alphaFinalScore,
+                    BravoScore = 100 - bravoFinalScore
+                });
             }
         }
 
