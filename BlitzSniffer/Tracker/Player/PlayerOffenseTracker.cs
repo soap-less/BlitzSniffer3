@@ -1,15 +1,17 @@
 ﻿using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using Serilog;
+using Serilog.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlitzSniffer.Tracker.Player
 {
     public class PlayerOffenseTracker
     {
+        private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "PlayerOffenseTracker");
         private static readonly int FRAME_DELAY = 3;
 
         private readonly ConcurrentDictionary<uint, PlayerDeathEvent> WaitingDeathEvents;
@@ -44,12 +46,12 @@ namespace BlitzSniffer.Tracker.Player
                         }
                         else
                         {
-                            Console.WriteLine($"[PlayerOffenseTracker] Removing incomplete event for victim {victimIdx}");
+                            LogContext.Information("Removing incomplete event for victim {VictimIdx}", victimIdx);
                         }
                     }
                     else
                     {
-                        throw new SnifferException("Failed to remove death event from waiting dict");
+                        LogContext.Error("Failed to remove death event for victim {VictimIdx}", victimIdx);
                     }
                 });
 
