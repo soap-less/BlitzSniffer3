@@ -5,6 +5,7 @@ using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
+using BlitzSniffer.Tracker.Versus.VArea;
 using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
 using Syroot.BinaryData;
@@ -129,6 +130,9 @@ namespace BlitzSniffer.Tracker
 
                 switch (rule)
                 {
+                    case VersusRule.Var:
+                        GameStateTracker = new VAreaVersusGameStateTracker(stage, alpha, bravo);
+                        break;
                     case VersusRule.Vlf:
                         GameStateTracker = new VLiftVersusGameStateTracker(stage, alpha, bravo);
                         break;

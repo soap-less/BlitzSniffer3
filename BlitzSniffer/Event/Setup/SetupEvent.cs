@@ -67,6 +67,9 @@ namespace BlitzSniffer.Event.Setup
 
             switch (Rule)
             {
+                case VersusRule.Var:
+                    RuleConfiguration = new SetupVAreaRuleConfiguration();
+                    break;
                 case VersusRule.Vlf:
                     RuleConfiguration = new SetupVLiftRuleConfiguration();
                     break;
