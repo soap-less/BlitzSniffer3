@@ -5,6 +5,7 @@ using BlitzSniffer.Tracker;
 using BlitzSniffer.WebSocket;
 using LibHac;
 using Serilog;
+using Serilog.Core;
 using SharpPcap;
 using System;
 using System.IO;
@@ -13,6 +14,8 @@ namespace BlitzSniffer
 {
     class Program
     {
+        private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "Program");
+
         /// <summary>
         /// Sniffs Splatoon 2 LAN sessions.
         /// </summary>
@@ -96,6 +99,9 @@ namespace BlitzSniffer
                 {
                     packetReceiver = new ReplayPacketReceiver(replayFile.FullName);
                 }
+
+                LogContext.Information("Waiting for user to start replay");
+                Console.ReadLine();
             }
             else
             {
