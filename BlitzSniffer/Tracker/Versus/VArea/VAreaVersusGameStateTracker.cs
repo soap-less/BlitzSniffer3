@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus;
@@ -152,7 +152,125 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
                         break;
                     case 4: // VArea finish
-                        // TODO
+                        ushort alphaTicks = reader.ReadUInt16();
+                        ushort bravoTicks = reader.ReadUInt16();
+
+                        uint alphaSeconds = VAreaTicksToSeconds(alphaTicks);
+                        uint bravoSeconds = VAreaTicksToSeconds(bravoTicks);
+
+                        // These calculations come from Game::RefereeVersusVArea::invokeEventFinish().
+                        //
+                        // The decompiled version is an absolute mess and I'm too lazy to figure out
+                        // what it does exactly (probably corrections for KO and if the seconds happen
+                        // to be equal). The below is basically a straight port of the decompiled code,
+                        // Hex-Rays automatic variable names and all.
+
+                        uint v14;
+                        if (alphaSeconds != 0)
+                        {
+                            v14 = alphaSeconds;
+                        }
+                        else
+                        {
+                            v14 = 1;
+                        }
+
+                        uint v15;
+                        if (alphaSeconds != 0)
+                        {
+                            v15 = alphaSeconds - 1;
+                        }
+                        else
+                        {
+                            v15 = 0;
+                        }
+
+                        uint v16;
+                        if (alphaSeconds != 0)
+                        {
+                            v16 = alphaSeconds - 1;
+                        }
+                        else
+                        {
+                            v16 = 0;
+                        }
+
+                        uint v17;
+                        if (alphaSeconds != 0)
+                        {
+                            v17 = alphaSeconds;
+                        }
+                        else
+                        {
+                            v17 = 1;
+                        }
+
+                        uint v18;
+                        if (alphaTicks <= bravoTicks)
+                        {
+                            v18 = v16;
+                        }
+                        else
+                        {
+                            v18 = v14;
+                        }
+
+                        uint v19;
+                        if (alphaTicks <= bravoTicks)
+                        {
+                            v19 = v17;
+                        }
+                        else
+                        {
+                            v19 = v15;
+                        }
+
+                        if (alphaSeconds != bravoSeconds)
+                        {
+                            v19 = bravoSeconds;
+                        }
+                        
+                        if (alphaSeconds != bravoSeconds)
+                        {
+                            v18 = alphaSeconds;
+                        }
+
+                        uint v20;
+                        if (v19 != 0)
+                        {
+                            v20 = v18;
+                        }
+                        else
+                        {
+                            v20 = 100;
+                        }
+
+                        uint alphaFinalScore;
+                        if (v18 != 0)
+                        {
+                            alphaFinalScore = v20;
+                        }
+                        else
+                        {
+                            alphaFinalScore = 0;
+                        }
+
+                        uint bravoFinalScore;
+                        if (v18 != 0)
+                        {
+                            bravoFinalScore = v19;
+                        }
+                        else
+                        {
+                            bravoFinalScore = 100;
+                        }
+
+                        EventTracker.Instance.AddEvent(new GachiFinishEvent()
+                        {
+                            AlphaScore = 100 - alphaFinalScore,
+                            BravoScore = 100 - bravoFinalScore
+                        });
+
                         break;
                     default:
                         break;
