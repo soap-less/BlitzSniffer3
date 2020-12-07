@@ -1,4 +1,5 @@
-﻿using BlitzSniffer.Clone;
+﻿using Blitz.Cmn.Def;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus;
 using Nintendo.Sead;
@@ -42,6 +43,38 @@ namespace BlitzSniffer.Tracker.Versus
         {
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandleSystemEventInternal;
+        }
+
+        public Team GetLeadingTeam()
+        {
+            if (AlphaScore > BravoScore)
+            {
+                return Team.Alpha; 
+            }
+            else if (BravoScore > AlphaScore)
+            {
+                return Team.Bravo;
+            }
+            else
+            {
+                return Team.Neutral;
+            }
+        }
+
+        public Team GetTrailingTeam()
+        {
+            if (AlphaScore > BravoScore)
+            {
+                return Team.Bravo;
+            }
+            else if (BravoScore > AlphaScore)
+            {
+                return Team.Alpha;
+            }
+            else
+            {
+                return Team.Neutral;
+            }
         }
 
         private void HandleSystemEventInternal(object sender, CloneChangedEventArgs args)
