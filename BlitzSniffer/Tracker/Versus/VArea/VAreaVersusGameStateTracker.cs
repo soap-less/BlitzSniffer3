@@ -6,11 +6,14 @@ using Nintendo.Sead;
 using Syroot.BinaryData;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BlitzSniffer.Tracker.Versus.VArea
 {
     class VAreaVersusGameStateTracker : GachiVersusGameStateTracker
     {
+        private static readonly int OVERTIME_TIMEOUT_FRAMES = 600;
+
         public override VersusRule Rule => VersusRule.Var;
 
         private List<VAreaPaintTargetArea> PaintTargetAreas;
@@ -18,11 +21,14 @@ namespace BlitzSniffer.Tracker.Versus.VArea
         private uint AlphaPenalty;
         private uint BravoPenalty;
 
+        private bool HasTrailingLostControlOfAreasInOvertime;
+
         public VAreaVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
             PaintTargetAreas = new List<VAreaPaintTargetArea>();
             AlphaPenalty = 0;
             BravoPenalty = 0;
+            HasTrailingLostControlOfAreasInOvertime = false;
 
             int areaIdx = 0;
             foreach (Dictionary<string, dynamic> obj in StageLayout["Objs"])
@@ -132,6 +138,31 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 {
                     uint team = ((rawTeams >> (i * 2)) & 3) - 1;
                     PaintTargetAreas[i].ChangeControl((Team)team);
+                }
+
+                if (InOvertime)
+                {
+                    if (PaintTargetAreas.Any(x => x.ControllingTeam != GetTrailingTeam()))
+                    {
+                        if (!HasTrailingLostControlOfAreasInOvertime)
+                        {
+                            HasTrailingLostControlOfAreasInOvertime = true;
+
+                            EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+                            {
+                                Length = OVERTIME_TIMEOUT_FRAMES
+                            });
+                        }
+                    }
+                    else
+                    {
+                        HasTrailingLostControlOfAreasInOvertime = false;
+
+                        EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+                        {
+                            Length = -1
+                        });
+                    }
                 }
             }
             else if (eventType == 4) // VArea finish
