@@ -26,10 +26,17 @@ namespace BlitzSniffer.Config
             set;
         }
 
+        public string Key
+        {
+            get;
+            set;
+        }
+
         public SnifferConfig()
         {
             Rom = new RomConfig();
             DefaultDevice = "none";
+            Key = "ABCDE-FGHIJ-KLMNO-PQRST";
         }
 
         public static void Load()
