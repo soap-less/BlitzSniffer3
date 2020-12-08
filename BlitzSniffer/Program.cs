@@ -1,4 +1,4 @@
-using BlitzSniffer.Config;
+﻿using BlitzSniffer.Config;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;
 using BlitzSniffer.Tracker;
@@ -108,6 +108,8 @@ namespace BlitzSniffer
             SnifferServer.Initialize();
 
             GameSession.Initialize();
+
+            LocalLog.RegisterConsoleDebug();
 
             PacketReceiver packetReceiver;
             if (replayFile != null)
