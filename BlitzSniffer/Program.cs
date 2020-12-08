@@ -32,6 +32,7 @@ namespace BlitzSniffer
         {
             SnifferConfig.Load();
 
+#if !DEBUG
             KeyInfoResult keyResult = Key.Activate(token: CRYPTOLENS_AUTH_TOKEN, parameters: new ActivateModel()
             {
                 Key = SnifferConfig.Instance.Key,
@@ -45,6 +46,7 @@ namespace BlitzSniffer
                 Console.WriteLine("Please contact OatmealDome.");
                 return;
             }
+#endif
 
             ICaptureDevice captureDevice = GetCaptureDevice();
 
