@@ -17,7 +17,6 @@ namespace BlitzSniffer
 {
     class Program
     {
-        private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "Program");
         private static readonly string LOG_FORMAT = "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
 
         private static string CRYPTOLENS_PUBLIC_KEY = "<RSAKeyValue><Modulus>kXe0NP7Dco5g85KOziWQT+oK21VkKwp+4XeR6GOTf46u2F3UwdFK3UYA1wXxIobbWoCpvX+7Yq/gGlV03IEqjzfxePwMXKd31EIFT7fez/hKz29YRD6A9pIJwqnHfJo8Xfje/6vxj83nvlvLXLgLutJs4tKK+hM43EAKy2NEs3mF/qeu88tPX3MMkrqrN0N2/I2tPnUgiMjV/pZ02wWhZSFnsfxhpcmwUI0mTYPcYa8317oG2BoXtNiS7wpurHygZPPRpcqc/BJjR7117N3IY7GIBa7qsBhcyzjr86m+Wt2s65kt3A5vI9jAjQ7cTIPIhzvWJCoeVOwTdjJSpjZsxw==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>";
@@ -101,6 +100,8 @@ namespace BlitzSniffer
                 .WriteTo.Async(c => c.File(logFile, outputTemplate: LOG_FORMAT))
                 .CreateLogger();
 
+            ILogger localLogContext = Log.ForContext(Constants.SourceContextPropertyName, "Program");
+
             if (useRom)
             {
                 RomConfig romConfig = SnifferConfig.Instance.Rom;
@@ -130,7 +131,7 @@ namespace BlitzSniffer
                     packetReceiver = new ReplayPacketReceiver(replayFile.FullName);
                 }
 
-                LogContext.Information("Waiting for user to start replay");
+                localLogContext.Information("Waiting for user to start replay");
                 Console.ReadLine();
             }
             else
@@ -140,7 +141,7 @@ namespace BlitzSniffer
 
             packetReceiver.Start();
 
-            LogContext.Information("Start up complete. Press any key to exit.");
+            localLogContext.Information("Start up complete. Press any key to exit.");
 
             Console.ReadLine();
 
