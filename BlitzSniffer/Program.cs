@@ -96,7 +96,7 @@ namespace BlitzSniffer
 
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.Console(outputTemplate: LOG_FORMAT)
+                .WriteTo.Async(c => c.Console(outputTemplate: LOG_FORMAT))
                 .WriteTo.Async(c => c.File(logFile, outputTemplate: LOG_FORMAT))
                 .CreateLogger();
 
