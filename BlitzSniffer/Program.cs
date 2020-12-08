@@ -32,22 +32,6 @@ namespace BlitzSniffer
         {
             SnifferConfig.Load();
 
-#if !DEBUG
-            KeyInfoResult keyResult = Key.Activate(token: CRYPTOLENS_AUTH_TOKEN, parameters: new ActivateModel()
-            {
-                Key = SnifferConfig.Instance.Key,
-                ProductId = 8988,
-                Sign = true,
-                MachineCode = Helpers.GetMachineCodePI()
-            });
-
-            if (keyResult == null || keyResult.Result == ResultType.Error || !keyResult.LicenseKey.HasValidSignature(CRYPTOLENS_PUBLIC_KEY).IsValid())
-            {
-                Console.WriteLine("Please contact OatmealDome.");
-                return;
-            }
-#endif
-
             ICaptureDevice captureDevice = GetCaptureDevice();
 
             if (captureDevice == null && replayFile == null)
@@ -86,6 +70,22 @@ namespace BlitzSniffer
             }
 
             SnifferConfig.Instance.Save();
+
+#if !DEBUG
+            KeyInfoResult keyResult = Key.Activate(token: CRYPTOLENS_AUTH_TOKEN, parameters: new ActivateModel()
+            {
+                Key = SnifferConfig.Instance.Key,
+                ProductId = 8988,
+                Sign = true,
+                MachineCode = Helpers.GetMachineCodePI()
+            });
+
+            if (keyResult == null || keyResult.Result == ResultType.Error || !keyResult.LicenseKey.HasValidSignature(CRYPTOLENS_PUBLIC_KEY).IsValid())
+            {
+                Console.WriteLine("Please contact OatmealDome.");
+                return;
+            }
+#endif
 
             Console.Clear();
 
