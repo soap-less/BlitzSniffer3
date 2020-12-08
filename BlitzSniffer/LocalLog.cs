@@ -107,10 +107,13 @@ namespace BlitzSniffer
             }
             else
             {
-                LogContext.Information(JsonSerializer.Serialize(args.GameEvent, args.GameEvent.GetType(), new JsonSerializerOptions()
+                string json = JsonSerializer.Serialize(args.GameEvent, args.GameEvent.GetType(), new JsonSerializerOptions()
                 {
                     WriteIndented = true
-                }));
+                });
+
+                string linePrefix = args.GameEvent.Name + ": {Json}";
+                LogContext.Information(linePrefix, json);
             }
         }
 
