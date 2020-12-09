@@ -8,6 +8,7 @@ namespace BlitzSniffer.Event
         public static readonly EventTracker Instance = new EventTracker();
 
         private readonly BlockingCollection<GameEvent> EventQueue;
+        private readonly CancellationTokenSource Token;
 
         public delegate void SendEventHandler(object sender, SendEventArgs args);
         public event SendEventHandler SendEvent;
@@ -15,6 +16,7 @@ namespace BlitzSniffer.Event
         public EventTracker()
         {
             EventQueue = new BlockingCollection<GameEvent>();
+            Token = new CancellationTokenSource();
 
             new Thread(SendEvents).Start();
         }
@@ -24,9 +26,14 @@ namespace BlitzSniffer.Event
             EventQueue.Add(gameEvent);
         }
 
+        public void Shutdown()
+        {
+            Token.Cancel();
+        }
+
         private void SendEvents()
         {
-            while (true)
+            while (!Token.IsCancellationRequested)
             {
                 if (EventQueue.TryTake(out GameEvent gameEvent))
                 {

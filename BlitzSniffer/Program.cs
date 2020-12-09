@@ -1,4 +1,5 @@
 ﻿using BlitzSniffer.Config;
+using BlitzSniffer.Event;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;
 using BlitzSniffer.Tracker;
@@ -148,6 +149,8 @@ namespace BlitzSniffer
             localLogContext.Information("Start up complete. Press any key to exit.");
 
             Console.ReadLine();
+
+            EventTracker.Instance.Shutdown();
 
             Log.CloseAndFlush();
 
