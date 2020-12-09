@@ -2,6 +2,7 @@
 using Serilog;
 using Serilog.Core;
 using System.Text.Json;
+using WebSocketSharp;
 using WebSocketSharp.Server;
 
 namespace BlitzSniffer.WebSocket
@@ -12,14 +13,25 @@ namespace BlitzSniffer.WebSocket
 
         public SnifferEventService()
         {
-            EventTracker.Instance.SendEvent += BroadcastEvent;
+
         }
 
         protected override void OnOpen()
         {
             base.OnOpen();
 
+            EventTracker.Instance.SendEvent += BroadcastEvent;
+
             LogContext.Information("Client connected");
+        }
+
+        protected override void OnClose(CloseEventArgs e)
+        {
+            base.OnClose(e);
+
+            EventTracker.Instance.SendEvent -= BroadcastEvent;
+
+            LogContext.Information("Client disconnected");
         }
 
         private void BroadcastEvent(object sender, SendEventArgs args)
