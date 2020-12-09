@@ -139,8 +139,12 @@ namespace BlitzSniffer
                 packetReceiver = new LivePacketReceiver(captureDevice);
             }
 
-            packetReceiver.Start();
+            Directory.CreateDirectory("PacketCaptures");
+            string pcapDumpFile = Path.Combine("PacketCaptures", $"{dateTime}.pcap");
 
+            packetReceiver.Start(replayFile == null ? pcapDumpFile : null);
+
+            localLogContext.Information("This session's log files are filed under \"{DateTime}\".", dateTime);
             localLogContext.Information("Start up complete. Press any key to exit.");
 
             Console.ReadLine();

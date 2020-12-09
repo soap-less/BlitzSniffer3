@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
 using NintendoNetcode.Enl;
 using NintendoNetcode.Pia;
@@ -14,8 +14,10 @@ using PacketDotNet;
 using Serilog;
 using Serilog.Core;
 using SharpPcap;
+using SharpPcap.LibPcap;
 using Syroot.BinaryData;
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -41,20 +43,58 @@ namespace BlitzSniffer.Receiver
             set;
         } = null;
 
-        public virtual void Start()
+        private CaptureFileWriterDevice WriterDevice
         {
+            get;
+            set;
+        }
+
+        private BlockingCollection<RawCapture> CaptureQueue
+        {
+            get;
+            set;
+        }
+
+        private Thread DumperThread
+        {
+            get;
+            set;
+        }
+
+        private CancellationTokenSource DumperCancellationTokenSource
+        {
+            get;
+            set;
+        }
+
+        public virtual void Start(string outputFile = null)
+        {
+            if (outputFile != null)
+            {
+                WriterDevice = new CaptureFileWriterDevice(outputFile);
+                WriterDevice.Open();
+
+                CaptureQueue = new BlockingCollection<RawCapture>();
+                DumperCancellationTokenSource = new CancellationTokenSource();
+                DumperThread = new Thread(DumpPackets);
+                DumperThread.Start();
+            }
+
             Device.Filter = "ip and udp and (udp portrange 40000-49160 or udp port 30000)";
             Device.OnPacketArrival += OnPacketArrival;
             Device.StartCapture();
-
-            while (true)
-            {
-                Thread.Sleep(1000);
-            }
         }
 
         public virtual void Dispose()
         {
+            if (WriterDevice != null)
+            {
+                DumperCancellationTokenSource.Cancel();
+                DumperThread.Join();
+
+                WriterDevice.Close();
+            }
+
             Device.Close();
         }
 
@@ -91,6 +131,11 @@ namespace BlitzSniffer.Receiver
                 {
                     LogContext.Error(ex, "Exception while processing packet");
                 }
+            }
+
+            if (WriterDevice != null)
+            {
+                CaptureQueue.Add(e.Packet);
             }
         }
 
@@ -165,6 +210,17 @@ namespace BlitzSniffer.Receiver
 
                 EnlMessage enlMessage = new EnlMessage(innerReader, 10, 0);
                 EnlHolder.Instance.EnlMessageReceived(enlMessage);
+            }
+        }
+
+        private void DumpPackets()
+        {
+            while (!DumperCancellationTokenSource.IsCancellationRequested)
+            {
+                while (CaptureQueue.TryTake(out RawCapture capture))
+                {
+                    WriterDevice.Write(capture);
+                }
             }
         }
 

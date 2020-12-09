@@ -45,7 +45,7 @@ namespace BlitzSniffer.Receiver
 
         }
 
-        public override void Start()
+        public override void Start(string outputFile = null)
         {
             lock (TimevalLock)
             {
@@ -57,7 +57,8 @@ namespace BlitzSniffer.Receiver
             }
 
             IncrementThread.Start();
-            base.Start();
+
+            base.Start(outputFile);
         }
 
         public override void Dispose()
