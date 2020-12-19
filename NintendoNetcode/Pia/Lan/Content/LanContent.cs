@@ -1,4 +1,5 @@
 ﻿using Syroot.BinaryData;
+using System;
 
 namespace NintendoNetcode.Pia.Lan.Content
 {
@@ -6,10 +7,8 @@ namespace NintendoNetcode.Pia.Lan.Content
     {
         public LanContent(BinaryDataReader reader)
         {
-            Deserialize(reader);
-        }
 
-        protected abstract void Deserialize(BinaryDataReader reader);
+        }
 
     }
 }
