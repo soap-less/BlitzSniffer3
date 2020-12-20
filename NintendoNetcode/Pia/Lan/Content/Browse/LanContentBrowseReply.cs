@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using NintendoNetcode.Pia.Lan.Content.Browse.Crypto;
+using Syroot.BinaryData;
 
 namespace NintendoNetcode.Pia.Lan.Content.Browse
 {
@@ -10,7 +11,7 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
             set;
         }
 
-        public byte[] CryptoChallengeReply
+        public LanCryptoContentResponse CryptoResponse
         {
             get;
             set;
@@ -20,7 +21,7 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
         {
             uint sessionInfoSize = reader.ReadUInt32();
             SessionInfo = new LanSessionInfo(reader);
-            CryptoChallengeReply = reader.ReadBytes(0x3a);
+            CryptoResponse = new LanCryptoContentResponse(reader);
         }
 
     }

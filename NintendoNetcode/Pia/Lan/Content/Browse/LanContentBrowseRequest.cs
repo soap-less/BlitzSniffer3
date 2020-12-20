@@ -1,4 +1,5 @@
-﻿using Syroot.BinaryData;
+﻿using NintendoNetcode.Pia.Lan.Content.Browse.Crypto;
+using Syroot.BinaryData;
 
 namespace NintendoNetcode.Pia.Lan.Content.Browse
 {
@@ -10,7 +11,7 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
             set;
         }
 
-        public byte[] CryptoChallenge
+        public LanCryptoContentChallenge CryptoChallenge
         {
             get;
             set;
@@ -20,7 +21,7 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
         {
             uint criteriaSize = reader.ReadUInt32();
             SessionSearchCriteria = reader.ReadBytes((int)criteriaSize);
-            CryptoChallenge = reader.ReadBytes(0x12a);
+            CryptoChallenge = new LanCryptoContentChallenge(reader);
         }
 
     }
