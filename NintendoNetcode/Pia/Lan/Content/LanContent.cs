@@ -10,5 +10,10 @@ namespace NintendoNetcode.Pia.Lan.Content
 
         }
 
+        public virtual void Serialize(BinaryDataWriter writer)
+        {
+            throw new NotSupportedException("Can't serialize this LanContent");
+        }
+
     }
 }
