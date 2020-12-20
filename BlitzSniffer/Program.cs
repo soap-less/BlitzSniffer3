@@ -41,11 +41,23 @@ namespace BlitzSniffer
             {
                 if (CaptureDeviceList.Instance.Count == 0)
                 {
-                    Console.WriteLine("Error: No capture devices found. Ensure that NPcap (or equivalent) is installed correctly.");
+                    Console.WriteLine("Error: No capture devices found. Ensure that Npcap (or equivalent) is installed correctly.");
                     Console.WriteLine("Press any key to exit.");
                     Console.ReadKey();
 
                     return;
+                }
+
+                if (!string.IsNullOrEmpty(SnifferConfig.Instance.DefaultDevice) && SnifferConfig.Instance.DefaultDevice != "none")
+                {
+                    Console.WriteLine("Error: Could not find the configured capture device. You will be asked to choose a new device.");
+                    Console.WriteLine("If you do not wish to choose a new device, close BlitzSniffer. Ensure that Npcap (or equivalent)");
+                    Console.WriteLine("is installed correctly and that the capture device is connected to the computer.");
+                    Console.WriteLine($"\nConfigured device: \"{SnifferConfig.Instance.DefaultDevice}\"\n");
+                    Console.WriteLine("Press any key to continue.");
+                    Console.ReadKey();
+
+                    Console.WriteLine();
                 }
 
                 while (true)
