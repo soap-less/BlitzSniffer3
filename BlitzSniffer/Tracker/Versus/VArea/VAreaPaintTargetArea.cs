@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus.VArea;
 
@@ -36,6 +36,12 @@ namespace BlitzSniffer.Tracker.Versus.VArea
             private set;
         }
 
+        private bool StateEventWaitForMax
+        {
+            get;
+            set;
+        }
+
         public VAreaPaintTargetArea(int idx)
         {
             AreaIdx = idx;
@@ -43,6 +49,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
             PaintPercentage = 0;
             Unk2 = 0;
             Unk3 = 0;
+            StateEventWaitForMax = false;
         }
 
         public void ChangeControl(Team team)
@@ -56,7 +63,18 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 });
             }
 
+
+            if (ControllingTeam == Team.Neutral && team != Team.Neutral)
+            {
+                // This flag tells UpdateWitHState to wait for PaintPercentage to be updated to
+                // 1.0f before sending new events. Otherwise, a VAreaPaintAreaControlChangeEvent
+                // may be followed by a VAreaPaintAreaCappedStateUpdateEvent with a PaintPercentage
+                // of less than 1.0f (typically around 0.7f since that's the capture percentage).
+                StateEventWaitForMax = true;
+            }
+
             ControllingTeam = team;
+
         }
 
         public void UpdateWithState(float paintPercent, byte unk2, sbyte unk3)
@@ -75,6 +93,18 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 }
 
                 PaintPercentage = paintPercent;
+
+                if (StateEventWaitForMax)
+                {
+                    if (PaintPercentage != 1.0f)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        StateEventWaitForMax = false;
+                    }
+                }
 
                 EventTracker.Instance.AddEvent(new VAreaPaintAreaCappedStateUpdateEvent()
                 {
@@ -96,6 +126,18 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 }
 
                 PaintPercentage = paintPercent * -1;
+
+                if (StateEventWaitForMax)
+                {
+                    if (PaintPercentage != 1.0f)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        StateEventWaitForMax = false;
+                    }
+                }
 
                 EventTracker.Instance.AddEvent(new VAreaPaintAreaCappedStateUpdateEvent()
                 {
