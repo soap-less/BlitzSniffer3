@@ -89,12 +89,12 @@ namespace BlitzSniffer
             else if (args.GameEvent is VAreaPaintAreaCappedStateUpdateEvent)
             {
                 VAreaPaintAreaCappedStateUpdateEvent cappedEvent = args.GameEvent as VAreaPaintAreaCappedStateUpdateEvent;
-                LogContext.Information("VAreaPaintAreaCappedStateUpdate: area {AreaIndex}, to neutralize {ToNeutralize}", cappedEvent.AreaIdx, cappedEvent.ToNeutralize);
+                LogContext.Information("VAreaPaintAreaCappedStateUpdate: area {AreaIndex}, capped team has {Paint}% of the area", cappedEvent.AreaIdx, cappedEvent.PaintPercentage * 100f);
             }
             else if (args.GameEvent is VAreaPaintAreaContestedStateUpdateEvent)
             {
                 VAreaPaintAreaContestedStateUpdateEvent contestedEvent = args.GameEvent as VAreaPaintAreaContestedStateUpdateEvent;
-                LogContext.Information("VAreaPaintAreaContestedStateUpdate: area {AreaIndex}, favoured team {FavouredTeam}, to capture {ToCapture}", contestedEvent.AreaIdx, contestedEvent.FavouredTeam, contestedEvent.ToCapture);
+                LogContext.Information("VAreaPaintAreaContestedStateUpdate: area {AreaIndex}, paint {Paint}% in favour of {FavouredTeam}", contestedEvent.AreaIdx, contestedEvent.PaintPercentage * 100f, contestedEvent.FavouredTeam);
             }
             else if (args.GameEvent is VAreaPaintAreaControlChangeEvent)
             {
