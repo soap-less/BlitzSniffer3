@@ -10,7 +10,7 @@
             set;
         }
 
-        public float ToNeutralize
+        public float PaintPercentage
         {
             get;
             set;

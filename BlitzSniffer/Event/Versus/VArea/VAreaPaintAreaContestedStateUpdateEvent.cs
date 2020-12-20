@@ -18,7 +18,7 @@ namespace BlitzSniffer.Event.Versus.VArea
             set;
         }
 
-        public float ToCapture
+        public float PaintPercentage
         {
             get;
             set;

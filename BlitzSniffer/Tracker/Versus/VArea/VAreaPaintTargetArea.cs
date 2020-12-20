@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus.VArea;
 
@@ -6,10 +6,6 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 {
     class VAreaPaintTargetArea
     {
-        // TODO: is there a bprm or something where this information can be loaded from?
-        private static readonly float NEUTRALIZE_PERCENT = 0.5f;
-        private static readonly float CAPTURE_PERCENT = 0.7f;
-
         private int AreaIdx
         {
             get;
@@ -83,7 +79,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 EventTracker.Instance.AddEvent(new VAreaPaintAreaCappedStateUpdateEvent()
                 {
                     AreaIdx = AreaIdx,
-                    ToNeutralize = PaintPercentage - NEUTRALIZE_PERCENT
+                    PaintPercentage = PaintPercentage
                 });
             }
             else if (ControllingTeam == Team.Bravo)
@@ -104,7 +100,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 EventTracker.Instance.AddEvent(new VAreaPaintAreaCappedStateUpdateEvent()
                 {
                     AreaIdx = AreaIdx,
-                    ToNeutralize = PaintPercentage - NEUTRALIZE_PERCENT
+                    PaintPercentage = PaintPercentage
                 });
             }
             else if (ControllingTeam == Team.Neutral)
@@ -137,7 +133,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 {
                     AreaIdx = AreaIdx,
                     FavouredTeam = favouredTeam,
-                    ToCapture = CAPTURE_PERCENT - PaintPercentage
+                    PaintPercentage = PaintPercentage
                 });
             }
 
