@@ -39,6 +39,15 @@ namespace BlitzSniffer
 
             if (captureDevice == null && replayFile == null)
             {
+                if (CaptureDeviceList.Instance.Count == 0)
+                {
+                    Console.WriteLine("Error: No capture devices found. Ensure that NPcap (or equivalent) is installed correctly.");
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadKey();
+
+                    return;
+                }
+
                 while (true)
                 {
                     for (int i = 0; i < CaptureDeviceList.Instance.Count; i++)
