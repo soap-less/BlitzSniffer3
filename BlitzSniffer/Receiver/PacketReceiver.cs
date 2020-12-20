@@ -1,5 +1,6 @@
 using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
+using BlitzSniffer.Searcher;
 using NintendoNetcode.Enl;
 using NintendoNetcode.Pia;
 using NintendoNetcode.Pia.Clone;
@@ -78,6 +79,8 @@ namespace BlitzSniffer.Receiver
                 DumperThread.Start();
             }
 
+            SessionSearcher.Instance.SessionFound += SessionFound;
+
             Device.Filter = "ip and udp and (udp portrange 40000-49160 or udp port 30000)";
             Device.OnPacketArrival += OnPacketArrival;
             Device.StartCapture();
@@ -96,6 +99,11 @@ namespace BlitzSniffer.Receiver
             Device.Close();
         }
 
+        private void SessionFound(object sender, SessionFoundArgs e)
+        {
+            SessionKey = e.SessionKey;
+        }
+
         protected virtual void OnPacketArrival(object sender, CaptureEventArgs e)
         {
             Packet packet = Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
@@ -110,11 +118,7 @@ namespace BlitzSniffer.Receiver
 
                 try
                 {
-                    if (udpPacket.DestinationPort == 30000)
-                    {
-                        HandleLanSearchPacket(reader);
-                    }
-                    else
+                    if (udpPacket.DestinationPort != 30000)
                     {
                         if (SessionKey == null)
                         {
@@ -134,24 +138,6 @@ namespace BlitzSniffer.Receiver
             if (WriterDevice != null)
             {
                 CaptureQueue.Add(e.Packet);
-            }
-        }
-
-        private void HandleLanSearchPacket(BinaryDataReader reader)
-        {
-            byte firstByte = reader.ReadByte();
-
-            if (firstByte == 0x1)
-            {
-                LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
-                byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, PiaEncryptionUtil.BlitzGameKey);
-
-                if (SessionKey != null && !newKey.SequenceEqual(SessionKey))
-                {
-                    throw new SnifferException("Session key mismatch - are there two sessions running at once?");
-                }
-
-                SessionKey = newKey;
             }
         }
 
@@ -220,6 +206,11 @@ namespace BlitzSniffer.Receiver
                     WriterDevice.Write(capture);
                 }
             }
+        }
+
+        public ICaptureDevice GetDevice()
+        {
+            return Device;
         }
 
     }

@@ -2,6 +2,7 @@
 using BlitzSniffer.Event;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;
+using BlitzSniffer.Searcher;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.WebSocket;
 using LibHac;
@@ -139,6 +140,8 @@ namespace BlitzSniffer
             {
                 packetReceiver = new LivePacketReceiver(captureDevice);
             }
+
+            LanSessionSearcher.Initialize(packetReceiver.GetDevice());
 
             Directory.CreateDirectory("PacketCaptures");
             string pcapDumpFile = Path.Combine("PacketCaptures", $"{dateTime}.pcap");
