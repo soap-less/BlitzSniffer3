@@ -27,8 +27,6 @@ namespace BlitzSniffer.Receiver
 {
     public abstract class PacketReceiver : IDisposable
     {
-        private static byte[] BlitzGameKey = { 0xee, 0x18, 0x2a, 0x63, 0xe2, 0x16, 0xcd, 0xb1, 0xf5, 0x1a, 0xd4, 0xbe, 0xd8, 0xcf, 0x65, 0x08 };
-
         private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "PacketReceiver");
 
         protected ICaptureDevice Device
@@ -146,7 +144,7 @@ namespace BlitzSniffer.Receiver
             if (firstByte == 0x1)
             {
                 LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
-                byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, BlitzGameKey);
+                byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, PiaEncryptionUtil.BlitzGameKey);
 
                 if (SessionKey != null && !newKey.SequenceEqual(SessionKey))
                 {
