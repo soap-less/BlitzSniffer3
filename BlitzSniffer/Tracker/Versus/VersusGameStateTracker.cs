@@ -10,7 +10,7 @@ namespace BlitzSniffer.Tracker.Versus
             get;
         }
 
-        public VersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
+        protected VersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
         }
 
