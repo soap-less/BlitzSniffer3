@@ -57,6 +57,16 @@ namespace BlitzSniffer
                 PlayerSpecialActivateEvent specialEvent = args.GameEvent as PlayerSpecialActivateEvent;
                 LogContext.Information("PlayerSpecialActivate: {Name} activated their special weapon.", GameSession.Instance.PlayerTracker.GetPlayer(specialEvent.PlayerIdx).Name);
             }
+            else if (args.GameEvent is PlayerRidingVLiftEvent)
+            {
+                PlayerRidingVLiftEvent ridingEvent = args.GameEvent as PlayerRidingVLiftEvent;
+                LogContext.Information("PlayerRidingVLiftEvent: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
+            }
+            else if (args.GameEvent is PlayerLeftVLiftEvent)
+            {
+                PlayerLeftVLiftEvent leftEvent = args.GameEvent as PlayerLeftVLiftEvent;
+                LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
+            }
             else if (args.GameEvent is GachiScoreUpdateEvent)
             {
                 GachiScoreUpdateEvent scoreUpdateEvent = args.GameEvent as GachiScoreUpdateEvent;
