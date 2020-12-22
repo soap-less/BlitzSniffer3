@@ -387,6 +387,9 @@ namespace BlitzSniffer.Tracker.Player
                         PlayerIdx = id
                     });
                 }
+
+                VLiftVersusGameStateTracker tracker = GameSession.Instance.GameStateTracker as VLiftVersusGameStateTracker;
+                tracker.UpdateOvertimeTimeoutState();
             }
         }
 
