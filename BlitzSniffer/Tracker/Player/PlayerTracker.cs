@@ -3,11 +3,13 @@ using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using BlitzSniffer.Resources;
+using BlitzSniffer.Tracker.Versus.VLift;
 using BlitzSniffer.Util;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace BlitzSniffer.Tracker.Player
 {
@@ -71,6 +73,11 @@ namespace BlitzSniffer.Tracker.Player
                     player.Team = (actualTeamBits & mask) != 0 ? Team.Bravo : Team.Alpha;
                 }
             }
+        }
+
+        public int GetPlayersOnVLift()
+        {
+            return Players.Values.Where(p => p.IsOnVLift).Count();
         }
 
         private void HandlePlayerEvent(object sender, CloneChangedEventArgs args)
@@ -251,6 +258,34 @@ namespace BlitzSniffer.Tracker.Player
                         Charge = player.SpecialGaugeCharge
                     });
                 }
+
+                // mUnk8
+                bitReader.Seek(10);
+
+                // mUnk9
+                bitReader.Seek(10);
+
+                // mUnk10
+                bitReader.Seek(17);
+
+                // mUnk?? (not in 3.1.0)
+                bitReader.Seek(17);
+
+                // mUnk11
+                bitReader.Seek(2 + 10);
+
+                // mUnk12
+                bitReader.Seek(9);
+
+                // mUnk13
+                bitReader.Seek(4);
+
+                // flags
+                uint flags = bitReader.ReadVariableBits(32);
+                if (GameSession.Instance.GameStateTracker is VLiftVersusGameStateTracker)
+                {
+                    UpdateVLiftRidingStatus(playerId, (flags & 0x8000000) != 0);
+                }
             }
         }
 
@@ -328,6 +363,31 @@ namespace BlitzSniffer.Tracker.Player
             }
 
             return cause;
+        }
+
+        private void UpdateVLiftRidingStatus(uint id, bool riding)
+        {
+            Player player = Players[id];
+
+            if (player.IsOnVLift != riding)
+            {
+                player.IsOnVLift = riding;
+
+                if (riding)
+                {
+                    EventTracker.Instance.AddEvent(new PlayerRidingVLiftEvent()
+                    {
+                        PlayerIdx = id
+                    });
+                }
+                else
+                {
+                    EventTracker.Instance.AddEvent(new PlayerLeftVLiftEvent()
+                    {
+                        PlayerIdx = id
+                    });
+                }
+            }
         }
 
     }

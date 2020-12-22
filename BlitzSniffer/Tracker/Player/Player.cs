@@ -58,6 +58,12 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
+        public bool IsOnVLift
+        {
+            get;
+            set;
+        }
+
         public Player(string name)
         {
             IsActive = false;
@@ -69,6 +75,7 @@ namespace BlitzSniffer.Tracker.Player
             Kills = 0;
             Deaths = 0;
             Assists = 0;
+            IsOnVLift = false;
         }
 
     }
