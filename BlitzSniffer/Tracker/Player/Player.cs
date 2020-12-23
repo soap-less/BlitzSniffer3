@@ -58,6 +58,12 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
+        public bool HasGachihoko
+        {
+            get;
+            set;
+        }
+
         public bool IsOnVLift
         {
             get;
@@ -75,6 +81,7 @@ namespace BlitzSniffer.Tracker.Player
             Kills = 0;
             Deaths = 0;
             Assists = 0;
+            HasGachihoko = false;
             IsOnVLift = false;
         }
 
