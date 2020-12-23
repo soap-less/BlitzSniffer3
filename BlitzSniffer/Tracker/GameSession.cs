@@ -124,10 +124,10 @@ namespace BlitzSniffer.Tracker
 
                 // TODO verify these
                 reader.Seek(52, SeekOrigin.Begin);
-                Color4f alpha = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 0);
+                Color4f alpha = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1.0f);
 
                 reader.Seek(72, SeekOrigin.Begin);
-                Color4f bravo = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 0);
+                Color4f bravo = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1.0f);
 
                 switch (rule)
                 {
