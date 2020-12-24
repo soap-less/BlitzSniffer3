@@ -1,4 +1,4 @@
-using NintendoNetcode.Pia;
+﻿using NintendoNetcode.Pia;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using PacketDotNet;
 using SharpPcap;
@@ -103,6 +103,8 @@ namespace BlitzSniffer.Searcher
 
             using (UdpClient client = new UdpClient(30000))
             {
+                client.EnableBroadcast = true;
+
                 while (!BroadcastToken.IsCancellationRequested)
                 {
                     // Used for nonce
