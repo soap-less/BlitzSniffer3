@@ -1,4 +1,4 @@
-﻿using NintendoNetcode.Pia;
+using NintendoNetcode.Pia;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using PacketDotNet;
 using SharpPcap;
@@ -72,9 +72,26 @@ namespace BlitzSniffer.Searcher
             LibPcapLiveDevice liveDevice = Device as LibPcapLiveDevice;
             PcapAddress pcapInetAddress = liveDevice.Addresses.Where(a => a.Addr.type == AddressTypes.AF_INET_AF_INET6 && a.Addr.ipAddress.AddressFamily == AddressFamily.InterNetwork).FirstOrDefault();
 
-            // GetAddressBytes returns an array in network order
-            byte[] ipv4Address = pcapInetAddress.Addr.ipAddress.GetAddressBytes();
-            byte[] mask = pcapInetAddress.Netmask.ipAddress.GetAddressBytes();
+            byte[] ipv4Address;
+            byte[] mask;
+
+            if (pcapInetAddress != null)
+            {
+                // GetAddressBytes returns an array in network order
+                ipv4Address = pcapInetAddress.Addr.ipAddress.GetAddressBytes();
+                mask = pcapInetAddress.Netmask.ipAddress.GetAddressBytes();
+            }
+            else
+            {
+                IPAddress address = liveDevice.Interface.GatewayAddresses.FirstOrDefault();
+                if (address == null)
+                {
+                    throw new SnifferException("Failed to find an address to calculate the broadcast address from");
+                }
+
+                ipv4Address = address.GetAddressBytes();
+                mask = new byte[] { 255, 255, 255, 0 }; // usually the case, but not always
+            }
 
             for (int i = 0; i < ipv4Address.Length; i++)
             {
