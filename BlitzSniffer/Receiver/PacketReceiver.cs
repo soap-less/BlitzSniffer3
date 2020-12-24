@@ -81,7 +81,7 @@ namespace BlitzSniffer.Receiver
 
             SessionSearcher.Instance.SessionFound += SessionFound;
 
-            Device.Filter = "ip and udp and (udp portrange 40000-49160 or udp port 30000)";
+            Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
             Device.OnPacketArrival += OnPacketArrival;
             Device.StartCapture();
         }
