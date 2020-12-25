@@ -196,8 +196,8 @@ namespace BlitzSniffer.Receiver
                     continue;
                 }
 
-                CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, data);
                 CloneHolder.Instance.UpdateCloneClock(clock);
+                CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, data);
             }
         }
 
