@@ -34,6 +34,8 @@ namespace NintendoNetcode.Pia.Clone.Content
         {
             switch (type)
             {
+                case CloneContentType.ClockReply:
+                    return typeof(CloneContentClockReply);
                 case CloneContentType.Data:
                     return typeof(CloneContentDataOnly);
                 case CloneContentType.DataWithDestIndex:
