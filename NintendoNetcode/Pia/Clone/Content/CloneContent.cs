@@ -42,6 +42,14 @@ namespace NintendoNetcode.Pia.Clone.Content
                     return typeof(CloneContentDataWithDestIndex);
                 case CloneContentType.DataWithDestBitmap:
                     return typeof(CloneContentDataWithDestBitmap);
+                case CloneContentType.ClockCloneCommand:
+                    return typeof(CloneContentClockCloneCommand);
+                case CloneContentType.ClockAndCountCloneCommand:
+                    return typeof(CloneContentClockAndCountCloneCommand);
+                case CloneContentType.ClockAndParticipantCloneCommand:
+                    return typeof(CloneContentClockAndParticipantCloneCommand);
+                case CloneContentType.ClockAndCountAndParicipantCloneCommand:
+                    return typeof(CloneContentClockAndCountAndParticipantCloneCommand);
                 default:
                     return null;
             }
