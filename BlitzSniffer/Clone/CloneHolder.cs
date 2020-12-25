@@ -25,8 +25,17 @@ namespace BlitzSniffer.Clone
             set;
         }
 
+        public uint Clock
+        {
+            get;
+            private set;
+        }
+
         public delegate void CloneChangedEventHandler(object sender, CloneChangedEventArgs args);
         public event CloneChangedEventHandler CloneChanged;
+
+        public delegate void ClockChangedEventHandler(object sender, ClockChangedEventArgs args);
+        public event ClockChangedEventHandler ClockChanged;
 
         private CloneHolder()
         {
@@ -69,6 +78,16 @@ namespace BlitzSniffer.Clone
             else
             {
                 throw new SnifferException($"Clone {cloneId} not found");
+            }
+        }
+
+        public void UpdateCloneClock(uint clock)
+        {
+            if (Clock < clock)
+            {
+                Clock = clock;
+
+                ClockChanged(this, new ClockChangedEventArgs(clock));
             }
         }
 

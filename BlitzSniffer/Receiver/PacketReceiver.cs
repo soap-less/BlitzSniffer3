@@ -169,19 +169,35 @@ namespace BlitzSniffer.Receiver
 
             foreach (CloneElementData cloneElementData in cloneContentData.ElementData)
             {
+                byte[] data;
+                uint clock;
+
                 Type type = cloneElementData.GetType();
                 if (type == typeof(CloneElementDataEventData))
                 {
-                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataEventData).Data);
+                    CloneElementDataEventData eventData = cloneElementData as CloneElementDataEventData;
+                    data = eventData.Data;
+                    clock = eventData.Clock;
                 }
                 else if (type == typeof(CloneElementDataReliableData))
                 {
-                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataReliableData).Data);
+                    CloneElementDataReliableData reliableData = cloneElementData as CloneElementDataReliableData;
+                    data = reliableData.Data;
+                    clock = reliableData.Clock;
                 }
                 else if (type == typeof(CloneElementDataUnreliable))
                 {
-                    CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, (cloneElementData as CloneElementDataUnreliable).Data);
+                    CloneElementDataUnreliable unreliableData = cloneElementData as CloneElementDataUnreliable;
+                    data = unreliableData.Data;
+                    clock = unreliableData.Clock;
                 }
+                else
+                {
+                    continue;
+                }
+
+                CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, data);
+                CloneHolder.Instance.UpdateCloneClock(clock);
             }
         }
 
