@@ -172,28 +172,25 @@ namespace BlitzSniffer.Receiver
                 byte[] data;
                 uint clock;
 
-                Type type = cloneElementData.GetType();
-                if (type == typeof(CloneElementDataEventData))
+                switch (cloneElementData)
                 {
-                    CloneElementDataEventData eventData = cloneElementData as CloneElementDataEventData;
-                    data = eventData.Data;
-                    clock = eventData.Clock;
-                }
-                else if (type == typeof(CloneElementDataReliableData))
-                {
-                    CloneElementDataReliableData reliableData = cloneElementData as CloneElementDataReliableData;
-                    data = reliableData.Data;
-                    clock = reliableData.Clock;
-                }
-                else if (type == typeof(CloneElementDataUnreliable))
-                {
-                    CloneElementDataUnreliable unreliableData = cloneElementData as CloneElementDataUnreliable;
-                    data = unreliableData.Data;
-                    clock = unreliableData.Clock;
-                }
-                else
-                {
-                    continue;
+                    case CloneElementDataEventData eventData:
+                        data = eventData.Data;
+                        clock = eventData.Clock;
+
+                        break;
+                    case CloneElementDataReliableData reliableData:
+                        data = reliableData.Data;
+                        clock = reliableData.Clock;
+                        
+                        break;
+                    case CloneElementDataUnreliable unreliableData:
+                        data = unreliableData.Data;
+                        clock = unreliableData.Clock;
+                        
+                        break;
+                    default:
+                        continue;
                 }
 
                 CloneHolder.Instance.UpdateCloneClock(clock);
