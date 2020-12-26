@@ -101,5 +101,12 @@ namespace BlitzSniffer.Util
             return (uint)(one | two << 8 | three << 16 | four << 24);
         }
 
+        // sead::ReadStream::readF32BitImpl_
+        public float ReadF32Bit(int a2, int a3)
+        {
+            float raw = ReadVariableBits(a2 + a3);
+            return raw / (1 << a3);
+        }
+
     }
 }
