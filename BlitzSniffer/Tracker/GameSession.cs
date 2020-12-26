@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
@@ -40,11 +40,21 @@ namespace BlitzSniffer.Tracker
             private set;
         }
 
+        public uint ElapsedTicks
+        {
+            get;
+            set;
+        }
+
         public bool IsSetup
         {
             get;
             private set;
         }
+
+        private bool ClockReady;
+        private uint StartClock;
+        private uint CurrentClock;
 
         private GameSession()
         {
@@ -54,8 +64,12 @@ namespace BlitzSniffer.Tracker
 
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleSeqEventVersusSetting;
+            holder.CloneChanged += HandleSystemEvent;
+
+            holder.ClockChanged += HandleClockChanged;
 
             holder.RegisterClone(2);
+            holder.RegisterClone(100);
         }
 
         public static void Initialize()
@@ -80,6 +94,10 @@ namespace BlitzSniffer.Tracker
             }
 
             IsSetup = false;
+            ElapsedTicks = 0;
+            ClockReady = false;
+            StartClock = 0;
+            CurrentClock = 0;
 
             EventTracker.Instance.AddEvent(new SessionResetEvent());
         }
@@ -145,6 +163,57 @@ namespace BlitzSniffer.Tracker
                         break;
                 }
             }
+        }
+
+        private void HandleSystemEvent(object sender, CloneChangedEventArgs args)
+        {
+            if (args.CloneId != 100 || args.ElementId != 1)
+            {
+                return;
+            }
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                uint eventType = reader.ReadUInt32();
+
+                if (eventType == 0) // Synchronize game start using clone clock
+                {
+                    StartClock = reader.ReadUInt32();
+                    // int mapId = reader.ReadInt32();
+                    // uint unknown = reader.ReadUInt32();
+
+                    ClockReady = true;
+                }
+            }
+        }
+
+        public void HandleClockChanged(object sender, ClockChangedEventArgs args)
+        {
+            if (!ClockReady)
+            {
+                return;
+            }
+
+            // Only tick if we've passed the start
+            if (args.Clock >= StartClock)
+            {
+                uint elapsedClockTicks = args.Clock - CurrentClock;
+
+                // This is a for loop because we might need to catch up by several ticks.
+                // If the clone clock is uneven, CloneClockToGameFrame always rounds down the
+                // number of ticks.
+                for (uint i = 0; i < Blitz.Lp.Utl.CloneClockToGameFrame(elapsedClockTicks); i++)
+                {
+                    ElapsedTicks++;
+
+                    // TODO: Add event handler for a game tick
+                }
+            }
+
+            CurrentClock = args.Clock;
         }
 
     }
