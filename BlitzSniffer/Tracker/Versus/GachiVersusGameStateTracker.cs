@@ -97,10 +97,8 @@ namespace BlitzSniffer.Tracker.Versus
 
                     EventTracker.Instance.AddEvent(new GachiOvertimeStartEvent());
                 }
-                else
-                {
-                    HandleSystemEvent(eventType, reader);
-                }
+                
+                HandleSystemEvent(eventType, reader);
             }
         }
 
