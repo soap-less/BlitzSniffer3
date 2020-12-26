@@ -1,7 +1,8 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Resources;
 using BlitzSniffer.Tracker.Versus.VLift;
 using BlitzSniffer.Util;

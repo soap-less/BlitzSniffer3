@@ -1,4 +1,4 @@
-﻿namespace BlitzSniffer.Event.Player
+﻿namespace BlitzSniffer.Event.Player.VLift
 {
     class PlayerRidingVLiftEvent : PlayerEvent
     {
