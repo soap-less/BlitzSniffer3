@@ -98,7 +98,15 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
         protected override void HandleSystemEvent(uint eventType, BinaryDataReader reader)
         {
-
+            if (eventType == 5) // VGoal finish
+            {
+                // These ushorts are the "result left count", so convert them to score
+                EventTracker.Instance.AddEvent(new GachiFinishEvent()
+                {
+                    AlphaScore = (uint)100 - reader.ReadUInt16(),
+                    BravoScore = (uint)100 - reader.ReadUInt16()
+                });
+            }
         }
 
     }
