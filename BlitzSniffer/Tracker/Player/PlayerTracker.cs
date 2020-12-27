@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -152,7 +152,8 @@ namespace BlitzSniffer.Tracker.Player
                         deathEvent.IsComplete = true;
 
                         break;
-                    case 4: // Respawn
+                    case 4: // Revival (after being splatted)
+                    case 5: // Recover (after entering out of bounds or water)
                         if (player.IsAlive)
                         {
                             return;
