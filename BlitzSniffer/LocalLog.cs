@@ -1,5 +1,6 @@
 ﻿using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Event.Versus;
 using BlitzSniffer.Event.Versus.VArea;
 using BlitzSniffer.Event.Versus.VLift;
