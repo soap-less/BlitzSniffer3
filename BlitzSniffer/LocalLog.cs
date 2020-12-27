@@ -23,108 +23,96 @@ namespace BlitzSniffer
 
         static void PrintEventToConsole(object sender, SendEventArgs args)
         {
-            if (args.GameEvent is PlayerDeathEvent)
+            switch (args.GameEvent)
             {
-                PlayerDeathEvent deathEvent = args.GameEvent as PlayerDeathEvent;
-                PlayerTracker tracker = GameSession.Instance.PlayerTracker;
-                Player victimPlayer = tracker.GetPlayer(deathEvent.PlayerIdx);
-                Player attackerPlayer = deathEvent.AttackerIdx != -1 ? tracker.GetPlayer((uint)deathEvent.AttackerIdx) : null;
-                Player assisterPlayer = deathEvent.AssisterIdx != -1 ? tracker.GetPlayer((uint)deathEvent.AssisterIdx) : null;
+                case PlayerDeathEvent deathEvent:
+                    PlayerTracker tracker = GameSession.Instance.PlayerTracker;
+                    Player victimPlayer = tracker.GetPlayer(deathEvent.PlayerIdx);
+                    Player attackerPlayer = deathEvent.AttackerIdx != -1 ? tracker.GetPlayer((uint)deathEvent.AttackerIdx) : null;
+                    Player assisterPlayer = deathEvent.AssisterIdx != -1 ? tracker.GetPlayer((uint)deathEvent.AssisterIdx) : null;
 
-                string deathStr;
-                if (attackerPlayer != null)
-                {
-                    deathStr = $"{victimPlayer.Name} was killed by {attackerPlayer.Name} using {deathEvent.Cause}";
-                }
-                else
-                {
-                    deathStr = $"{victimPlayer.Name} died by {deathEvent.Cause}";
-                }
+                    string deathStr;
+                    if (attackerPlayer != null)
+                    {
+                        deathStr = $"{victimPlayer.Name} was killed by {attackerPlayer.Name} using {deathEvent.Cause}";
+                    }
+                    else
+                    {
+                        deathStr = $"{victimPlayer.Name} died by {deathEvent.Cause}";
+                    }
 
-                if (assisterPlayer != null)
-                {
-                    deathStr += $" with help from {assisterPlayer.Name}";
-                }
+                    if (assisterPlayer != null)
+                    {
+                        deathStr += $" with help from {assisterPlayer.Name}";
+                    }
 
-                LogContext.Information("PlayerDeath: {DeathString}", deathStr);
-            }
-            else if (args.GameEvent is PlayerRespawnEvent)
-            {
-                PlayerRespawnEvent respawnEvent = args.GameEvent as PlayerRespawnEvent;
-                LogContext.Information("PlayerRespawn: {Name} respawned", GameSession.Instance.PlayerTracker.GetPlayer(respawnEvent.PlayerIdx).Name);
-            }
-            else if (args.GameEvent is PlayerSpecialActivateEvent)
-            {
-                PlayerSpecialActivateEvent specialEvent = args.GameEvent as PlayerSpecialActivateEvent;
-                LogContext.Information("PlayerSpecialActivate: {Name} activated their special weapon.", GameSession.Instance.PlayerTracker.GetPlayer(specialEvent.PlayerIdx).Name);
-            }
-            else if (args.GameEvent is PlayerRidingVLiftEvent)
-            {
-                PlayerRidingVLiftEvent ridingEvent = args.GameEvent as PlayerRidingVLiftEvent;
-                LogContext.Information("PlayerRidingVLiftEvent: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
-            }
-            else if (args.GameEvent is PlayerLeftVLiftEvent)
-            {
-                PlayerLeftVLiftEvent leftEvent = args.GameEvent as PlayerLeftVLiftEvent;
-                LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
-            }
-            else if (args.GameEvent is GachiScoreUpdateEvent)
-            {
-                GachiScoreUpdateEvent scoreUpdateEvent = args.GameEvent as GachiScoreUpdateEvent;
-                LogContext.Information("GachiScoreUpdate: alpha {AlphaScore} + {AlphaPenalty}, bravo {BravoScore} + {BravoPenalty}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.AlphaPenalty, scoreUpdateEvent.BravoScore, scoreUpdateEvent.BravoPenalty);
-            }
-            else if (args.GameEvent is GachiOvertimeStartEvent)
-            {
-                LogContext.Information("GachiOvertimeStart: overtime is starting now");
-            }
-            else if (args.GameEvent is GachiOvertimeTimeoutUpdateEvent)
-            {
-                GachiOvertimeTimeoutUpdateEvent overtimeTimeoutEvent = args.GameEvent as GachiOvertimeTimeoutUpdateEvent;
-                LogContext.Information("GachiOvertimeTimeoutUpdate: overtime will end in {Ticks} ticks", overtimeTimeoutEvent.Length);
-            }
-            else if (args.GameEvent is GachiFinishEvent)
-            {
-                GachiFinishEvent finishEvent = args.GameEvent as GachiFinishEvent;
-                LogContext.Information("GachiFinishEvent: game finish, {AlphaScore} - {BravoScore}", finishEvent.AlphaScore, finishEvent.BravoScore);
-            }
-            /*else if (args.GameEvent is VLiftPositionUpdateEvent)
-            {
-                VLiftPositionUpdateEvent positionEvent = args.GameEvent as VLiftPositionUpdateEvent;
-                LogContext.Information("VLiftPositionUpdate: alpha {AlphaPosition}%, bravo {BravoPosition}%", positionEvent.AlphaPosition, positionEvent.BravoPosition);
-            }*/
-            else if (args.GameEvent is VLiftCheckpointUpdateEvent)
-            {
-                VLiftCheckpointUpdateEvent checkpointUpdateEvent = args.GameEvent as VLiftCheckpointUpdateEvent;
-                LogContext.Information("VLiftCheckpointUpdate: team {Team}, checkpoint {Index}, HP {Hp}, best HP {BestHp}", checkpointUpdateEvent.Team, checkpointUpdateEvent.Idx, checkpointUpdateEvent.Hp, checkpointUpdateEvent.BestHp);
-            }
-            else if (args.GameEvent is VAreaPaintAreaCappedStateUpdateEvent)
-            {
-                VAreaPaintAreaCappedStateUpdateEvent cappedEvent = args.GameEvent as VAreaPaintAreaCappedStateUpdateEvent;
-                LogContext.Information("VAreaPaintAreaCappedStateUpdate: area {AreaIndex}, capped team has {Paint}% of the area", cappedEvent.AreaIdx, cappedEvent.PaintPercentage * 100f);
-            }
-            else if (args.GameEvent is VAreaPaintAreaContestedStateUpdateEvent)
-            {
-                VAreaPaintAreaContestedStateUpdateEvent contestedEvent = args.GameEvent as VAreaPaintAreaContestedStateUpdateEvent;
-                LogContext.Information("VAreaPaintAreaContestedStateUpdate: area {AreaIndex}, paint {Paint}% in favour of {FavouredTeam}", contestedEvent.AreaIdx, contestedEvent.PaintPercentage * 100f, contestedEvent.FavouredTeam);
-            }
-            else if (args.GameEvent is VAreaPaintAreaControlChangeEvent)
-            {
-                VAreaPaintAreaControlChangeEvent changeEvent = args.GameEvent as VAreaPaintAreaControlChangeEvent;
-                LogContext.Information("VAreaPaintAreaControlChange: area {AreaIndex}, controlled team {Team}", changeEvent.AreaIdx, changeEvent.Team);
-            }
-            else if (args.GameEvent is PlayerGaugeUpdateEvent)
-            {
-                return;
-            }
-            else
-            {
-                string json = JsonSerializer.Serialize(args.GameEvent, args.GameEvent.GetType(), new JsonSerializerOptions()
-                {
-                    WriteIndented = true
-                });
+                    LogContext.Information("PlayerDeath: {DeathString}", deathStr);
 
-                string linePrefix = args.GameEvent.Name + ": {Json}";
-                LogContext.Information(linePrefix, json);
+                    break;
+                case PlayerRespawnEvent respawnEvent:
+                    LogContext.Information("PlayerRespawn: {Name} respawned", GameSession.Instance.PlayerTracker.GetPlayer(respawnEvent.PlayerIdx).Name);
+
+                    break;
+                case PlayerSpecialActivateEvent specialEvent:
+                    LogContext.Information("PlayerSpecialActivate: {Name} activated their special weapon.", GameSession.Instance.PlayerTracker.GetPlayer(specialEvent.PlayerIdx).Name);
+
+                    break;
+                case PlayerRidingVLiftEvent ridingEvent:
+                    LogContext.Information("PlayerRidingVLiftEvent: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
+
+                    break;
+                case PlayerLeftVLiftEvent leftEvent:
+                    LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
+
+                    break;
+                case GachiScoreUpdateEvent scoreUpdateEvent:
+                    LogContext.Information("GachiScoreUpdate: alpha {AlphaScore} + {AlphaPenalty}, bravo {BravoScore} + {BravoPenalty}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.AlphaPenalty, scoreUpdateEvent.BravoScore, scoreUpdateEvent.BravoPenalty);
+                    
+                    break;
+                case GachiOvertimeStartEvent overtimeStartEvent:
+                    LogContext.Information("GachiOvertimeStart: overtime is starting now");
+                    
+                    break;
+                case GachiOvertimeTimeoutUpdateEvent overtimeTimeoutEvent:
+                    LogContext.Information("GachiOvertimeTimeoutUpdate: overtime will end in {Ticks} ticks", overtimeTimeoutEvent.Length);
+                    
+                    break;
+                case GachiFinishEvent finishEvent:
+                    LogContext.Information("GachiFinishEvent: game finish, {AlphaScore} - {BravoScore}", finishEvent.AlphaScore, finishEvent.BravoScore);
+
+                    break;
+                /* case VLiftPositionUpdateEvent positionEvent:
+                    LogContext.Information("VLiftPositionUpdate: alpha {AlphaPosition}%, bravo {BravoPosition}%", positionEvent.AlphaPosition, positionEvent.BravoPosition);
+                
+                    break;*/
+                case VLiftCheckpointUpdateEvent checkpointUpdateEvent:
+                    LogContext.Information("VLiftCheckpointUpdate: team {Team}, checkpoint {Index}, HP {Hp}, best HP {BestHp}", checkpointUpdateEvent.Team, checkpointUpdateEvent.Idx, checkpointUpdateEvent.Hp, checkpointUpdateEvent.BestHp);
+
+                    break;
+                case VAreaPaintAreaCappedStateUpdateEvent cappedEvent:
+                    LogContext.Information("VAreaPaintAreaCappedStateUpdate: area {AreaIndex}, capped team has {Paint}% of the area", cappedEvent.AreaIdx, cappedEvent.PaintPercentage * 100f);
+
+                    break;
+                case VAreaPaintAreaContestedStateUpdateEvent contestedEvent:
+                    LogContext.Information("VAreaPaintAreaContestedStateUpdate: area {AreaIndex}, paint {Paint}% in favour of {FavouredTeam}", contestedEvent.AreaIdx, contestedEvent.PaintPercentage * 100f, contestedEvent.FavouredTeam);
+                    
+                    break;
+                case VAreaPaintAreaControlChangeEvent changeEvent:
+                    LogContext.Information("VAreaPaintAreaControlChange: area {AreaIndex}, controlled team {Team}", changeEvent.AreaIdx, changeEvent.Team);
+
+                    break;
+                case PlayerGaugeUpdateEvent gaugeEvent:
+                    break;
+                default:
+                    string json = JsonSerializer.Serialize(args.GameEvent, args.GameEvent.GetType(), new JsonSerializerOptions()
+                    {
+                        WriteIndented = true
+                    });
+
+                    string linePrefix = args.GameEvent.Name + ": {Json}";
+                    LogContext.Information(linePrefix, json);
+
+                    break;
             }
         }
 
