@@ -1,7 +1,9 @@
 using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
+using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Versus;
+using BlitzSniffer.Event.Versus.VGoal;
 using BlitzSniffer.Util;
 using Nintendo.Sead;
 using Syroot.BinaryData;
@@ -85,15 +87,72 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                 return;
             }
 
-            /*
-             * BreakBarrier
-             * GetGachihoko
-             * Lost
-             * LostToInit
-             * Recovery
-             * Reallocate
-             * ExpiredBlast
-             */
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                byte eventType = reader.ReadByte();
+
+                switch (eventType)
+                {
+                    case 0: // BreakBarrier
+                        byte senderPlayerIdx = reader.ReadByte();
+                        byte breakerPlayerIdx = reader.ReadByte();
+
+                        // reader.Seek(-4, SeekOrigin.End);
+                        // uint breakFrame = reader.ReadUInt32();
+
+                        EventTracker.Instance.AddEvent(new VGoalBarrierBreakEvent()
+                        {
+                            BreakerPlayerIdx = breakerPlayerIdx
+                        });
+
+                        break;
+                    case 1: // GetGachihoko
+                        reader.Seek(1); // nothing
+
+                        byte heldPlayer = reader.ReadByte();
+
+                        // reader.Seek(-4, SeekOrigin.End);
+                        // uint getFrame = reader.ReadUInt32();
+
+                        Player.Player responsiblePlayer = GameSession.Instance.PlayerTracker.GetPlayer(heldPlayer);
+                        responsiblePlayer.HasGachihoko = true;
+
+                        EventTracker.Instance.AddEvent(new PlayerGetGachihokoEvent()
+                        {
+                            PlayerIdx = heldPlayer
+                        });
+
+                        break;
+                    case 2: // Lost
+                    case 3: // LostToInit
+                        // TODO: What is the difference between these two?
+
+                        // The player only ever loses the Gachihoko upon death, so we let PlayerTracker fire a
+                        // PlayerLostGachihoko event while processing their death instead of firing it here.
+
+                        // Reset Gachihoko timeout
+                        GachihokoTimeout = 0;
+
+                        break;
+                    case 4: // Recovery
+                        // TODO: What's this?
+
+                        break;
+                    case 5: // Reallocate
+                        // TODO: What's this?
+
+                        break;
+                    case 6: // ExpiredBlast
+                        // TODO: For this event, the name seems to indicate that this fires upon the Gachihoko's
+                        // timer running out, but it seems to appear every time the Gachihoko is lost???
+
+                        break;
+                }
+
+            }
         }
 
         protected override void HandleSystemEvent(uint eventType, BinaryDataReader reader)
