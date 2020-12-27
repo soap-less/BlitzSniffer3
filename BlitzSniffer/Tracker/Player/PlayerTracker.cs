@@ -330,11 +330,16 @@ namespace BlitzSniffer.Tracker.Player
                 case 3:
                     switch (id)
                     {
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
+                        // Cases 4 to 7 were found in the array used for Cui::TextSetter::setLayoutMsg
+                        case 4: // Gachihoko explosion (holder?)
+                        case 6: // Gachihoko explosion (others?)
+                            cause = "Wsp_Shachihoko_Explosion";
+                            break;
+                        case 5: // Gachihoko bullet
                             cause = "Wsp_Shachihoko";
+                            break;
+                        case 7: // Gachihoko barrier
+                            cause = $"Wsp_Shachihoko_Barrier";
                             break;
                         case 8:
                             cause = "Wot_PCFan";
