@@ -171,11 +171,22 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                 Player.Player gachihokoPlayer = GameSession.Instance.PlayerTracker.GetPlayerWithGachihoko();
                 if (gachihokoPlayer != null)
                 {
+                    // The time remaining is how much is left on the the Gachihoko timer if the trailing team
+                    // is currently in possession of it.
                     uint leftTicks = GachihokoTimeout - GameSession.Instance.ElapsedTicks;
                     EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
                     {
                         Length = (int)leftTicks
                     });
+                }
+                else
+                {
+                    // Otherwise, the trailing team has 10 seconds to pick up the Gachihoko.
+                    EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+                    {
+                        Length = 600
+                    });
+
                 }
             }
         }
