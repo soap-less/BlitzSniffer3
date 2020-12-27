@@ -95,13 +95,16 @@ namespace BlitzSniffer.Tracker
                 GameStateTracker = null;
             }
 
+            if (IsSetup)
+            {
+                EventTracker.Instance.AddEvent(new SessionResetEvent());
+            }
+
             IsSetup = false;
             ElapsedTicks = 0;
             ClockReady = false;
             StartClock = 0;
             CurrentClock = 0;
-
-            EventTracker.Instance.AddEvent(new SessionResetEvent());
         }
 
         public void FireSetupEvent()
