@@ -1,7 +1,8 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Resources;
 using BlitzSniffer.Tracker.Versus.VLift;
@@ -131,6 +132,17 @@ namespace BlitzSniffer.Tracker.Player
 
                         player.IsAlive = false;
                         player.Deaths++;
+
+                        if (player.HasGachihoko)
+                        {
+                            // Not anymore.
+                            player.HasGachihoko = false;
+
+                            EventTracker.Instance.AddEvent(new PlayerLostGachihokoEvent()
+                            {
+                                PlayerIdx = playerId
+                            });
+                        }
 
                         string cause = "Unknown";
                         if (eventId == 1)
