@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -9,6 +9,7 @@ using BlitzSniffer.Util;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -74,6 +75,14 @@ namespace BlitzSniffer.Tracker.Player
                     player.Team = (actualTeamBits & mask) != 0 ? Team.Bravo : Team.Alpha;
                 }
             }
+        }
+
+        public Player GetPlayerWithGachihoko()
+        {
+            IEnumerable<Player> gachihokoPlayers = Players.Values.Where(p => p.HasGachihoko);
+            Trace.Assert(gachihokoPlayers.Count() <= 1, "More than one player with Gachihoko");
+
+            return gachihokoPlayers.FirstOrDefault();
         }
 
         public int GetPlayersOnVLift()
