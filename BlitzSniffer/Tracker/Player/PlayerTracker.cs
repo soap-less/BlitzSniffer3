@@ -51,6 +51,19 @@ namespace BlitzSniffer.Tracker.Player
             return Players[idx];
         }
 
+        public Player GetPlayerWithGachihoko()
+        {
+            IEnumerable<Player> gachihokoPlayers = Players.Values.Where(p => p.HasGachihoko);
+            Trace.Assert(gachihokoPlayers.Count() <= 1, "More than one player with Gachihoko");
+
+            return gachihokoPlayers.FirstOrDefault();
+        }
+
+        public int GetPlayersOnVLift()
+        {
+            return Players.Values.Where(p => p.IsOnVLift).Count();
+        }
+
         public void SetTeamBits(uint teamBits)
         {
             TeamBits = teamBits;
@@ -75,19 +88,6 @@ namespace BlitzSniffer.Tracker.Player
                     player.Team = (actualTeamBits & mask) != 0 ? Team.Bravo : Team.Alpha;
                 }
             }
-        }
-
-        public Player GetPlayerWithGachihoko()
-        {
-            IEnumerable<Player> gachihokoPlayers = Players.Values.Where(p => p.HasGachihoko);
-            Trace.Assert(gachihokoPlayers.Count() <= 1, "More than one player with Gachihoko");
-
-            return gachihokoPlayers.FirstOrDefault();
-        }
-
-        public int GetPlayersOnVLift()
-        {
-            return Players.Values.Where(p => p.IsOnVLift).Count();
         }
 
         private void HandlePlayerEvent(object sender, CloneChangedEventArgs args)
