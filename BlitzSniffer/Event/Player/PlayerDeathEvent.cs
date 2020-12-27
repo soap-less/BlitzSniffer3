@@ -31,5 +31,12 @@ namespace BlitzSniffer.Event.Player
             set;
         }
 
+        [JsonIgnore]
+        public uint SendDeadline
+        {
+            get;
+            set;
+        }
+
     }
 }

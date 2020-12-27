@@ -5,20 +5,27 @@ using Serilog.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace BlitzSniffer.Tracker.Player
 {
-    public class PlayerOffenseTracker
+    public class PlayerOffenseTracker : IDisposable
     {
         private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "PlayerOffenseTracker");
-        private static readonly int FRAME_DELAY = 3;
+        private static readonly uint FRAME_DELAY = 3;
 
         private readonly ConcurrentDictionary<uint, PlayerDeathEvent> WaitingDeathEvents;
 
         public PlayerOffenseTracker()
         {
             WaitingDeathEvents = new ConcurrentDictionary<uint, PlayerDeathEvent>();
+
+            GameSession.Instance.GameTicked += HandleGameTick;
+        }
+
+        public void Dispose()
+        {
+            GameSession.Instance.GameTicked -= HandleGameTick;
         }
 
         public PlayerDeathEvent GetDeathEventForVictim(uint victimIdx)
@@ -31,32 +38,38 @@ namespace BlitzSniffer.Tracker.Player
             {
                 PlayerDeathEvent deathEvent = new PlayerDeathEvent()
                 {
-                    PlayerIdx = victimIdx
+                    PlayerIdx = victimIdx,
+                    SendDeadline = GameSession.Instance.ElapsedTicks + FRAME_DELAY
                 };
 
                 WaitingDeathEvents[victimIdx] = deathEvent;
 
-                Task.Delay(17 * FRAME_DELAY).ContinueWith(x =>
-                {
-                    if (WaitingDeathEvents.Remove(victimIdx, out _))
-                    {
-                        if (deathEvent.IsComplete)
-                        {
-                            EventTracker.Instance.AddEvent(deathEvent);
-                        }
-                        else
-                        {
-                            LogContext.Information("Removing incomplete event for victim {VictimIdx}", victimIdx);
-                        }
-                    }
-                    else
-                    {
-                        LogContext.Error("Failed to remove death event for victim {VictimIdx}", victimIdx);
-                    }
-                });
-
                 return deathEvent;
             }
+        }
+
+        private void HandleGameTick(object sender, GameTickedEventArgs args)
+        {
+            IEnumerable<KeyValuePair<uint, PlayerDeathEvent>> deathEvents = WaitingDeathEvents.Where(p => p.Value.SendDeadline >= args.ElapsedTicks);
+            if (deathEvents.Count() == 0)
+            {
+                return;
+            }
+
+            foreach (KeyValuePair<uint, PlayerDeathEvent> pair in deathEvents.ToList())
+            {
+                if (pair.Value.IsComplete)
+                {
+                    EventTracker.Instance.AddEvent(pair.Value);
+                }
+                else
+                {
+                    LogContext.Information("Removing incomplete event for victim {VictimIdx}", pair.Key);
+                }
+
+                WaitingDeathEvents.Remove(pair.Key, out _);
+            }
+
         }
 
     }
