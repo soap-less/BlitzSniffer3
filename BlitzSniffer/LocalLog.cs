@@ -1,8 +1,10 @@
 ﻿using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
+using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Event.Versus;
 using BlitzSniffer.Event.Versus.VArea;
+using BlitzSniffer.Event.Versus.VGoal;
 using BlitzSniffer.Event.Versus.VLift;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.Tracker.Player;
@@ -57,6 +59,14 @@ namespace BlitzSniffer
                     LogContext.Information("PlayerSpecialActivate: {Name} activated their special weapon.", GameSession.Instance.PlayerTracker.GetPlayer(specialEvent.PlayerIdx).Name);
 
                     break;
+                case PlayerGetGachihokoEvent getGachihokoEvent:
+                    LogContext.Information("PlayerGetGachihokoEvent: {Name} got the Rainmaker", GameSession.Instance.PlayerTracker.GetPlayer(getGachihokoEvent.PlayerIdx).Name);
+
+                    break;
+                case PlayerLostGachihokoEvent lostGachihokoEvent:
+                    LogContext.Information("PlayerLostGachihokoEvent: {Name} lost the Rainmaker", GameSession.Instance.PlayerTracker.GetPlayer(lostGachihokoEvent.PlayerIdx).Name);
+
+                    break;
                 case PlayerRidingVLiftEvent ridingEvent:
                     LogContext.Information("PlayerRidingVLiftEvent: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
 
@@ -81,7 +91,11 @@ namespace BlitzSniffer
                     LogContext.Information("GachiFinishEvent: game finish, {AlphaScore} - {BravoScore}", finishEvent.AlphaScore, finishEvent.BravoScore);
 
                     break;
-                /* case VLiftPositionUpdateEvent positionEvent:
+                case VGoalBarrierBreakEvent barrierBreakEvent:
+                    LogContext.Information("VGoalBarrierBreakEvent: Rainmaker barrier was broken by {Name}", GameSession.Instance.PlayerTracker.GetPlayer(barrierBreakEvent.BreakerPlayerIdx).Name);
+
+                    break;
+                /*case VLiftPositionUpdateEvent positionEvent:
                     LogContext.Information("VLiftPositionUpdate: alpha {AlphaPosition}%, bravo {BravoPosition}%", positionEvent.AlphaPosition, positionEvent.BravoPosition);
                 
                     break;*/
