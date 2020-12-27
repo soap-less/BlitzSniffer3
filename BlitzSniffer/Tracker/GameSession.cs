@@ -56,6 +56,9 @@ namespace BlitzSniffer.Tracker
         private uint StartClock;
         private uint CurrentClock;
 
+        public delegate void GameTickedHandler(object sender, GameTickedEventArgs args);
+        public event GameTickedHandler GameTicked;
+
         private GameSession()
         {
             PlayerTracker = new PlayerTracker();
@@ -209,7 +212,7 @@ namespace BlitzSniffer.Tracker
                 {
                     ElapsedTicks++;
 
-                    // TODO: Add event handler for a game tick
+                    GameTicked(this, new GameTickedEventArgs(ElapsedTicks));
                 }
             }
 
