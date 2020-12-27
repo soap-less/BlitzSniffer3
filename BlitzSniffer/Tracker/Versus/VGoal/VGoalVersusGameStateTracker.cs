@@ -125,6 +125,14 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                             PlayerIdx = heldPlayer
                         });
 
+                        if (InOvertime && responsiblePlayer.Team == GetTrailingTeam())
+                        {
+                            EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+                            {
+                                Length = 3600 // 60 seconds, default Gachihoko timeout length
+                            });
+                        }
+
                         break;
                     case 2: // Lost
                     case 3: // LostToInit
