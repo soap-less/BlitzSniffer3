@@ -166,6 +166,18 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                     BravoScore = (uint)100 - reader.ReadUInt16()
                 });
             }
+            else if (eventType == 7) // Overtime start
+            {
+                Player.Player gachihokoPlayer = GameSession.Instance.PlayerTracker.GetPlayerWithGachihoko();
+                if (gachihokoPlayer != null)
+                {
+                    uint leftTicks = GachihokoTimeout - GameSession.Instance.ElapsedTicks;
+                    EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+                    {
+                        Length = (int)leftTicks
+                    });
+                }
+            }
         }
 
     }
