@@ -144,10 +144,23 @@ namespace BlitzSniffer.Tracker.Player
                             });
                         }
 
+                        int attackerIdx = -1;
                         string cause = "Unknown";
+                        
                         if (eventId == 1)
                         {
-                            cause = GetDeathCauseForAttackedPlayer((unk8 & 0xFF0000) >> 16, unk8 & 0xFFFF);
+                            uint type = (unk8 & 0xFF0000) >> 16;
+                            uint id = unk8 & 0xFFFF;
+
+                            cause = GetDeathCauseForAttackedPlayer(type, id);
+
+                            // If this player was the Gachihoko holder and they died because of the timeout explosion,
+                            // don't set their their attacker. Otherwise, the death event will say that they were killed
+                            // by themselves, which isn't standard (for suicides, the attacker variable is never set).
+                            if (type != 3 || id != 4)
+                            {
+                                attackerIdx = (int)unk10;
+                            }
                         }
                         else if (eventId == 2)
                         {
@@ -159,7 +172,7 @@ namespace BlitzSniffer.Tracker.Player
                         }
 
                         PlayerDeathEvent deathEvent = OffenseTracker.GetDeathEventForVictim(playerId);
-                        deathEvent.AttackerIdx = eventId == 1 ? (int)unk10 : -1;
+                        deathEvent.AttackerIdx = attackerIdx;
                         deathEvent.Cause = cause;
                         deathEvent.IsComplete = true;
 
