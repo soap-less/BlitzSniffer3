@@ -61,7 +61,7 @@ namespace BlitzSniffer.Tracker
 
         private GameSession()
         {
-            PlayerTracker = new PlayerTracker();
+            PlayerTracker = null;
             StationTracker = new StationTracker(); 
             GameStateTracker = null;
 
@@ -82,12 +82,11 @@ namespace BlitzSniffer.Tracker
 
         public void Reset()
         {
-            if (!IsSetup)
+            if (PlayerTracker != null)
             {
-                return;
+                PlayerTracker.Dispose();
             }
-
-            PlayerTracker.Dispose();
+            
             PlayerTracker = new PlayerTracker();
 
             if (GameStateTracker != null)

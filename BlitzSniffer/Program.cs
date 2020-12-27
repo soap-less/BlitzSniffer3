@@ -139,6 +139,7 @@ namespace BlitzSniffer
             SnifferServer.Initialize();
 
             GameSession.Initialize();
+            GameSession.Instance.Reset();
 
             LocalLog.RegisterConsoleDebug();
 
