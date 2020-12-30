@@ -22,6 +22,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 
 namespace BlitzSniffer.Receiver
@@ -143,7 +144,17 @@ namespace BlitzSniffer.Receiver
 
         private void HandlePiaPacket(BinaryDataReader reader, byte[] sourceAddress)
         {
-            PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(sourceAddress));
+            PiaPacket piaPacket;
+            try
+            {
+                piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(sourceAddress));
+            }
+            catch (CryptographicException)
+            {
+                // Just skip... We probably don't have the correct key yet or someone is running
+                // another game/session on this network.
+                return;
+            }
 
             foreach (PiaMessage message in piaPacket.Messages)
             {
