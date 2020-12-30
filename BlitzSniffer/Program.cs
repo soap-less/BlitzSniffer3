@@ -1,4 +1,4 @@
-using BlitzSniffer.Config;
+﻿using BlitzSniffer.Config;
 using BlitzSniffer.Event;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;
@@ -28,10 +28,11 @@ namespace BlitzSniffer
         /// Sniffs Splatoon 2 LAN sessions.
         /// </summary>
         /// <param name="useRom">If a Splatoon 2 ROM should be used instead of the GameData file.</param>
+        /// <param name="useSnicom">Use sys-snicom to extract the encryption key.</param>
         /// <param name="replayFile">A pcap file to replay.</param>
         /// <param name="replayInRealTime">If the replay file should be replayed in real-time.</param>
         /// <param name="realTimeStartOffset">When to fast-forward to in the replay file.</param>
-        static void Main(bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
+        static void Main(bool useRom = false, bool useSnicom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
         {
             SnifferConfig.Load();
 
@@ -163,7 +164,14 @@ namespace BlitzSniffer
                 packetReceiver = new LivePacketReceiver(captureDevice);
             }
 
-            LanSessionSearcher.Initialize(packetReceiver.GetDevice());
+            if (useSnicom)
+            {
+                SnicomSessionSearcher.Initialize();
+            }
+            else
+            {
+                LanSessionSearcher.Initialize(packetReceiver.GetDevice());
+            }
 
             Directory.CreateDirectory("PacketCaptures");
             string pcapDumpFile = Path.Combine("PacketCaptures", $"{dateTime}.pcap");

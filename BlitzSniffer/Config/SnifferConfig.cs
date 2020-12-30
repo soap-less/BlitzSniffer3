@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 
 namespace BlitzSniffer.Config
@@ -20,6 +19,12 @@ namespace BlitzSniffer.Config
             set;
         }
 
+        public SnicomConfig Snicom
+        {
+            get;
+            set;
+        }
+
         public string DefaultDevice
         {
             get;
@@ -35,6 +40,7 @@ namespace BlitzSniffer.Config
         public SnifferConfig()
         {
             Rom = new RomConfig();
+            Snicom = new SnicomConfig();
             DefaultDevice = "none";
             Key = "ABCDE-FGHIJ-KLMNO-PQRST";
         }
