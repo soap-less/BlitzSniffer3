@@ -1,4 +1,4 @@
-﻿using NintendoNetcode.Pia;
+using NintendoNetcode.Pia;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using PacketDotNet;
 using SharpPcap;
@@ -38,6 +38,14 @@ namespace BlitzSniffer.Searcher
         public static void Initialize(ICaptureDevice device)
         {
             Instance = new LanSessionSearcher(device);
+        }
+
+        public override void Dispose()
+        {
+            if (!BroadcastToken.IsCancellationRequested)
+            {
+                BroadcastToken.Cancel();
+            }
         }
 
         protected virtual void OnPacketArrival(object sender, CaptureEventArgs e)

@@ -1,6 +1,8 @@
-﻿namespace BlitzSniffer.Searcher
+﻿using System;
+
+namespace BlitzSniffer.Searcher
 {
-    abstract class SessionSearcher
+    abstract class SessionSearcher : IDisposable
     {
         public static SessionSearcher Instance = null;
 
@@ -11,6 +13,8 @@
         {
 
         }
+
+        public abstract void Dispose();
 
         protected void NotifySessionFound(byte[] key)
         {
