@@ -49,6 +49,12 @@ namespace BlitzSniffer.Receiver
             set;
         } = null;
 
+        private uint GatheringId
+        {
+            get;
+            set;
+        }
+
         private CaptureFileWriterDevice WriterDevice
         {
             get;
@@ -125,6 +131,10 @@ namespace BlitzSniffer.Receiver
             {
                 SessionKey = e.Data;
             }
+            else if (e.FoundDataType == SessionFoundDataType.GatheringId)
+            {
+                GatheringId = BitConverter.ToUInt32(e.Data);
+            }
         }
 
         protected virtual void OnPacketArrival(object sender, CaptureEventArgs e)
@@ -157,6 +167,12 @@ namespace BlitzSniffer.Receiver
                             return;
                         }
 
+                        if (SessionType == PiaSessionType.Inet && GatheringId == 0)
+                        {
+                            LogContext.Warning("Skipping packet with length {Length}, no gathering ID", udpPacket.PayloadData.Length);
+                            return;
+                        }
+
                         HandlePiaPacket(reader, ipPacket.SourceAddress.GetAddressBytes());
                     }
                 }
@@ -174,7 +190,20 @@ namespace BlitzSniffer.Receiver
 
         private void HandlePiaPacket(BinaryDataReader reader, byte[] sourceAddress)
         {
-            PiaEncryptionArgs encryptionArgs = new PiaLanEncryptionArgs(SessionKey, sourceAddress);
+            PiaEncryptionArgs encryptionArgs;
+            if (SessionType == PiaSessionType.Lan)
+            {
+                encryptionArgs = new PiaLanEncryptionArgs(SessionKey, sourceAddress);
+            }
+            else if (SessionType == PiaSessionType.Inet)
+            {
+                encryptionArgs = new PiaInetEncryptionArgs(SessionKey, GatheringId);
+            }
+            else
+            {
+                LogContext.Error("LDN sessions not supported");
+                return;
+            }
 
             PiaPacket piaPacket;
             try
