@@ -1,4 +1,5 @@
 using BlitzSniffer.Clone;
+using BlitzSniffer.Config;
 using BlitzSniffer.Enl;
 using BlitzSniffer.Searcher;
 using NintendoNetcode.Enl;
@@ -10,7 +11,6 @@ using NintendoNetcode.Pia.Clone.Element.Data.Event;
 using NintendoNetcode.Pia.Clone.Element.Data.Reliable;
 using NintendoNetcode.Pia.Clone.Element.Data.Unreliable;
 using NintendoNetcode.Pia.Encryption;
-using NintendoNetcode.Pia.Lan.Content.Browse;
 using NintendoNetcode.Pia.Unreliable;
 using PacketDotNet;
 using Serilog;
@@ -22,7 +22,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 
@@ -31,6 +30,12 @@ namespace BlitzSniffer.Receiver
     public abstract class PacketReceiver : IDisposable
     {
         private static readonly ILogger LogContext = Log.ForContext(Constants.SourceContextPropertyName, "PacketReceiver");
+
+        protected PiaSessionType SessionType
+        {
+            get;
+            set;
+        }
 
         protected ICaptureDevice Device
         {
@@ -68,6 +73,11 @@ namespace BlitzSniffer.Receiver
             set;
         }
 
+        protected PacketReceiver(PiaSessionType sessionType)
+        {
+            SessionType = sessionType;
+        }
+
         public virtual void Start(string outputFile = null)
         {
             if (outputFile != null)
@@ -83,7 +93,15 @@ namespace BlitzSniffer.Receiver
 
             SessionSearcher.Instance.SessionFound += SessionFound;
 
-            Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
+            if (SessionType == PiaSessionType.Lan)
+            {
+                Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
+            }
+            else
+            {
+                Device.Filter = $"ip and udp and ip host {SnifferConfig.Instance.Snicom.IpAddress}";
+            }
+
             Device.OnPacketArrival += OnPacketArrival;
             Device.StartCapture();
         }

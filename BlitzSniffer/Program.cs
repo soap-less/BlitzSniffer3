@@ -6,6 +6,7 @@ using BlitzSniffer.Searcher;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.WebSocket;
 using LibHac;
+using NintendoNetcode.Pia;
 using Serilog;
 using Serilog.Core;
 using SharpPcap;
@@ -27,12 +28,12 @@ namespace BlitzSniffer
         /// <summary>
         /// Sniffs Splatoon 2 LAN sessions.
         /// </summary>
+        /// <param name="onlineSession">Sniff online sessions.</param>
         /// <param name="useRom">If a Splatoon 2 ROM should be used instead of the GameData file.</param>
-        /// <param name="useSnicom">Use sys-snicom to extract the encryption key.</param>
         /// <param name="replayFile">A pcap file to replay.</param>
         /// <param name="replayInRealTime">If the replay file should be replayed in real-time.</param>
         /// <param name="realTimeStartOffset">When to fast-forward to in the replay file.</param>
-        static void Main(bool useRom = false, bool useSnicom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
+        static void Main(bool onlineSession = false, bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
         {
             SnifferConfig.Load();
 
@@ -144,16 +145,26 @@ namespace BlitzSniffer
 
             LocalLog.RegisterConsoleDebug();
 
+            PiaSessionType sessionType;
+            if (onlineSession)
+            {
+                sessionType = PiaSessionType.Inet;
+            }
+            else
+            {
+                sessionType = PiaSessionType.Lan;
+            }
+
             PacketReceiver packetReceiver;
             if (replayFile != null)
             {
                 if (replayInRealTime)
                 {
-                    packetReceiver = new RealTimeReplayPacketReceiver(replayFile.FullName, realTimeStartOffset);
+                    packetReceiver = new RealTimeReplayPacketReceiver(sessionType, replayFile.FullName, realTimeStartOffset);
                 }
                 else
                 {
-                    packetReceiver = new ReplayPacketReceiver(replayFile.FullName);
+                    packetReceiver = new ReplayPacketReceiver(sessionType, replayFile.FullName);
                 }
 
                 localLogContext.Information("Waiting for user to start replay");
@@ -161,10 +172,10 @@ namespace BlitzSniffer
             }
             else
             {
-                packetReceiver = new LivePacketReceiver(captureDevice);
+                packetReceiver = new LivePacketReceiver(sessionType, captureDevice);
             }
 
-            if (useSnicom)
+            if (sessionType == PiaSessionType.Inet)
             {
                 SnicomSessionSearcher.Initialize();
             }

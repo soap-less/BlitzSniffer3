@@ -1,4 +1,5 @@
-﻿using SharpPcap;
+﻿using NintendoNetcode.Pia;
+using SharpPcap;
 using System.Threading;
 
 namespace BlitzSniffer.Receiver
@@ -34,13 +35,13 @@ namespace BlitzSniffer.Receiver
 
         private object TimevalLock = new object();
 
-        public RealTimeReplayPacketReceiver(string path, int offset) : base(path)
+        public RealTimeReplayPacketReceiver(PiaSessionType sessionType, string path, int offset) : base(sessionType, path)
         {
             IncrementThread = new Thread(TimeIncrement);
             RealTimeStartOffset = offset;
         }
 
-        public RealTimeReplayPacketReceiver(string path) : this(path, 0)
+        public RealTimeReplayPacketReceiver(PiaSessionType sessionType, string path) : this(sessionType, path, 0)
         {
 
         }

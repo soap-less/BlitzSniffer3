@@ -1,4 +1,5 @@
-﻿using SharpPcap;
+﻿using NintendoNetcode.Pia;
+using SharpPcap;
 using SharpPcap.LibPcap;
 using SharpPcap.Npcap;
 
@@ -8,7 +9,7 @@ namespace BlitzSniffer.Receiver
     {
         private static readonly int ReadTimeout = 1;
 
-        public LivePacketReceiver(ICaptureDevice device)
+        public LivePacketReceiver(PiaSessionType sessionType, ICaptureDevice device) : base(sessionType)
         {
             Device = device;
 
