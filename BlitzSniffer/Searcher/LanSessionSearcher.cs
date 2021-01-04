@@ -68,7 +68,7 @@ namespace BlitzSniffer.Searcher
                     LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
                     byte[] key = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, PiaEncryptionUtil.BlitzGameKey);
 
-                    NotifySessionFound(key);
+                    NotifySessionDataFound(SessionFoundDataType.Key, key);
 
                     BroadcastToken.Cancel();
                 }

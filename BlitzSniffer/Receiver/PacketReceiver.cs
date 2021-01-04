@@ -103,7 +103,10 @@ namespace BlitzSniffer.Receiver
 
         private void SessionFound(object sender, SessionFoundArgs e)
         {
-            SessionKey = e.SessionKey;
+            if (e.FoundDataType == SessionFoundDataType.Key)
+            {
+                SessionKey = e.Data;
+            }
         }
 
         protected virtual void OnPacketArrival(object sender, CaptureEventArgs e)

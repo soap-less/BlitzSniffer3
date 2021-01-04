@@ -4,15 +4,22 @@ namespace BlitzSniffer.Searcher
 {
     public class SessionFoundArgs : EventArgs
     {
-        public byte[] SessionKey
+        public SessionFoundDataType FoundDataType
         {
             get;
             set;
         }
 
-        public SessionFoundArgs(byte[] key)
+        public byte[] Data
         {
-            SessionKey = key;
+            get;
+            set;
+        }
+
+        public SessionFoundArgs(SessionFoundDataType type, byte[] data)
+        {
+            FoundDataType = type;
+            Data = data;
         }
 
     }

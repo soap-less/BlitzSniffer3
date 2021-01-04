@@ -20,11 +20,14 @@ namespace BlitzSniffer.Searcher
 
         public abstract void Dispose();
 
-        protected void NotifySessionFound(byte[] key)
+        protected void NotifySessionDataFound(SessionFoundDataType type, byte[] data)
         {
-            SessionFound?.Invoke(this, new SessionFoundArgs(key));
+            SessionFound?.Invoke(this, new SessionFoundArgs(type, data));
 
-            LogContext.Information("Key found: {key}", BitConverter.ToString(key).Replace("-", "").ToLower());
+            if (type == SessionFoundDataType.Key)
+            {
+                LogContext.Information("Key found: {key}", BitConverter.ToString(data).Replace("-", "").ToLower());
+            }
         }
 
     }

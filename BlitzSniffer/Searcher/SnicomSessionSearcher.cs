@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Config;
+using BlitzSniffer.Config;
 using Serilog;
 using Serilog.Core;
 using System;
@@ -68,7 +68,7 @@ namespace BlitzSniffer.Searcher
                                 byte[] key = new byte[16];
                                 stream.Read(key, 0, 16);
 
-                                NotifySessionFound(key);
+                                NotifySessionDataFound(SessionFoundDataType.Key, key);
 
                                 break;
                             default:
