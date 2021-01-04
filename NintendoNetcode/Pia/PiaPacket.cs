@@ -10,6 +10,8 @@ namespace NintendoNetcode.Pia
 {
     public class PiaPacket
     {
+        public static readonly uint PACKET_MAGIC = 0x32ab9864;
+
         public bool IsEncrypted
         {
             get;
@@ -81,7 +83,7 @@ namespace NintendoNetcode.Pia
         {
             reader.ByteOrder = ByteOrder.BigEndian;
 
-            if (reader.ReadUInt32() != 0x32ab9864)
+            if (reader.ReadUInt32() != PACKET_MAGIC)
             {
                 throw new PiaException("Invalid packet magic number");
             }

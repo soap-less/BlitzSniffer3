@@ -143,6 +143,14 @@ namespace BlitzSniffer.Receiver
                 {
                     if (udpPacket.DestinationPort != 30000)
                     {
+                        using (reader.TemporarySeek())
+                        {
+                            if (reader.ReadUInt32() != PiaPacket.PACKET_MAGIC)
+                            {
+                                return;
+                            }
+                        }
+
                         if (SessionKey == null)
                         {
                             LogContext.Warning("Skipping packet with length {Length}, no session key", udpPacket.PayloadData.Length);
