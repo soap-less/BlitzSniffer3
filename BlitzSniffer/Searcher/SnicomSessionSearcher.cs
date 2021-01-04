@@ -71,6 +71,18 @@ namespace BlitzSniffer.Searcher
                                 NotifySessionDataFound(SessionFoundDataType.Key, key);
 
                                 break;
+                            case 'g': // gathering ID
+                                byte[] gatheringId = new byte[4];
+                                stream.Read(gatheringId, 0, 4);
+
+                                if (!BitConverter.IsLittleEndian)
+                                {
+                                    Array.Reverse(gatheringId);
+                                }
+
+                                NotifySessionDataFound(SessionFoundDataType.GatheringId, gatheringId);
+
+                                break;
                             default:
                                 LogContext.Warning("Unknown packet received with magic '{Magic}'", magic.ToString("x"));
 

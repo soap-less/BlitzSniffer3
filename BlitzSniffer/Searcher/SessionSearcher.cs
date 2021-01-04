@@ -26,7 +26,11 @@ namespace BlitzSniffer.Searcher
 
             if (type == SessionFoundDataType.Key)
             {
-                LogContext.Information("Key found: {key}", BitConverter.ToString(data).Replace("-", "").ToLower());
+                LogContext.Information("Key found: {Key}", BitConverter.ToString(data).Replace("-", "").ToLower());
+            }
+            else if (type == SessionFoundDataType.GatheringId)
+            {
+                LogContext.Information("Gathering ID found: {GatheringId}", BitConverter.ToString(data).Replace("-", "").ToLower());
             }
         }
 

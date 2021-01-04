@@ -2,6 +2,7 @@
 {
     public enum SessionFoundDataType
     {
-        Key
+        Key,
+        GatheringId
     }
 }
