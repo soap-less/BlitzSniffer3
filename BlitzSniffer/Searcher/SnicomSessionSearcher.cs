@@ -1,4 +1,4 @@
-using BlitzSniffer.Config;
+﻿using BlitzSniffer.Config;
 using Serilog;
 using Serilog.Core;
 using System;
@@ -94,6 +94,8 @@ namespace BlitzSniffer.Searcher
                 {
                     LogContext.Error("Exception: {Exception}", e);
                 }
+
+                Thread.Sleep(1000 * 3);
             }
         }
 
