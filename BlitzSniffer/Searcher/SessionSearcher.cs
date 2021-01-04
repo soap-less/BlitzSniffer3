@@ -10,7 +10,7 @@ namespace BlitzSniffer.Searcher
 
         public static SessionSearcher Instance = null;
 
-        public delegate void SessionFoundHandler(object sender, SessionFoundArgs args);
+        public delegate void SessionFoundHandler(object sender, SessionDataFoundArgs args);
         public event SessionFoundHandler SessionFound;
 
         protected SessionSearcher()
@@ -22,7 +22,7 @@ namespace BlitzSniffer.Searcher
 
         protected void NotifySessionDataFound(SessionFoundDataType type, byte[] data)
         {
-            SessionFound?.Invoke(this, new SessionFoundArgs(type, data));
+            SessionFound?.Invoke(this, new SessionDataFoundArgs(type, data));
 
             if (type == SessionFoundDataType.Key)
             {
