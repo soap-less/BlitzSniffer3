@@ -9,6 +9,7 @@ using NintendoNetcode.Pia.Clone.Element.Data;
 using NintendoNetcode.Pia.Clone.Element.Data.Event;
 using NintendoNetcode.Pia.Clone.Element.Data.Reliable;
 using NintendoNetcode.Pia.Clone.Element.Data.Unreliable;
+using NintendoNetcode.Pia.Encryption;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using NintendoNetcode.Pia.Unreliable;
 using PacketDotNet;
@@ -144,10 +145,12 @@ namespace BlitzSniffer.Receiver
 
         private void HandlePiaPacket(BinaryDataReader reader, byte[] sourceAddress)
         {
+            PiaEncryptionArgs encryptionArgs = new PiaLanEncryptionArgs(SessionKey, sourceAddress);
+
             PiaPacket piaPacket;
             try
             {
-                piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(sourceAddress));
+                piaPacket = new PiaPacket(reader, encryptionArgs);
             }
             catch (CryptographicException)
             {

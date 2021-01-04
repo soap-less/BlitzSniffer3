@@ -1,4 +1,5 @@
-﻿using NintendoNetcode.Util;
+﻿using NintendoNetcode.Pia.Encryption;
+using NintendoNetcode.Util;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
@@ -63,20 +64,20 @@ namespace NintendoNetcode.Pia
             set;
         } = null;
 
-        public PiaPacket(Stream stream, byte[] sessionKey, uint sourceIp, bool deserializeMessages = true)
+        public PiaPacket(Stream stream, PiaEncryptionArgs encryptionArgs, bool deserializeMessages = true)
         {
             using (BinaryDataReader reader = new BinaryDataReader(stream, true))
             {
-                Deserialize(reader, sessionKey, sourceIp, deserializeMessages);
+                Deserialize(reader, encryptionArgs, deserializeMessages);
             }
         }
 
-        public PiaPacket(BinaryDataReader reader, byte[] sessionKey, uint sourceIp, bool deserializeMessages = true)
+        public PiaPacket(BinaryDataReader reader, PiaEncryptionArgs encryptionArgs, bool deserializeMessages = true)
         {
-            Deserialize(reader, sessionKey, sourceIp, deserializeMessages);
+            Deserialize(reader, encryptionArgs, deserializeMessages);
         }
 
-        private void Deserialize(BinaryDataReader reader, byte[] sessionKey, uint sourceIp, bool deserializeMessages)
+        private void Deserialize(BinaryDataReader reader, PiaEncryptionArgs encryptionArgs, bool deserializeMessages)
         {
             reader.ByteOrder = ByteOrder.BigEndian;
 
@@ -100,13 +101,8 @@ namespace NintendoNetcode.Pia
             {
                 plaintext = new byte[ciphertext.Length];
 
-                byte[] nonce = new byte[12];
-                Array.Copy(BitConverter.GetBytes(sourceIp), nonce, 4);
-                Array.Copy(PacketNonce, 0, nonce, 4, 8);
-                nonce[4] = ConnectionId;
-
-                AesGcm aesGcm = new AesGcm(sessionKey);
-                aesGcm.Decrypt(nonce, ciphertext, Tag, plaintext);
+                AesGcm aesGcm = new AesGcm(encryptionArgs.SessionKey);
+                aesGcm.Decrypt(encryptionArgs.GetNonce(ConnectionId, PacketNonce), ciphertext, Tag, plaintext);
             }
             else
             {
