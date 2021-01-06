@@ -177,7 +177,14 @@ namespace BlitzSniffer
 
             if (sessionType == PiaSessionType.Inet)
             {
-                SnicomSessionSearcher.Initialize();
+                if (replayFile == null)
+                {
+                    SnicomSessionSearcher.Initialize();
+                }
+                else
+                {
+                    OnlineReplaySessionSearcher.Initialize(packetReceiver.GetDevice());
+                }
             }
             else
             {
