@@ -99,15 +99,6 @@ namespace BlitzSniffer.Receiver
 
             SessionSearcher.Instance.SessionFound += SessionFound;
 
-            if (SessionType == PiaSessionType.Lan)
-            {
-                Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
-            }
-            else
-            {
-                Device.Filter = $"ip and udp and ip host {SnifferConfig.Instance.Snicom.IpAddress}";
-            }
-
             Device.OnPacketArrival += OnPacketArrival;
             Device.StartCapture();
         }

@@ -1,4 +1,5 @@
-﻿using NintendoNetcode.Pia;
+﻿using BlitzSniffer.Config;
+using NintendoNetcode.Pia;
 using SharpPcap;
 using SharpPcap.LibPcap;
 using SharpPcap.Npcap;
@@ -23,6 +24,20 @@ namespace BlitzSniffer.Receiver
                 LibPcapLiveDevice libPcapDevice = device as LibPcapLiveDevice;
                 device.Open(DeviceMode.Promiscuous, ReadTimeout);
             }
+        }
+
+        public override void Start(string outputFile = null)
+        {
+            if (SessionType == PiaSessionType.Lan)
+            {
+                Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
+            }
+            else
+            {
+                Device.Filter = $"ip and udp and ip host {SnifferConfig.Instance.Snicom.IpAddress}";
+            }
+
+            base.Start(outputFile);
         }
 
     }
