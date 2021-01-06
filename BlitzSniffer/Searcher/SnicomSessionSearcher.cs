@@ -47,13 +47,8 @@ namespace BlitzSniffer.Searcher
 
                     LogContext.Information("Connection established with sys-snicom");
 
-                    while (!StopToken.IsCancellationRequested)
+                    while (client.Connected && !StopToken.IsCancellationRequested)
                     {
-                        if (!stream.DataAvailable)
-                        {
-                            continue;
-                        }
-
                         int magic = stream.ReadByte();
                         if (magic == -1)
                         {
