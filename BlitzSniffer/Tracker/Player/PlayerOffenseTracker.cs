@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Event;
+using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using Serilog;
 using Serilog.Core;
@@ -50,7 +50,7 @@ namespace BlitzSniffer.Tracker.Player
 
         private void HandleGameTick(object sender, GameTickedEventArgs args)
         {
-            IEnumerable<KeyValuePair<uint, PlayerDeathEvent>> deathEvents = WaitingDeathEvents.Where(p => p.Value.SendDeadline >= args.ElapsedTicks);
+            IEnumerable<KeyValuePair<uint, PlayerDeathEvent>> deathEvents = WaitingDeathEvents.Where(p => p.Value.SendDeadline <= args.ElapsedTicks);
             if (deathEvents.Count() == 0)
             {
                 return;
