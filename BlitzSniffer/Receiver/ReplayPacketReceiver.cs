@@ -12,5 +12,12 @@ namespace BlitzSniffer.Receiver
             Device.Open();
         }
 
+        public override void Start(string outputFile = null)
+        {
+            Device.Filter = "ip and udp";
+
+            base.Start(outputFile);
+        }
+
     }
 }
