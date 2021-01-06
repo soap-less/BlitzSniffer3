@@ -25,7 +25,13 @@ namespace BlitzSniffer.Receiver
             set;
         } = null;
 
-        private PosixTimeval RealTimeStartTimeval
+        private PosixTimeval WaitForTimeval
+        {
+            get;
+            set;
+        } = null;
+
+        private ManualResetEvent ContinueSignal
         {
             get;
             set;
@@ -39,6 +45,7 @@ namespace BlitzSniffer.Receiver
         {
             IncrementThread = new Thread(TimeIncrement);
             RealTimeStartOffset = offset;
+            ContinueSignal = new ManualResetEvent(false);
         }
 
         public RealTimeReplayPacketReceiver(PiaSessionType sessionType, string path) : this(sessionType, path, 0)
@@ -64,8 +71,12 @@ namespace BlitzSniffer.Receiver
 
         public override void Dispose()
         {
-            IncrementThreadStop = true;
             base.Dispose();
+
+            IncrementThreadStop = true;
+            IncrementThread.Join();
+            
+            ContinueSignal.Dispose();
         }
 
         // This is probably terrible, but it works
@@ -73,15 +84,23 @@ namespace BlitzSniffer.Receiver
         {
             while (!IncrementThreadStop)
             {
-                Thread.Sleep(8);
+                Thread.Sleep(1);
 
                 lock (TimevalLock)
                 {
-                    Timeval.MicroSeconds += 8000;
+                    Timeval.MicroSeconds += 1000;
                     if (Timeval.MicroSeconds >= 1000000)
                     {
                         Timeval.Seconds++;
                         Timeval.MicroSeconds = Timeval.MicroSeconds % 1000000;
+                    }
+
+                    if (WaitForTimeval != null)
+                    {
+                        if (WaitForTimeval < Timeval)
+                        {
+                            ContinueSignal.Set();
+                        }
                     }
                 }
             }
@@ -89,17 +108,31 @@ namespace BlitzSniffer.Receiver
 
         protected override void OnPacketArrival(object sender, CaptureEventArgs e)
         {
-            do
+            PosixTimeval packetTimeval = e.Packet.Timeval;
+
+            bool shouldWait = false;
+
+            if (packetTimeval > Timeval)
             {
+                shouldWait = true;
+
                 lock (TimevalLock)
                 {
-                    if (e.Packet.Timeval <= Timeval)
-                    {
-                        break;
-                    }
+                    WaitForTimeval = packetTimeval;
                 }
             }
-            while (true);
+
+            if (shouldWait)
+            {
+                ContinueSignal.WaitOne();
+
+                lock (TimevalLock)
+                {
+                    WaitForTimeval = null;
+
+                    ContinueSignal.Reset();
+                }
+            }
 
             base.OnPacketArrival(sender, e);
         }
