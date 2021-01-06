@@ -93,7 +93,7 @@ namespace BlitzSniffer.Receiver
                 WriterDevice = new CaptureFileWriterDevice(outputFile);
                 WriterDevice.Open();
 
-                CaptureQueue = new BlockingCollection<RawCapture>();
+                CaptureQueue = new BlockingCollection<RawCapture>(new ConcurrentQueue<RawCapture>());
                 DumperCancellationTokenSource = new CancellationTokenSource();
                 DumperThread = new Thread(DumpPackets);
                 DumperThread.Start();
@@ -312,9 +312,16 @@ namespace BlitzSniffer.Receiver
         {
             while (!DumperCancellationTokenSource.IsCancellationRequested)
             {
-                while (CaptureQueue.TryTake(out RawCapture capture))
+                try
                 {
-                    WriterDevice.Write(capture);
+                    if (CaptureQueue.TryTake(out RawCapture capture, -1, DumperCancellationTokenSource.Token))
+                    {
+                        WriterDevice.Write(capture);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    ;
                 }
             }
         }
