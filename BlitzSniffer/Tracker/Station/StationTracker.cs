@@ -1,6 +1,5 @@
-using BlitzSniffer.Clone;
+﻿using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
-using BlitzSniffer.Tracker.Player;
 using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
 using System.Collections.Generic;
@@ -12,15 +11,25 @@ namespace BlitzSniffer.Tracker.Station
 {
     class StationTracker
     {
-        private readonly Dictionary<uint, Station> Stations;
+        private readonly Dictionary<ulong, Station> Stations;
+
+        private byte LastJointSeqState
+        {
+            get;
+            set;
+        }
+
+        public int ActualConnectedStations
+        {
+            get;
+            private set;
+        }
 
         public StationTracker()
         {
-            Stations = new Dictionary<uint, Station>();
-            for (uint i = 0; i < 10; i++)
-            {
-                Stations[i] = new Station(i);
-            }
+            Stations = new Dictionary<ulong, Station>();
+            LastJointSeqState = 0;
+            ActualConnectedStations = 0;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleStationInfo;
@@ -34,35 +43,38 @@ namespace BlitzSniffer.Tracker.Station
              EnlHolder.Instance.SystemInfoReceived += HandleEnlSystemInfo;
         }
 
+        public Station GetStationForSsid(ulong sourceId)
+        {
+            if (Stations.TryGetValue(sourceId, out Station station))
+            {
+                return station;
+            }
+            else
+            {
+                Station newStation = new Station(sourceId);
+
+                Stations.Add(sourceId, newStation);
+
+                return newStation;
+            }
+        }
+
         private void HandleSeqStateAllSame(byte seqState)
         {
+            if (seqState == LastJointSeqState)
+            {
+                return;
+            }
+
             switch (seqState)
             {
                 case 7: // Apparently this is "ready for game start" - Game::OnlineStartGameExe::stateWaitForSeqState()
-                    PlayerTracker playerTracker = GameSession.Instance.PlayerTracker;
+                    GameSession.Instance.PlayerTracker.ApplyTeamBits();
 
-                    // Set default values for PlayerTracker
-                    foreach (Station station in Stations.Values)
-                    {
-                        if (station.PlayerId == 0xFF)
-                        {
-                            continue;
-                        }
-
-                        Player.Player player = playerTracker.GetPlayer(station.PlayerId);
-                        player.Name = station.Name;
-                        player.IsActive = true;
-                        player.IsAlive = true;
-                    }
-
-                    playerTracker.ApplyTeamBits();
-
-                    // Everything should be ready now, so fire SetupEvent
-                    // Previously this was done on receiving Cnet::PacketSeqEventVersusSetting, but SeqState 7 isn't
-                    // fired until the game is ready to proceed into synchronizing the clocks and waiting for the
-                    // game to start (VS intro demo), so this is probably the best place to do this
+                    // SeqState 7 isn't fired until the game is ready to proceed into synchronizing the clocks
+                    // and waiting for the game to start (VS intro demo)
                     GameSession.Instance.FireSetupEvent();
-                    
+
                     break;
                 case 12: // Results screen start - Game::SeqVersusResult::stateEnterStartResult()
                     GameSession.Instance.Reset();
@@ -71,29 +83,19 @@ namespace BlitzSniffer.Tracker.Station
                 default:
                     break;
             }
+
+            LastJointSeqState = seqState;
         }
 
         private void HandleEnlSystemInfo(object sender, SystemInfoReceivedEventArgs args)
         {
             EnlSystemInfoRecord record = args.Record;
 
-            // WTF is happening here?
-            if (record.PlayerIds.All(x => x == 0xFF))
+            IEnumerable<ulong> disconnectedStations = Stations.Keys.Except(record.Unknown3.Select(u => u.StationId)).ToList();
+
+            foreach (ulong stationId in disconnectedStations)
             {
-                return;
-            }
-
-            for (uint i = 0; i < record.PlayerIds.Count; i++)
-            {
-                Station station = Stations[i];
-                uint playerId = record.PlayerIds[(int)i];
-
-                if (station.PlayerId != 0xFF && playerId == 0xFF)
-                {
-                    station.Reset();
-                }
-
-                station.PlayerId = playerId;
+                Stations.Remove(stationId);
             }
         }
 
@@ -110,24 +112,26 @@ namespace BlitzSniffer.Tracker.Station
                 return;
             }
 
+            Station station = GetStationForSsid(args.SourceStationId);
+
             using (MemoryStream stream = new MemoryStream(args.Data))
             using (BinaryDataReader reader = new BinaryDataReader(stream))
             {
-                // Bitflag
-                reader.Seek(2);
-
+                reader.Seek(2); // Bitflag
                 byte seqState = reader.ReadByte();
-                Stations[enlId].SeqState = seqState;
+                ActualConnectedStations = reader.ReadByte();
 
-                // byte enlConnectedNum = reader.ReadByte();
-                
-                // Check if all the stations have the same Cnet::Def::SeqState
-                IEnumerable<Station> connectedStations = Stations.Values.Where(s => s.PlayerId != 0xFF);
-                if (connectedStations.Count() > 0 && connectedStations.All(s => s.SeqState == seqState))
+                station.SeqState = seqState;
+
+                if (ActualConnectedStations == Stations.Count)
                 {
-                    HandleSeqStateAllSame(seqState);
+                    if (Stations.Values.All(s => s.SeqState == seqState))
+                    {
+                        HandleSeqStateAllSame(seqState);
+                    }
                 }
             }
+                
         }
 
         private void HandlePlayerName(object sender, CloneChangedEventArgs args)
@@ -143,10 +147,15 @@ namespace BlitzSniffer.Tracker.Station
                 return;
             }
 
+            Station station = GetStationForSsid(args.SourceStationId);
+
             using (MemoryStream stream = new MemoryStream(args.Data))
             using (BinaryDataReader reader = new BinaryDataReader(stream))
             {
-                Stations[enlId].Name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
+                string name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
+                station.Name = name;
+
+                station.IsSetup = true;
             }
         }
 

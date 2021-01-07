@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-
-namespace BlitzSniffer.Tracker.Station
+﻿namespace BlitzSniffer.Tracker.Station
 {
     class Station
     {
-        public uint EnlId
-        {
-            get;
-            private set;
-        }
-
-        public uint PlayerId
+        private string DefaultName
         {
             get;
             set;
@@ -32,17 +21,23 @@ namespace BlitzSniffer.Tracker.Station
             set;
         }
 
-        public Station(uint enlId)
+        public bool IsSetup
         {
-            EnlId = enlId;
+            get;
+            set;
+        }
+
+        public Station(ulong ssid)
+        {
+            DefaultName = $"{ssid:x16}";
             Reset();
         }
 
         public void Reset()
         {
-            PlayerId = 0xFF; // disconnected
-            Name = $"Station {EnlId}";
+            Name = DefaultName;
             SeqState = 0;
+            IsSetup = false;
         }
 
     }
