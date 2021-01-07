@@ -33,7 +33,8 @@ namespace BlitzSniffer
         /// <param name="replayFile">A pcap file to replay.</param>
         /// <param name="replayInRealTime">If the replay file should be replayed in real-time.</param>
         /// <param name="realTimeStartOffset">When to fast-forward to in the replay file.</param>
-        static void Main(bool onlineSession = false, bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0)
+        /// <param name="autoStartReplay">Whether to skip prompting the user to start the replay or not.</param>
+        static void Main(bool onlineSession = false, bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0, bool autoStartReplay = false)
         {
             SnifferConfig.Load();
 
@@ -167,8 +168,11 @@ namespace BlitzSniffer
                     packetReceiver = new ReplayPacketReceiver(sessionType, replayFile.FullName);
                 }
 
-                localLogContext.Information("Waiting for user to start replay");
-                Console.ReadLine();
+                if (!autoStartReplay)
+                {
+                    localLogContext.Information("Waiting for user to start replay");
+                    Console.ReadLine();
+                }
             }
             else
             {
