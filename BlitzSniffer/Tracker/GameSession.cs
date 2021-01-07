@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
@@ -10,12 +10,18 @@ using BlitzSniffer.Tracker.Versus.VGoal;
 using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
 using Syroot.BinaryData;
+using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace BlitzSniffer.Tracker
 {
     class GameSession
     {
+        // Increment this if additional synchronization is needed before SetupEvent can fire!
+        private static readonly int SETUP_NECESSARY_SIGNALS = 1;
+
         public static GameSession Instance
         {
             get;
@@ -46,6 +52,24 @@ namespace BlitzSniffer.Tracker
             set;
         }
 
+        private Task SetupEventTask
+        {
+            get;
+            set;
+        }
+
+        private CancellationTokenSource SetupEventCts
+        {
+            get;
+            set;
+        }
+
+        private CountdownEvent SetupEventCountdown
+        {
+            get;
+            set;
+        }
+
         public bool IsSetup
         {
             get;
@@ -65,6 +89,10 @@ namespace BlitzSniffer.Tracker
             StationTracker = new StationTracker(); 
             GameStateTracker = null;
 
+            SetupEventTask = null;
+            SetupEventCts = new CancellationTokenSource();
+            SetupEventCountdown = new CountdownEvent(SETUP_NECESSARY_SIGNALS);
+
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleSeqEventVersusSetting;
             holder.CloneChanged += HandleSystemEvent;
@@ -82,6 +110,15 @@ namespace BlitzSniffer.Tracker
 
         public void Reset()
         {
+            if (SetupEventTask != null && SetupEventTask.Status == TaskStatus.Running)
+            {
+                SetupEventCts.Cancel();
+
+                SetupEventTask.Wait();
+            }
+
+            SetupEventCountdown.Reset();
+
             if (PlayerTracker != null)
             {
                 PlayerTracker.Dispose();
@@ -105,18 +142,29 @@ namespace BlitzSniffer.Tracker
             ClockReady = false;
             StartClock = 0;
             CurrentClock = 0;
+
+            SetupEventTask = Task.Run(FireSetupEvent);
         }
 
-        public void FireSetupEvent()
+        public void SignalSetupReady()
         {
-            if (IsSetup)
+            SetupEventCountdown.Signal();
+        }
+
+        private void FireSetupEvent()
+        {
+            try
             {
-                return;
+                SetupEventCountdown.Wait(SetupEventCts.Token);
+
+                IsSetup = true;
+
+                EventTracker.Instance.AddEvent(new SetupEvent());
             }
-
-            IsSetup = true;
-
-            EventTracker.Instance.AddEvent(new SetupEvent());
+            catch (OperationCanceledException)
+            {
+                ;
+            }
         }
 
         private void HandleSeqEventVersusSetting(object sender, CloneChangedEventArgs args)

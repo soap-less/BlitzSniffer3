@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
 using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
@@ -73,7 +73,7 @@ namespace BlitzSniffer.Tracker.Station
 
                     // SeqState 7 isn't fired until the game is ready to proceed into synchronizing the clocks
                     // and waiting for the game to start (VS intro demo)
-                    GameSession.Instance.FireSetupEvent();
+                    GameSession.Instance.SignalSetupReady();
 
                     break;
                 case 12: // Results screen start - Game::SeqVersusResult::stateEnterStartResult()
