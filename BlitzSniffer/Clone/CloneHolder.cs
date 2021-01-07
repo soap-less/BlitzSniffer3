@@ -67,13 +67,13 @@ namespace BlitzSniffer.Clone
             throw new SnifferException($"Clone {id} not found");
         }
 
-        public void UpdateElementInClone(uint cloneId, uint elementId, byte[] data)
+        public void UpdateElementInClone(uint cloneId, uint elementId, byte[] data, ulong sourceId)
         {
             if (Clones.TryGetValue(cloneId, out Dictionary<uint, byte[]> cloneData))
             {
                 cloneData[elementId] = data;
 
-                CloneChanged(this, new CloneChangedEventArgs(cloneId, elementId, data));
+                CloneChanged(this, new CloneChangedEventArgs(cloneId, elementId, data, sourceId));
             }
             else
             {

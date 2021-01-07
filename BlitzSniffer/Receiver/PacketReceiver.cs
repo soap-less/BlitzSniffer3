@@ -292,7 +292,7 @@ namespace BlitzSniffer.Receiver
                 }
 
                 CloneHolder.Instance.UpdateCloneClock(clock);
-                CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, data);
+                CloneHolder.Instance.UpdateElementInClone(cloneContentData.CloneId, cloneElementData.Id, data, cloneMessage.SourceStationId);
             }
         }
 

@@ -22,11 +22,18 @@ namespace BlitzSniffer.Clone
             set;
         }
 
-        public CloneChangedEventArgs(uint cid, uint eid, byte[] data)
+        public ulong SourceStationId
+        {
+            get;
+            set;
+        }
+
+        public CloneChangedEventArgs(uint cid, uint eid, byte[] data, ulong ssid)
         {
             CloneId = cid;
             ElementId = eid;
             Data = data;
+            SourceStationId = ssid;
         }
 
     }
