@@ -15,6 +15,7 @@ using SKM.V3.Methods;
 using SKM.V3.Models;
 using System;
 using System.IO;
+using System.Text;
 
 namespace BlitzSniffer
 {
@@ -36,6 +37,8 @@ namespace BlitzSniffer
         /// <param name="autoStartReplay">Whether to skip prompting the user to start the replay or not.</param>
         static void Main(bool onlineSession = false, bool useRom = false, FileInfo replayFile = null, bool replayInRealTime = false, int realTimeStartOffset = 0, bool autoStartReplay = false)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+
             SnifferConfig.Load();
 
             ICaptureDevice captureDevice = GetCaptureDevice();
@@ -123,7 +126,7 @@ namespace BlitzSniffer
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Async(c => c.Console(outputTemplate: LOG_FORMAT))
-                .WriteTo.Async(c => c.File(logFile, outputTemplate: LOG_FORMAT))
+                .WriteTo.Async(c => c.File(logFile, outputTemplate: LOG_FORMAT, encoding: Encoding.UTF8))
                 .CreateLogger();
 
             ILogger localLogContext = Log.ForContext(Constants.SourceContextPropertyName, "Program");
