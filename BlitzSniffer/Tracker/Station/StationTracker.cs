@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
 using BlitzSniffer.Tracker.Player;
 using NintendoNetcode.Enl.Record;
@@ -113,11 +113,14 @@ namespace BlitzSniffer.Tracker.Station
             using (MemoryStream stream = new MemoryStream(args.Data))
             using (BinaryDataReader reader = new BinaryDataReader(stream))
             {
+                // Bitflag
                 reader.Seek(2);
 
                 byte seqState = reader.ReadByte();
                 Stations[enlId].SeqState = seqState;
 
+                // byte enlConnectedNum = reader.ReadByte();
+                
                 // Check if all the stations have the same Cnet::Def::SeqState
                 IEnumerable<Station> connectedStations = Stations.Values.Where(s => s.PlayerId != 0xFF);
                 if (connectedStations.Count() > 0 && connectedStations.All(s => s.SeqState == seqState))
