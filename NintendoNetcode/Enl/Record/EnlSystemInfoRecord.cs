@@ -41,7 +41,7 @@ namespace NintendoNetcode.Enl.Record
             private set;
         }
 
-        public List<EnlUniqueId> Unknown2
+        public byte Unknown2
         {
             get;
             private set;
@@ -53,13 +53,13 @@ namespace NintendoNetcode.Enl.Record
             private set;
         }
 
-        public byte Unknown4
+        public List<EnlUniqueId> Unknown4
         {
             get;
             private set;
         }
 
-        public byte ConnectedPlayers
+        public byte Unknown5
         {
             get;
             private set;
@@ -79,21 +79,21 @@ namespace NintendoNetcode.Enl.Record
             ReceivedBitmap = reader.ReadUInt64();
             SessionTime = reader.ReadUInt64();
             PrincipalId = reader.ReadUInt64();
-
-            Unknown2 = new List<EnlUniqueId>();
-            for (int i = 0; i < ((p * 2) - 1); i++)
-            {
-                Unknown2.Add(new EnlUniqueId(reader));
-            }
+            Unknown2 = reader.ReadByte();
 
             Unknown3 = new List<EnlUniqueId>();
-            for (int i = 0; i < q; i++)
+            for (int i = 0; i < ((p * 2) - 1); i++)
             {
                 Unknown3.Add(new EnlUniqueId(reader));
             }
 
-            Unknown4 = reader.ReadByte();
-            ConnectedPlayers = reader.ReadByte();
+            Unknown4 = new List<EnlUniqueId>();
+            for (int i = 0; i < q; i++)
+            {
+                Unknown4.Add(new EnlUniqueId(reader));
+            }
+
+            Unknown5 = reader.ReadByte();
 
             PlayerIds = new List<uint>();
             for (int i = 0; i < p; i++)
