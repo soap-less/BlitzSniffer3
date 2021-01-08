@@ -1,10 +1,11 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
+using BlitzSniffer.Tracker.Versus.Paint;
 using BlitzSniffer.Tracker.Versus.VArea;
 using BlitzSniffer.Tracker.Versus.VGoal;
 using BlitzSniffer.Tracker.Versus.VLift;
@@ -202,6 +203,9 @@ namespace BlitzSniffer.Tracker
 
                 switch (rule)
                 {
+                    case VersusRule.Pnt:
+                        GameStateTracker = new PaintVersusGameStateTracker(stage, alpha, bravo);
+                        break;
                     case VersusRule.Vgl:
                         GameStateTracker = new VGoalVersusGameStateTracker(stage, alpha, bravo);
                         break;
