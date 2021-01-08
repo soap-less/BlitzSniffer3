@@ -145,7 +145,7 @@ namespace BlitzSniffer
             }
 #pragma warning restore CS0162
 
-            localLogContext.Information("BlitzSniffer {Version} ({BuildType}) for EndGameTV / CatalystWorkshop", ThisAssembly.AssemblyFileVersion, buildType);
+            localLogContext.Information("BlitzSniffer {Version} ({BuildType}) for EndGameTV / Catalyst Workshop", ThisAssembly.AssemblyFileVersion, buildType);
             localLogContext.Information("Copyright © 2020 - 2021 OatmealDome");
 
             if (useRom)
