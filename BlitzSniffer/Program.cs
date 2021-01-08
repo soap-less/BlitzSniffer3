@@ -131,6 +131,23 @@ namespace BlitzSniffer
 
             ILogger localLogContext = Log.ForContext(Constants.SourceContextPropertyName, "Program");
 
+            // The "Unreachable code" warning is suppressed here as the compiler will see that IsPrerelease
+            // is a constant boolean and tell us that one of the blocks will not be executed.
+#pragma warning disable CS0162
+            string buildType;
+            if (ThisAssembly.IsPrerelease)
+            {
+                buildType = "beta";
+            }
+            else
+            {
+                buildType = "stable";
+            }
+#pragma warning restore CS0162
+
+            localLogContext.Information("BlitzSniffer {Version} ({BuildType}) for EndGameTV / CatalystWorkshop", ThisAssembly.AssemblyFileVersion, buildType);
+            localLogContext.Information("Copyright © 2020 - 2021 OatmealDome");
+
             if (useRom)
             {
                 RomConfig romConfig = SnifferConfig.Instance.Rom;
