@@ -5,6 +5,7 @@ using BlitzSniffer.Event.Player;
 using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Resources;
+using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus.VLift;
 using BlitzSniffer.Util;
 using Syroot.BinaryData;
@@ -29,6 +30,7 @@ namespace BlitzSniffer.Tracker.Player
             OffenseTracker = new PlayerOffenseTracker();
 
             CloneHolder holder = CloneHolder.Instance;
+            holder.CloneChanged += UpdatePlayerDetails;
             holder.CloneChanged += HandlePlayerEvent;
             holder.CloneChanged += HandlePlayerNetState;
 
@@ -70,7 +72,7 @@ namespace BlitzSniffer.Tracker.Player
             TeamBits = teamBits;
         }
 
-        public void ApplyTeamBits()
+        private void ApplyTeamBits()
         {
             uint neutralBits = TeamBits >> 16;
             uint actualTeamBits = TeamBits & 0xFFFF;
@@ -87,6 +89,40 @@ namespace BlitzSniffer.Tracker.Player
                 else
                 {
                     player.Team = (actualTeamBits & mask) != 0 ? Team.Bravo : Team.Alpha;
+                }
+            }
+        }
+
+        private void UpdatePlayerDetails(object sender, CloneChangedEventArgs args)
+        {
+            uint playerId = args.CloneId - 111;
+            if (playerId >= 10)
+            {
+                return;
+            }
+
+            Player player = Players[playerId];
+
+            if (!player.IsActive)
+            {
+                StationTracker tracker = GameSession.Instance.StationTracker;
+                
+                Station.Station station = GameSession.Instance.StationTracker.GetStationForSsid(args.SourceStationId);
+                if (!station.IsSetup)
+                {
+                    return;
+                }
+
+                player.Name = station.Name;
+                player.IsAlive = true;
+                player.IsActive = true;
+
+                if (Players.Values.Where(p => p.IsActive).Count() == tracker.ActualConnectedStations)
+                {
+                    // Apply all team bits now that all players have been marked as active
+                    ApplyTeamBits();
+
+                    GameSession.Instance.SignalSetupReady();
                 }
             }
         }

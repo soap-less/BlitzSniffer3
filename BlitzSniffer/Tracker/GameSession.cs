@@ -20,7 +20,7 @@ namespace BlitzSniffer.Tracker
     class GameSession
     {
         // Increment this if additional synchronization is needed before SetupEvent can fire!
-        private static readonly int SETUP_NECESSARY_SIGNALS = 1;
+        private static readonly int SETUP_NECESSARY_SIGNALS = 2;
 
         public static GameSession Instance
         {

@@ -1,4 +1,4 @@
-using BlitzSniffer.Clone;
+﻿using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
 using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
@@ -69,8 +69,6 @@ namespace BlitzSniffer.Tracker.Station
             switch (seqState)
             {
                 case 7: // Apparently this is "ready for game start" - Game::OnlineStartGameExe::stateWaitForSeqState()
-                    GameSession.Instance.PlayerTracker.ApplyTeamBits();
-
                     // SeqState 7 isn't fired until the game is ready to proceed into synchronizing the clocks
                     // and waiting for the game to start (VS intro demo)
                     GameSession.Instance.SignalSetupReady();
