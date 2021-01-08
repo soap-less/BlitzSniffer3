@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -60,6 +60,11 @@ namespace BlitzSniffer.Tracker.Player
             Trace.Assert(gachihokoPlayers.Count() <= 1, "More than one player with Gachihoko");
 
             return gachihokoPlayers.FirstOrDefault();
+        }
+
+        public int GetAcivePlayers()
+        {
+            return Players.Values.Where(p => p.IsActive).Count();
         }
 
         public int GetPlayersOnVLift()
