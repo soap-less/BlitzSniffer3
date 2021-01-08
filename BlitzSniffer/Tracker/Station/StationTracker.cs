@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Clone;
+using BlitzSniffer.Clone;
 using BlitzSniffer.Enl;
 using NintendoNetcode.Enl.Record;
 using Syroot.BinaryData;
@@ -19,6 +19,12 @@ namespace BlitzSniffer.Tracker.Station
             set;
         }
 
+        private byte LastMasterSeqState
+        {
+            get;
+            set;
+        }
+
         public int ActivePlayerCount
         {
             get;
@@ -29,11 +35,13 @@ namespace BlitzSniffer.Tracker.Station
         {
             Stations = new Dictionary<ulong, Station>();
             LastJointSeqState = 0;
+            LastMasterSeqState = 0;
             ActivePlayerCount = 0;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleStationInfo;
             holder.CloneChanged += HandlePlayerName;
+            holder.CloneChanged += HandleMasterSeqState;
 
             for (uint i = 0; i < 10; i++)
             {
@@ -74,6 +82,22 @@ namespace BlitzSniffer.Tracker.Station
                     GameSession.Instance.SignalSetupReady();
 
                     break;
+                default:
+                    break;
+            }
+
+            LastJointSeqState = seqState;
+        }
+
+        private void HandleSeqStateMaster(byte seqState)
+        {
+            if (seqState == LastMasterSeqState)
+            {
+                return;
+            }
+
+            switch (seqState)
+            {
                 case 12: // Results screen start - Game::SeqVersusResult::stateEnterStartResult()
                     GameSession.Instance.Reset();
 
@@ -82,7 +106,7 @@ namespace BlitzSniffer.Tracker.Station
                     break;
             }
 
-            LastJointSeqState = seqState;
+            LastMasterSeqState = seqState;
         }
 
         private void HandleEnlSystemInfo(object sender, SystemInfoReceivedEventArgs args)
@@ -134,7 +158,6 @@ namespace BlitzSniffer.Tracker.Station
                     HandleSeqStateAllSame(seqState);
                 }
             }
-                
         }
 
         private void HandlePlayerName(object sender, CloneChangedEventArgs args)
@@ -159,6 +182,24 @@ namespace BlitzSniffer.Tracker.Station
                 station.Name = name;
 
                 station.IsSetup = true;
+            }
+        }
+
+        private void HandleMasterSeqState(object sender, CloneChangedEventArgs args)
+        {
+            if (args.CloneId != 2 || args.ElementId != 1)
+            {
+                return;
+            }
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                byte seqState = reader.ReadByte();
+
+                HandleSeqStateMaster(seqState);
             }
         }
 
