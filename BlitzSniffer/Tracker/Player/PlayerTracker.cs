@@ -117,7 +117,7 @@ namespace BlitzSniffer.Tracker.Player
                 player.IsAlive = true;
                 player.IsActive = true;
 
-                if (Players.Values.Where(p => p.IsActive).Count() == tracker.ActualConnectedStations)
+                if (Players.Values.Where(p => p.IsActive).Count() == tracker.ActivePlayerCount)
                 {
                     // Apply all team bits now that all players have been marked as active
                     ApplyTeamBits();

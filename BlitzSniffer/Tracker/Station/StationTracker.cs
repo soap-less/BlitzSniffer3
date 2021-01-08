@@ -19,7 +19,7 @@ namespace BlitzSniffer.Tracker.Station
             set;
         }
 
-        public int ActualConnectedStations
+        public int ActivePlayerCount
         {
             get;
             private set;
@@ -29,7 +29,7 @@ namespace BlitzSniffer.Tracker.Station
         {
             Stations = new Dictionary<ulong, Station>();
             LastJointSeqState = 0;
-            ActualConnectedStations = 0;
+            ActivePlayerCount = 0;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleStationInfo;
@@ -95,6 +95,15 @@ namespace BlitzSniffer.Tracker.Station
             {
                 Stations.Remove(stationId);
             }
+
+            int activeIds = record.PlayerIds.Where(p => p != 0xFF).Count();
+
+            if (activeIds == 0)
+            {
+                return;
+            }
+
+            ActivePlayerCount = activeIds;
         }
 
         private void HandleStationInfo(object sender, CloneChangedEventArgs args)
@@ -117,16 +126,12 @@ namespace BlitzSniffer.Tracker.Station
             {
                 reader.Seek(2); // Bitflag
                 byte seqState = reader.ReadByte();
-                ActualConnectedStations = reader.ReadByte();
 
                 station.SeqState = seqState;
 
-                if (ActualConnectedStations == Stations.Count)
+                if (Stations.Values.Where(s => s.SeqState == seqState).Count() == ActivePlayerCount)
                 {
-                    if (Stations.Values.All(s => s.SeqState == seqState))
-                    {
-                        HandleSeqStateAllSame(seqState);
-                    }
+                    HandleSeqStateAllSame(seqState);
                 }
             }
                 
