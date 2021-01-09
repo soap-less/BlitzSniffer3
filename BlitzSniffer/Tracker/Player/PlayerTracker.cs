@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -65,7 +65,7 @@ namespace BlitzSniffer.Tracker.Player
 
         public int GetAcivePlayers()
         {
-            return Players.Values.Where(p => p.IsActive).Count();
+            return Players.Values.Where(p => p.IsActive && !p.IsDisconnected).Count();
         }
 
         public int GetPlayersOnVLift()
@@ -83,9 +83,9 @@ namespace BlitzSniffer.Tracker.Player
             KeyValuePair<uint, Player> pair = Players.Where(p => p.Value.SourceStationId == stationId).FirstOrDefault();
 
             Player player = pair.Value;
-            if (player != null && player.IsActive)
+            if (player != null && !player.IsDisconnected)
             {
-                player.IsActive = false;
+                player.IsDisconnected = true;
 
                 EventTracker.Instance.AddEvent(new PlayerDisconnectEvent()
                 {
@@ -125,11 +125,11 @@ namespace BlitzSniffer.Tracker.Player
 
             Player player = Players[playerId];
 
-            if (!player.IsActive)
+            if (!player.IsActive && !player.IsDisconnected)
             {
                 StationTracker tracker = GameSession.Instance.StationTracker;
                 
-                Station.Station station = GameSession.Instance.StationTracker.GetStationForSsid(args.SourceStationId);
+                Station.Station station = tracker.GetStationForSsid(args.SourceStationId);
                 if (!station.IsSetup)
                 {
                     return;

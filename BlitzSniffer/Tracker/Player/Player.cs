@@ -16,6 +16,12 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
+        public bool IsDisconnected
+        {
+            get;
+            set;
+        }
+
         public string Name
         {
             get;
@@ -80,6 +86,7 @@ namespace BlitzSniffer.Tracker.Player
         {
             SourceStationId = 0;
             IsActive = false;
+            IsDisconnected = false;
             Name = name;
             Team = Team.Neutral;
             IsAlive = false;
