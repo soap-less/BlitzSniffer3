@@ -257,12 +257,11 @@ namespace BlitzSniffer.Tracker
             // Only tick if we've passed the start
             if (args.Clock >= StartClock)
             {
-                uint elapsedClockTicks = args.Clock - CurrentClock;
+                uint startFrames = Blitz.Lp.Utl.CloneClockToGameFrame(StartClock);
+                uint currentFrames = Blitz.Lp.Utl.CloneClockToGameFrame(args.Clock);
+                uint totalFrames = currentFrames - startFrames;
 
-                // This is a for loop because we might need to catch up by several ticks.
-                // If the clone clock is uneven, CloneClockToGameFrame always rounds down the
-                // number of ticks.
-                for (uint i = 0; i < Blitz.Lp.Utl.CloneClockToGameFrame(elapsedClockTicks); i++)
+                for (uint i = 0; i < totalFrames - ElapsedTicks; i++)
                 {
                     ElapsedTicks++;
 
