@@ -55,6 +55,27 @@ namespace BlitzSniffer
                     LogContext.Information("PlayerRespawn: {Name} respawned", GameSession.Instance.PlayerTracker.GetPlayer(respawnEvent.PlayerIdx).Name);
 
                     break;
+                case PlayerSignalEvent signalEvent:
+                    string signal;
+                    switch (signalEvent.SignalType)
+                    {
+                        case 0:
+                            signal = "This way!";
+                            break;
+                        case 1:
+                            signal = "Ouch!";
+                            break;
+                        case 2:
+                            signal = "Booyah!";
+                            break;
+                        default:
+                            signal = "Unknown signal";
+                            break;
+                    }
+
+                    LogContext.Information("PlayerSignal: {Name} says {Signal}", GameSession.Instance.PlayerTracker.GetPlayer(signalEvent.PlayerIdx).Name, signal);
+
+                    break;
                 case PlayerSpecialActivateEvent specialEvent:
                     LogContext.Information("PlayerSpecialActivate: {Name} activated their special weapon.", GameSession.Instance.PlayerTracker.GetPlayer(specialEvent.PlayerIdx).Name);
 
