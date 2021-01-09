@@ -183,6 +183,11 @@ namespace BlitzSniffer.Tracker.Versus
 
                 if (eventType == 7) // Overtime start
                 {
+                    if (InOvertime)
+                    {
+                        return;
+                    }
+
                     InOvertime = true;
 
                     EventTracker.Instance.AddEvent(new GachiOvertimeStartEvent());
