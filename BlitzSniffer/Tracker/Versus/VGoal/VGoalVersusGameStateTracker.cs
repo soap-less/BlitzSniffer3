@@ -100,6 +100,11 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
                         break;
                     case 1: // GetGachihoko
+                        if (GameSession.Instance.PlayerTracker.GetPlayerWithGachihoko() != null)
+                        {
+                            return;
+                        }
+                        
                         reader.Seek(1); // nothing
 
                         byte heldPlayer = reader.ReadByte();
