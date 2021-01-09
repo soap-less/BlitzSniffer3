@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -120,6 +120,7 @@ namespace BlitzSniffer.Tracker.Player
 
                 player.Name = station.Name;
                 player.IsAlive = true;
+                player.SourceStationId = args.SourceStationId;
                 player.IsActive = true;
 
                 if (Players.Values.Where(p => p.IsActive).Count() == tracker.ActivePlayerCount)
@@ -129,6 +130,10 @@ namespace BlitzSniffer.Tracker.Player
 
                     GameSession.Instance.SignalSetupReady();
                 }
+            }
+            else
+            {
+                Debug.Assert(args.SourceStationId == player.SourceStationId);
             }
         }
 

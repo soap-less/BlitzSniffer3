@@ -4,6 +4,12 @@ namespace BlitzSniffer.Tracker.Player
 {
     class Player
     {
+        public ulong SourceStationId
+        {
+            get;
+            set;
+        }
+
         public bool IsActive
         {
             get;
@@ -72,6 +78,7 @@ namespace BlitzSniffer.Tracker.Player
 
         public Player(string name)
         {
+            SourceStationId = 0;
             IsActive = false;
             Name = name;
             Team = Team.Neutral;
