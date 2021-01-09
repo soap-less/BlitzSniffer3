@@ -127,7 +127,24 @@ namespace BlitzSniffer.Tracker.Station
                 return;
             }
 
-            ActivePlayerCount = activeIds;
+            int disconnectedPlayers = 0;
+
+            for (int i = 0; i < record.Unknown3.Count(); i++)
+            {
+                int bitMask = 1 << i;
+                if ((record.DisconnectedBitmap & (ulong)bitMask) != 0)
+                {
+                    disconnectedPlayers++;
+
+                    // Only set this player as disconnected if in-game
+                    if (LastMasterSeqState >= 7)
+                    {
+                        GameSession.Instance.PlayerTracker.SetPlayerDisconnected(record.Unknown3[i].StationId);
+                    }
+                }
+            }
+
+            ActivePlayerCount = activeIds - disconnectedPlayers;
         }
 
         private void HandleStationInfo(object sender, CloneChangedEventArgs args)

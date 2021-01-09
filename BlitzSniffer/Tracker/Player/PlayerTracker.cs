@@ -1,4 +1,4 @@
-using Blitz.Cmn.Def;
+﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -75,6 +75,15 @@ namespace BlitzSniffer.Tracker.Player
         public void SetTeamBits(uint teamBits)
         {
             TeamBits = teamBits;
+        }
+
+        public void SetPlayerDisconnected(ulong stationId)
+        {
+            Player player = Players.Values.Where(p => p.SourceStationId == stationId).FirstOrDefault();
+            if (player != null && player.IsActive)
+            {
+                player.IsActive = false;
+            }
         }
 
         private void ApplyTeamBits()
