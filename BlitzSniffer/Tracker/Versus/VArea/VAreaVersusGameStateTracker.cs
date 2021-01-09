@@ -261,11 +261,8 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                     bravoFinalScore = 100;
                 }
 
-                EventTracker.Instance.AddEvent(new GachiFinishEvent()
-                {
-                    AlphaScore = 100 - alphaFinalScore,
-                    BravoScore = 100 - bravoFinalScore
-                });
+
+                HandleFinishEvent(100 - alphaFinalScore, 100 - bravoFinalScore);
             }
         }
 

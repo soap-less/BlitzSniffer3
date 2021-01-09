@@ -141,11 +141,7 @@ namespace BlitzSniffer.Tracker.Versus.VLift
             if (eventType == 1) // VLift finish
             {
                 // These bytes are the "result left count", so convert them to score
-                EventTracker.Instance.AddEvent(new GachiFinishEvent()
-                {
-                    AlphaScore = (uint)100 - reader.ReadByte(),
-                    BravoScore = (uint)100 - reader.ReadByte()
-                });
+                HandleFinishEvent((uint)100 - reader.ReadByte(), (uint)100 - reader.ReadByte());
             }
         }
 

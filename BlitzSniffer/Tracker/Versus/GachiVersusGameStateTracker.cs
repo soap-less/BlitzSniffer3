@@ -78,6 +78,15 @@ namespace BlitzSniffer.Tracker.Versus
             }
         }
 
+        protected void HandleFinishEvent(uint alphaScore, uint bravoScore)
+        {
+            EventTracker.Instance.AddEvent(new GachiFinishEvent()
+            {
+                AlphaScore = alphaScore,
+                BravoScore = bravoScore
+            });
+        }
+
         protected Team GetLeadingTeam()
         {
             if (AlphaScore > BravoScore)
