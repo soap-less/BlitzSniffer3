@@ -82,6 +82,18 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
+        public int LastSignalType
+        {
+            get;
+            set;
+        }
+
+        public uint LastSignalExpirationTick
+        {
+            get;
+            set;
+        }
+
         public Player(string name)
         {
             SourceStationId = 0;
@@ -97,6 +109,8 @@ namespace BlitzSniffer.Tracker.Player
             Assists = 0;
             HasGachihoko = false;
             IsOnVLift = false;
+            LastSignalType = -1;
+            LastSignalExpirationTick = 0;
         }
 
     }
