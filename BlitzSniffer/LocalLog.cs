@@ -96,6 +96,10 @@ namespace BlitzSniffer
                     LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
 
                     break;
+                case PaintFinishEvent paintFinishEvent:
+                    LogContext.Information("PaintFinishEvent: game finish, {AlphaScore}p - {BravoScore}p", paintFinishEvent.AlphaPoints, paintFinishEvent.BravoPoints);
+
+                    break;
                 case GachiScoreUpdateEvent scoreUpdateEvent:
                     LogContext.Information("GachiScoreUpdate: alpha {AlphaScore} + {AlphaPenalty}, bravo {BravoScore} + {BravoPenalty}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.AlphaPenalty, scoreUpdateEvent.BravoScore, scoreUpdateEvent.BravoPenalty);
                     
