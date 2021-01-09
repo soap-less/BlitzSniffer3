@@ -79,10 +79,17 @@ namespace BlitzSniffer.Tracker.Player
 
         public void SetPlayerDisconnected(ulong stationId)
         {
-            Player player = Players.Values.Where(p => p.SourceStationId == stationId).FirstOrDefault();
+            KeyValuePair<uint, Player> pair = Players.Where(p => p.Value.SourceStationId == stationId).FirstOrDefault();
+
+            Player player = pair.Value;
             if (player != null && player.IsActive)
             {
                 player.IsActive = false;
+
+                EventTracker.Instance.AddEvent(new PlayerDisconnectEvent()
+                {
+                    PlayerIdx = pair.Key
+                });
             }
         }
 
