@@ -17,11 +17,13 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
         private bool GachihokoHasBarrier;
         private uint GachihokoTimeout;
+        private bool HasTimeoutEventFired;
 
         public VGoalVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
             GachihokoHasBarrier = true;
             GachihokoTimeout = 0;
+            HasTimeoutEventFired = false;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(121);
@@ -101,6 +103,7 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                         // uint breakFrame = reader.ReadUInt32();
 
                         GachihokoHasBarrier = false;
+                        HasTimeoutEventFired = false;
 
                         EventTracker.Instance.AddEvent(new VGoalBarrierBreakEvent()
                         {
@@ -169,9 +172,15 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                     case 6: // ExpiredBlast
                         // See Lost comments.
 
+                        if (!HasTimeoutEventFired)
+                        {
+                            EventTracker.Instance.AddEvent(new VGoalGachihokoTimeoutEvent());
+                        }
+
+                        HasTimeoutEventFired = true;
+
                         break;
                 }
-
             }
         }
 
