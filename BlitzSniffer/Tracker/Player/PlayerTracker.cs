@@ -148,10 +148,6 @@ namespace BlitzSniffer.Tracker.Player
                     GameSession.Instance.SignalSetupReady();
                 }
             }
-            else
-            {
-                Debug.Assert(args.SourceStationId == player.SourceStationId);
-            }
         }
 
         private void HandlePlayerEvent(object sender, CloneChangedEventArgs args)
