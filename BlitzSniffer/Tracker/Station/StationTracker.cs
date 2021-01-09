@@ -113,13 +113,6 @@ namespace BlitzSniffer.Tracker.Station
         {
             EnlSystemInfoRecord record = args.Record;
 
-            IEnumerable<ulong> disconnectedStations = Stations.Keys.Except(record.Unknown3.Select(u => u.StationId)).ToList();
-
-            foreach (ulong stationId in disconnectedStations)
-            {
-                Stations.Remove(stationId);
-            }
-
             int activeIds = record.PlayerIds.Where(p => p != 0xFF).Count();
 
             if (activeIds == 0)
