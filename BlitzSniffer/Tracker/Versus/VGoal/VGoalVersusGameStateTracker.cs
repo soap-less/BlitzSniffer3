@@ -143,12 +143,22 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                         // The player only ever loses the Gachihoko upon death, so we let PlayerTracker fire a
                         // PlayerLostGachihoko event while processing their death instead of firing it here.
 
+                        if (eventType == 3 && !GachihokoHasBarrier)
+                        {
+                            EventTracker.Instance.AddEvent(new VGoalGachihokoResetEvent());
+                        }
+
                         // Reset Gachihoko state
                         GachihokoTimeout = 0;
                         GachihokoHasBarrier = true;
 
                         break;
                     case 4: // Recovery (Reset to spawn)
+                        if (!GachihokoHasBarrier)
+                        {
+                            EventTracker.Instance.AddEvent(new VGoalGachihokoResetEvent());
+                        }
+
                         GachihokoHasBarrier = true;
 
                         break;
