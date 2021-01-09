@@ -63,17 +63,7 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                 uint bravoBestScore = ReadScore(); // yes, bravo first
                 uint alphaBestScore = ReadScore();
 
-                if (alphaBestScore != AlphaScore || bravoBestScore != BravoScore)
-                {
-                    AlphaScore = alphaBestScore;
-                    BravoScore = bravoBestScore;
-
-                    EventTracker.Instance.AddEvent(new GachiScoreUpdateEvent()
-                    {
-                        AlphaScore = AlphaScore,
-                        BravoScore = BravoScore
-                    });
-                }
+                UpdateScores(alphaBestScore, bravoBestScore);
 
                 // Current position
                 // float position = bitReader.ReadF32Bit(3, 14) - 2.0f;

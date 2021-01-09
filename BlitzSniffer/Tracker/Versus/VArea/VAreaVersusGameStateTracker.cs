@@ -18,16 +18,11 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
         private List<VAreaPaintTargetArea> PaintTargetAreas;
 
-        private uint AlphaPenalty;
-        private uint BravoPenalty;
-
         private bool HasTrailingLostControlOfAreasInOvertime;
 
         public VAreaVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
             PaintTargetAreas = new List<VAreaPaintTargetArea>();
-            AlphaPenalty = 0;
-            BravoPenalty = 0;
             HasTrailingLostControlOfAreasInOvertime = false;
 
             int areaIdx = 0;
@@ -82,21 +77,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 uint newAlphaPenalty = VAreaTicksToSeconds(reader.ReadUInt16());
                 uint newBravoPenalty = VAreaTicksToSeconds(reader.ReadUInt16());
 
-                if (newAlphaPenalty != AlphaPenalty || newBravoPenalty != BravoPenalty || newAlphaScore != AlphaScore || newBravoScore != BravoScore)
-                {
-                    AlphaPenalty = newAlphaPenalty;
-                    BravoPenalty = newBravoPenalty;
-                    AlphaScore = newAlphaScore;
-                    BravoScore = newBravoScore;
-
-                    EventTracker.Instance.AddEvent(new GachiScoreUpdateEvent()
-                    {
-                        AlphaScore = AlphaScore,
-                        BravoScore = BravoScore,
-                        AlphaPenalty = AlphaPenalty,
-                        BravoPenalty = BravoPenalty
-                    });
-                }
+                UpdateScores(newAlphaScore, newBravoScore, newAlphaPenalty, newBravoPenalty);
 
                 reader.Seek(4);
 

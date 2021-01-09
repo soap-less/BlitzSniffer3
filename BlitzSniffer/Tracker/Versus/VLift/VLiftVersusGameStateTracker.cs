@@ -125,17 +125,7 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                 uint alphaBestScore = ReadScore();
                 uint bravoBestScore = ReadScore();
 
-                if (alphaBestScore != AlphaScore || bravoBestScore != BravoScore)
-                {
-                    AlphaScore = alphaBestScore;
-                    BravoScore = bravoBestScore;
-
-                    EventTracker.Instance.AddEvent(new GachiScoreUpdateEvent()
-                    {
-                        AlphaScore = AlphaScore,
-                        BravoScore = BravoScore
-                    });
-                }
+                UpdateScores(alphaBestScore, bravoBestScore);
 
                 reader.Seek(8); // skip best total checkpoint HP since we keep track of this internally
                 uint alphaCurrentTotalCheckpointHp = (uint)reader.ReadSingle();

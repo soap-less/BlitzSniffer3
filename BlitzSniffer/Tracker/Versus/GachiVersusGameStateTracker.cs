@@ -13,13 +13,25 @@ namespace BlitzSniffer.Tracker.Versus
         public uint AlphaScore
         {
             get;
-            protected set;
+            private set;
         }
 
         public uint BravoScore
         {
             get;
-            protected set;
+            private set;
+        }
+
+        public uint AlphaPenalty
+        {
+            get;
+            private set;
+        }
+
+        public uint BravoPenalty
+        {
+            get;
+            private set;
         }
 
         public bool InOvertime
@@ -32,6 +44,8 @@ namespace BlitzSniffer.Tracker.Versus
         {
             AlphaScore = 0;
             BravoScore = 0;
+            AlphaPenalty = 0;
+            BravoPenalty = 0;
             InOvertime = false;
 
             CloneHolder holder = CloneHolder.Instance;
@@ -43,6 +57,25 @@ namespace BlitzSniffer.Tracker.Versus
         {
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandleSystemEventInternal;
+        }
+
+        protected void UpdateScores(uint alphaScore, uint bravoScore, uint alphaPenalty = 0, uint bravoPenalty = 0)
+        {
+            if (alphaScore != AlphaScore || bravoScore != BravoScore || alphaPenalty != AlphaPenalty || bravoPenalty != BravoPenalty)
+            {
+                AlphaScore = alphaScore;
+                BravoScore = bravoScore;
+                AlphaPenalty = alphaPenalty;
+                BravoPenalty = bravoPenalty;
+
+                EventTracker.Instance.AddEvent(new GachiScoreUpdateEvent()
+                {
+                    AlphaScore = AlphaScore,
+                    BravoScore = BravoScore,
+                    AlphaPenalty = AlphaPenalty,
+                    BravoPenalty = BravoPenalty
+                });
+            }
         }
 
         protected Team GetLeadingTeam()
