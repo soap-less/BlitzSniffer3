@@ -45,7 +45,7 @@ namespace BlitzSniffer.Tracker.Versus
             holder.CloneChanged -= HandleSystemEventInternal;
         }
 
-        public Team GetLeadingTeam()
+        protected Team GetLeadingTeam()
         {
             if (AlphaScore > BravoScore)
             {
@@ -61,7 +61,7 @@ namespace BlitzSniffer.Tracker.Versus
             }
         }
 
-        public Team GetTrailingTeam()
+        protected Team GetTrailingTeam()
         {
             if (AlphaScore > BravoScore)
             {
