@@ -15,10 +15,12 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
     {
         public override VersusRule Rule => VersusRule.Vgl;
 
+        private bool GachihokoHasBarrier;
         private uint GachihokoTimeout;
 
         public VGoalVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
+            GachihokoHasBarrier = true;
             GachihokoTimeout = 0;
 
             CloneHolder holder = CloneHolder.Instance;
@@ -87,11 +89,18 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
                 switch (eventType)
                 {
                     case 0: // BreakBarrier
+                        if (!GachihokoHasBarrier)
+                        {
+                            return;
+                        }
+
                         byte senderPlayerIdx = reader.ReadByte();
                         byte breakerPlayerIdx = reader.ReadByte();
 
                         // reader.Seek(-4, SeekOrigin.End);
                         // uint breakFrame = reader.ReadUInt32();
+
+                        GachihokoHasBarrier = false;
 
                         EventTracker.Instance.AddEvent(new VGoalBarrierBreakEvent()
                         {
@@ -130,18 +139,17 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
                         break;
                     case 2: // Lost
-                    case 3: // LostToInit
-                        // TODO: What is the difference between these two?
-
+                    case 3: // LostToInit (lost and reset to spawn)
                         // The player only ever loses the Gachihoko upon death, so we let PlayerTracker fire a
                         // PlayerLostGachihoko event while processing their death instead of firing it here.
 
-                        // Reset Gachihoko timeout
+                        // Reset Gachihoko state
                         GachihokoTimeout = 0;
+                        GachihokoHasBarrier = true;
 
                         break;
-                    case 4: // Recovery
-                        // TODO: What's this?
+                    case 4: // Recovery (Reset to spawn)
+                        GachihokoHasBarrier = true;
 
                         break;
                     case 5: // Reallocate
@@ -149,8 +157,7 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
                         break;
                     case 6: // ExpiredBlast
-                        // TODO: For this event, the name seems to indicate that this fires upon the Gachihoko's
-                        // timer running out, but it seems to appear every time the Gachihoko is lost???
+                        // See Lost comments.
 
                         break;
                 }
