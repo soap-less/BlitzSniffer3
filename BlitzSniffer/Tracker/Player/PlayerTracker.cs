@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -45,6 +45,7 @@ namespace BlitzSniffer.Tracker.Player
         public void Dispose()
         {
             CloneHolder holder = CloneHolder.Instance;
+            holder.CloneChanged -= UpdatePlayerDetails;
             holder.CloneChanged -= HandlePlayerEvent;
             holder.CloneChanged -= HandlePlayerNetState;
         }
