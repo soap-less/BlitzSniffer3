@@ -19,6 +19,8 @@ namespace BlitzSniffer.Tracker.Player
 {
     class PlayerTracker : IDisposable
     {
+        private static readonly uint SIGNAL_TIMEOUT = 20;
+
         private readonly Dictionary<uint, Player> Players;
         private readonly PlayerOffenseTracker OffenseTracker;
 
@@ -33,6 +35,7 @@ namespace BlitzSniffer.Tracker.Player
             holder.CloneChanged += UpdatePlayerDetails;
             holder.CloneChanged += HandlePlayerEvent;
             holder.CloneChanged += HandlePlayerNetState;
+            holder.CloneChanged += HandlePlayerSignalEvent;
 
             for (uint i = 0; i < 10; i++)
             {
@@ -40,6 +43,8 @@ namespace BlitzSniffer.Tracker.Player
 
                 Players[i] = new Player($"Player {i}");
             }
+
+            GameSession.Instance.GameTicked += HandleGameTick;
         }
 
         public void Dispose()
@@ -48,6 +53,9 @@ namespace BlitzSniffer.Tracker.Player
             holder.CloneChanged -= UpdatePlayerDetails;
             holder.CloneChanged -= HandlePlayerEvent;
             holder.CloneChanged -= HandlePlayerNetState;
+            holder.CloneChanged -= HandlePlayerSignalEvent;
+
+            GameSession.Instance.GameTicked -= HandleGameTick;
         }
 
         public Player GetPlayer(uint idx)
@@ -379,6 +387,77 @@ namespace BlitzSniffer.Tracker.Player
                 if (GameSession.Instance.GameStateTracker is VLiftVersusGameStateTracker)
                 {
                     UpdateVLiftRidingStatus(playerId, (flags & 0x8000000) != 0);
+                }
+            }
+        }
+
+        private void HandlePlayerSignalEvent(object sender, CloneChangedEventArgs args)
+        {
+            uint playerId = args.CloneId - 111;
+            if (playerId >= 10)
+            {
+                return;
+            }
+
+            if (args.ElementId != 3)
+            {
+                return;
+            }
+
+            Player player = Players[playerId];
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                reader.ByteOrder = ByteOrder.LittleEndian;
+
+                ushort gameSignalType = reader.ReadUInt16();
+
+                int eventSignalType;
+                if (gameSignalType == 0)
+                {
+                    if (player.IsAlive)
+                    {
+                        // This way!
+                        eventSignalType = 0;
+                    }
+                    else
+                    {
+                        // Ouch!
+                        // TODO: Coop is "Help!"
+                        eventSignalType = 1;
+                    }
+                }
+                else
+                {
+                    // Booyah!
+                    eventSignalType = 2;
+                }
+
+                if (eventSignalType == player.LastSignalType)
+                {
+                    return;
+                }
+
+                player.LastSignalType = eventSignalType;
+                player.LastSignalExpirationTick = GameSession.Instance.ElapsedTicks + SIGNAL_TIMEOUT;
+
+                EventTracker.Instance.AddEvent(new PlayerSignalEvent()
+                {
+                    PlayerIdx = playerId,
+                    SignalType = eventSignalType
+                });
+            }
+        }
+
+        private void HandleGameTick(object sender, GameTickedEventArgs args)
+        {
+            foreach (Player player in Players.Values.Where(p => p.LastSignalType != -1))
+            {
+                if (player.LastSignalExpirationTick <= args.ElapsedTicks)
+                {
+                    player.LastSignalType = -1;
+                    player.LastSignalExpirationTick = 0;
                 }
             }
         }
