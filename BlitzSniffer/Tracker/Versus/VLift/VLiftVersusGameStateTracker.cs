@@ -15,7 +15,6 @@ namespace BlitzSniffer.Tracker.Versus.VLift
         public override VersusRule Rule => VersusRule.Vlf;
 
         private VLiftRail Rail;
-        private bool InOvertimeTimeout;
 
         public VLiftVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
@@ -84,21 +83,11 @@ namespace BlitzSniffer.Tracker.Versus.VLift
             int playersOnVLift = GameSession.Instance.PlayerTracker.GetPlayersOnVLift();
             if (InOvertimeTimeout && playersOnVLift > 0)
             {
-                InOvertimeTimeout = false;
-
-                EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
-                {
-                    Length = -1
-                });
+                SetOvertimeTimeout(-1);
             }
             else if (!InOvertimeTimeout && playersOnVLift == 0)
             {
-                InOvertimeTimeout = true;
-
-                EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
-                {
-                    Length = 300
-                });
+                SetOvertimeTimeout(300);
             }
         }
 

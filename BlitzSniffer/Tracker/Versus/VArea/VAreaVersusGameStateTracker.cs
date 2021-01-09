@@ -129,20 +129,12 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                         {
                             HasTrailingLostControlOfAreasInOvertime = true;
 
-                            EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
-                            {
-                                Length = OVERTIME_TIMEOUT_FRAMES
-                            });
+                            SetOvertimeTimeout(OVERTIME_TIMEOUT_FRAMES);
                         }
                     }
                     else
                     {
-                        HasTrailingLostControlOfAreasInOvertime = false;
-
-                        EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
-                        {
-                            Length = -1
-                        });
+                        SetOvertimeTimeout(-1);
                     }
                 }
             }

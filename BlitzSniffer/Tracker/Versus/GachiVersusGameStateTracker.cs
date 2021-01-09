@@ -40,6 +40,13 @@ namespace BlitzSniffer.Tracker.Versus
             private set;
         }
 
+        public bool InOvertimeTimeout
+        {
+            get;
+            private set;
+        }
+
+
         public GachiVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)
         {
             AlphaScore = 0;
@@ -47,6 +54,7 @@ namespace BlitzSniffer.Tracker.Versus
             AlphaPenalty = 0;
             BravoPenalty = 0;
             InOvertime = false;
+            InOvertimeTimeout = false;
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(100);
@@ -84,6 +92,28 @@ namespace BlitzSniffer.Tracker.Versus
             {
                 AlphaScore = alphaScore,
                 BravoScore = bravoScore
+            });
+        }
+
+        protected void SetOvertimeTimeout(int timeout)
+        {
+            if (!InOvertime)
+            {
+                return;
+            }
+
+            if (timeout == -1)
+            {
+                InOvertimeTimeout = false;
+            }
+            else
+            {
+                InOvertimeTimeout = true;
+            }
+
+            EventTracker.Instance.AddEvent(new GachiOvertimeTimeoutUpdateEvent()
+            {
+                Length = timeout
             });
         }
 
