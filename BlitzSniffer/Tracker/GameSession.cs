@@ -7,6 +7,7 @@ using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
 using BlitzSniffer.Tracker.Versus.Paint;
 using BlitzSniffer.Tracker.Versus.VArea;
+using BlitzSniffer.Tracker.Versus.VClam;
 using BlitzSniffer.Tracker.Versus.VGoal;
 using BlitzSniffer.Tracker.Versus.VLift;
 using Nintendo.Sead;
@@ -214,6 +215,9 @@ namespace BlitzSniffer.Tracker
                         break;
                     case VersusRule.Vlf:
                         GameStateTracker = new VLiftVersusGameStateTracker(stage, alpha, bravo);
+                        break;
+                    case VersusRule.Vcl:
+                        GameStateTracker = new VClamVersusGameStateTracker(stage, alpha, bravo);
                         break;
                     default:
                         GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
