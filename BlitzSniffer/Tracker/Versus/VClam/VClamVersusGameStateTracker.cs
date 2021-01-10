@@ -90,7 +90,7 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
                     // If this barrier break will happen after then one we are curerntly tracking,
                     // we should just ignore it.
-                    if (gameFrame >= CurrentBrokenBasket.BreakTick)
+                    if (gameFrame >= CurrentBrokenBasket.GetCurrentBreakRequestTick())
                     {
                         return;
                     }

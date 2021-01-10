@@ -2,6 +2,7 @@
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus.VClam;
 using System;
+using System.Diagnostics;
 
 namespace BlitzSniffer.Tracker.Versus.VClam
 {
@@ -13,35 +14,21 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             private set;
         }
 
-        public bool IsBroken
+        public VClamBasketState State
         {
             get;
             private set;
         }
 
-        public uint BreakTick
-        {
-            get;
-            private set;
-        }
-
-        public uint LeftBrokenFrames
-        {
-            get;
-            private set;
-        }
-
-        public uint RepairTick
-        {
-            get;
-            private set;
-        }
+        private uint TargetTick; // variable reused between states
+        private uint LeftBrokenFrames;
 
         public VClamBasket(Team team)
         {
             OwningTeam = team;
 
-            Reset();
+            TargetTick = 0;
+            LeftBrokenFrames = 0;
 
             GameSession.Instance.GameTicked += HandleGameTick;
         }
@@ -53,12 +40,23 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public void RequestBreak(uint tick)
         {
-            BreakTick = tick;
+            Trace.Assert(State == VClamBasketState.Idle);
+
+            TargetTick = tick;
+        }
+
+        public uint GetCurrentBreakRequestTick()
+        {
+            Trace.Assert(State == VClamBasketState.Idle);
+
+            return TargetTick;
         }
 
         public void NullifyBreakRequest()
         {
-            BreakTick = 0;
+            Trace.Assert(State == VClamBasketState.Idle);
+
+            TargetTick = 0;
         }
 
         public void UpdateBrokenFrames(uint newFrames)
@@ -77,59 +75,67 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public void RequestRepair(uint tick)
         {
-            RepairTick = tick;
-        }
+            Trace.Assert(State == VClamBasketState.Broken || State == VClamBasketState.Closed);
 
-        private void Reset()
-        {
-            IsBroken = false;
-            BreakTick = 0;
-            LeftBrokenFrames = 0; // set directly to avoid event firing
-            RepairTick = 0;
+            TargetTick = tick;
         }
 
         private void HandleGameTick(object sender, GameTickedEventArgs args)
         {
-            if (!IsBroken)
+            switch (State)
             {
-                if (BreakTick == 0)
-                {
-                    return;
-                }
-
-                if (args.ElapsedTicks >= BreakTick)
-                {
-                    IsBroken = true;
-
-                    EventTracker.Instance.AddEvent(new VClamBasketBreakEvent()
+                case VClamBasketState.Idle:
+                    if (TargetTick == 0)
                     {
-                        Team = OwningTeam
-                    });
+                        return;
+                    }
 
-                    UpdateBrokenFrames(600); // default, 10 seconds
-                }
-            }
-            else
-            {
-                if (LeftBrokenFrames > 0)
-                {
-                    LeftBrokenFrames--;
-                }
-
-                if (RepairTick == 0)
-                {
-                    return;
-                }
-
-                if (args.ElapsedTicks >= RepairTick)
-                {
-                    Reset();
-
-                    EventTracker.Instance.AddEvent(new VClamBasketRepairEvent()
+                    if (args.ElapsedTicks >= TargetTick)
                     {
-                        Team = OwningTeam
-                    });
-                }
+                        TargetTick = 0;
+
+                        EventTracker.Instance.AddEvent(new VClamBasketBreakEvent()
+                        {
+                            Team = OwningTeam
+                        });
+
+                        UpdateBrokenFrames(600); // default, 10 seconds
+
+                        State = VClamBasketState.Broken;
+                    }
+
+                    break;
+                case VClamBasketState.Broken:
+                    if (LeftBrokenFrames > 0)
+                    {
+                        LeftBrokenFrames--;
+
+                        if (LeftBrokenFrames == 0)
+                        {
+                            State = VClamBasketState.Closed;
+                        }
+                    }
+
+                    break;
+                case VClamBasketState.Closed:
+                    if (TargetTick == 0)
+                    {
+                        return;
+                    }
+
+                    if (args.ElapsedTicks >= TargetTick)
+                    {
+                        TargetTick = 0;
+
+                        EventTracker.Instance.AddEvent(new VClamBasketRepairEvent()
+                        {
+                            Team = OwningTeam
+                        });
+
+                        State = VClamBasketState.Idle;
+                    }
+
+                    break;
             }
         }
 
