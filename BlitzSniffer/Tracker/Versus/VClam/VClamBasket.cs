@@ -130,6 +130,11 @@ namespace BlitzSniffer.Tracker.Versus.VClam
                         if (LeftBrokenFrames == 0)
                         {
                             State = VClamBasketState.Closed;
+
+                            EventTracker.Instance.AddEvent(new VClamBasketClosedEvent()
+                            {
+                                Team = OwningTeam
+                            });
                         }
                     }
 
@@ -143,11 +148,6 @@ namespace BlitzSniffer.Tracker.Versus.VClam
                     if (args.ElapsedTicks >= TargetTick)
                     {
                         TargetTick = 0;
-
-                        EventTracker.Instance.AddEvent(new VClamBasketRepairEvent()
-                        {
-                            Team = OwningTeam
-                        });
 
                         State = VClamBasketState.Idle;
                     }
