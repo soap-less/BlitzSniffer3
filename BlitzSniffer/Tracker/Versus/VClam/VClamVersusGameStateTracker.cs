@@ -30,6 +30,9 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public override void Dispose()
         {
+            AlphaBasket.Dispose();
+            BravoBasket.Dispose();
+
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= HandleBasketBreak;
             holder.CloneChanged -= HandleBasketRepair;
