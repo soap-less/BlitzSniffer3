@@ -50,7 +50,7 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public void Dispose()
         {
-            OppositeBasket = null; // just in case
+            _OppositeBasket = null; // just in case
 
             GameSession.Instance.GameTicked -= HandleGameTick;
         }
