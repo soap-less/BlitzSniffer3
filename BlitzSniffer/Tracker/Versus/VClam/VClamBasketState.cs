@@ -4,6 +4,7 @@
     {
         Idle,
         Broken,
-        Closed
+        Closed,
+        Invincible
     }
 }

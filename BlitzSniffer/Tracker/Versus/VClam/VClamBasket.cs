@@ -37,6 +37,7 @@ namespace BlitzSniffer.Tracker.Versus.VClam
         private VClamBasket _OppositeBasket;
         private uint TargetTick; // variable reused between states
         private uint LeftBrokenFrames;
+        private bool InvincibleByLink;
 
         public VClamBasket(Team team)
         {
@@ -44,6 +45,7 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
             TargetTick = 0;
             LeftBrokenFrames = 0;
+            InvincibleByLink = false;
 
             GameSession.Instance.GameTicked += HandleGameTick;
         }
@@ -97,6 +99,21 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             TargetTick = tick;
         }
 
+        public void RequestInvincibilityByLink()
+        {
+            Trace.Assert(State == VClamBasketState.Idle);
+
+            EventTracker.Instance.AddEvent(new VClamBasketVulnerabilityUpdateEvent()
+            {
+                Team = OwningTeam,
+                IsInvincible = true
+            });
+
+            InvincibleByLink = true;
+
+            State = VClamBasketState.Invincible;
+        }
+
         private void HandleGameTick(object sender, GameTickedEventArgs args)
         {
             switch (State)
@@ -118,6 +135,10 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
                         UpdateBrokenFrames(600); // default, 10 seconds
 
+                        InvincibleByLink = false;
+
+                        OppositeBasket.RequestInvincibilityByLink();
+
                         State = VClamBasketState.Broken;
                     }
 
@@ -129,12 +150,20 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
                         if (LeftBrokenFrames == 0)
                         {
-                            State = VClamBasketState.Closed;
-
                             EventTracker.Instance.AddEvent(new VClamBasketClosedEvent()
                             {
                                 Team = OwningTeam
                             });
+
+                            // We could send this on the transition to our invincible state,
+                            // but that is 60 ticks after it technically becomes invincible.
+                            EventTracker.Instance.AddEvent(new VClamBasketVulnerabilityUpdateEvent()
+                            {
+                                Team = OwningTeam,
+                                IsInvincible = true
+                            });
+
+                            State = VClamBasketState.Closed;
                         }
                     }
 
@@ -147,7 +176,32 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
                     if (args.ElapsedTicks >= TargetTick)
                     {
+                        TargetTick = TargetTick + 600;
+                        
+                        State = VClamBasketState.Invincible;
+                    }
+
+                    break;
+                case VClamBasketState.Invincible:
+                    bool idleCondition;
+                    if (InvincibleByLink)
+                    {
+                        idleCondition = OppositeBasket.State != VClamBasketState.Broken;
+                    }
+                    else
+                    {
+                        idleCondition = args.ElapsedTicks >= TargetTick;
+                    }
+
+                    if (idleCondition)
+                    {
                         TargetTick = 0;
+
+                        EventTracker.Instance.AddEvent(new VClamBasketVulnerabilityUpdateEvent()
+                        {
+                            Team = OwningTeam,
+                            IsInvincible = false
+                        });
 
                         State = VClamBasketState.Idle;
                     }
