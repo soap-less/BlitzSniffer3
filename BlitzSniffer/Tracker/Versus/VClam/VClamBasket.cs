@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Versus.VClam;
 using System;
@@ -14,12 +14,27 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             private set;
         }
 
+        public VClamBasket OppositeBasket
+        {
+            get
+            {
+                return _OppositeBasket;
+            }
+            set
+            {
+                Trace.Assert(_OppositeBasket == null);
+
+                _OppositeBasket = value;
+            }
+        }
+
         public VClamBasketState State
         {
             get;
             private set;
         }
 
+        private VClamBasket _OppositeBasket;
         private uint TargetTick; // variable reused between states
         private uint LeftBrokenFrames;
 
@@ -35,6 +50,8 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public void Dispose()
         {
+            OppositeBasket = null; // just in case
+
             GameSession.Instance.GameTicked -= HandleGameTick;
         }
 

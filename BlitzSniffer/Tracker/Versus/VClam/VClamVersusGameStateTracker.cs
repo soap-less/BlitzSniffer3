@@ -20,6 +20,9 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             BravoBasket = new VClamBasket(Team.Bravo);
             CurrentBrokenBasket = null;
 
+            AlphaBasket.OppositeBasket = BravoBasket;
+            BravoBasket.OppositeBasket = AlphaBasket;
+
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleBasketBreak;
             holder.CloneChanged += HandleBasketRepair;
