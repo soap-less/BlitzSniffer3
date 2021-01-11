@@ -126,6 +126,20 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                 else if (difference < 0)
                 {
                     uint newHp = checkpoint.Hp + (uint)(-difference);
+                    if (newHp > checkpoint.BaseHp)
+                    {
+                        if (team == Team.Alpha)
+                        {
+                            AlphaCurrentCheckpoint--;
+                        }
+                        else
+                        {
+                            BravoCurrentCheckpoint--;
+                        }
+
+                        continue;
+                    }
+
                     checkpoint.Hp = newHp;
                     difference = 0;
                 }

@@ -28,11 +28,6 @@ namespace BlitzSniffer.Tracker.Versus.VLift
                 {
                     BestHp = _Hp;
                 }
-
-                if (BestHp <= 0)
-                {
-                    BaseHp = 0;
-                }
             }
         }
 
