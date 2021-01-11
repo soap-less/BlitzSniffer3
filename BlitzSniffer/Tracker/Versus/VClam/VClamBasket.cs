@@ -101,7 +101,7 @@ namespace BlitzSniffer.Tracker.Versus.VClam
 
         public void RequestInvincibilityByLink()
         {
-            Trace.Assert(State == VClamBasketState.Idle);
+            Trace.Assert(State == VClamBasketState.Idle || State == VClamBasketState.Invincible);
 
             EventTracker.Instance.AddEvent(new VClamBasketVulnerabilityUpdateEvent()
             {
@@ -110,6 +110,11 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             });
 
             InvincibleByLink = true;
+
+            // Clear because we could be transitioning from already invincible (i.e. this basket
+            // was broken, transitioned into invincible, then the opposite team's basket was broken
+            // during the invincibility period)
+            TargetTick = 0;
 
             State = VClamBasketState.Invincible;
         }
