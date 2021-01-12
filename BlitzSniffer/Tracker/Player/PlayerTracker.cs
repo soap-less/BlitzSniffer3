@@ -450,9 +450,16 @@ namespace BlitzSniffer.Tracker.Player
                     }
                     else
                     {
-                        // Ouch!
-                        // TODO: Coop is "Help!"
-                        eventSignalType = 1;
+                        if (GameSession.Instance.IsCoop)
+                        {
+                            // Help!
+                            eventSignalType = 3;
+                        }
+                        else
+                        {
+                            // Ouch!
+                            eventSignalType = 1;
+                        }
                     }
                 }
                 else
