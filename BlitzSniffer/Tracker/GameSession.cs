@@ -2,6 +2,7 @@ using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Setup;
+using BlitzSniffer.Tracker.Coop;
 using BlitzSniffer.Tracker.Player;
 using BlitzSniffer.Tracker.Station;
 using BlitzSniffer.Tracker.Versus;
@@ -169,6 +170,10 @@ namespace BlitzSniffer.Tracker
                 {
                     EventTracker.Instance.AddEvent(new SetupVersusEvent());
                 }
+                else if (GameStateTracker is CoopGameStateTracker)
+                {
+                    EventTracker.Instance.AddEvent(new SetupCoopEvent());
+                }
                 else
                 {
                     throw new SnifferException("No setup event for GameStateTracker");
@@ -241,6 +246,10 @@ namespace BlitzSniffer.Tracker
                             GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
                             break;
                     }
+                }
+                else
+                {
+                    GameStateTracker = new CoopGameStateTracker(stage, alpha, bravo);
                 }
             }
         }
