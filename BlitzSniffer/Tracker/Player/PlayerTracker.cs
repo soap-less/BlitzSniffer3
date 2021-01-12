@@ -223,14 +223,21 @@ namespace BlitzSniffer.Tracker.Player
                             uint type = (unk8 & 0xFF0000) >> 16;
                             uint id = unk8 & 0xFFFF;
 
-                            cause = GetDeathCauseForAttackedPlayer(type, id);
-
-                            // If this player was the Gachihoko holder and they died because of the timeout explosion,
-                            // don't set their their attacker. Otherwise, the death event will say that they were killed
-                            // by themselves, which isn't standard (for suicides, the attacker variable is never set).
-                            if (type != 3 || id != 4)
+                            if (!GameSession.Instance.IsCoop)
                             {
-                                attackerIdx = (int)unk10;
+                                cause = GetDeathCauseForAttackedPlayer(type, id);
+
+                                // If this player was the Gachihoko holder and they died because of the timeout explosion,
+                                // don't set their their attacker. Otherwise, the death event will say that they were killed
+                                // by themselves, which isn't standard (for suicides, the attacker variable is never set).
+                                if (type != 3 || id != 4)
+                                {
+                                    attackerIdx = (int)unk10;
+                                }
+                            }
+                            else
+                            {
+                                cause = GetDeathCauseForAttackedPlayerCoop(type, id);
                             }
                         }
                         else if (eventId == 2)
@@ -575,6 +582,64 @@ namespace BlitzSniffer.Tracker.Player
             }
 
             return cause;
+        }
+
+        private string GetDeathCauseForAttackedPlayerCoop(uint type, uint id)
+        {
+            // This should always be the case for Coop
+            Trace.Assert(type == 8);
+
+            switch (id)
+            {
+                case 0:
+                    return "Coop_SakelienStandard";
+                case 1:
+                    return "Coop_SakelienLarge";
+                case 2:
+                    return "Coop_SakelienSmall";
+                case 3:
+                    return "Coop_SakelienGolden";
+                case 4:
+                    return "Coop_SakelienBagman";
+                case 5:
+                    return "Coop_SakelienBagmanLarge";
+                case 6:
+                    return "Coop_SakelienBomber";
+                case 7:
+                    return "Coop_SakelienCannon";
+                case 8:
+                    return "Coop_SakelienCup";
+                case 9:
+                    return "Coop_SakelienCupTwins";
+                case 10:
+                    return "Coop_SakelienEscape";
+                case 11:
+                    return "Coop_SakelienGeyser";
+                case 12:
+                    return "Coop_SakelienShield";
+                case 13:
+                    return "Coop_SakelienSnake";
+                case 14:
+                    return "Coop_SakelienTower";
+                case 15:
+                    return "Coop_Sakediver";
+                case 16:
+                    return "Coop_Sakedozer";
+                case 17:
+                    return "Coop_Sakeflyer";
+                case 18:
+                    return "Coop_Sakepuncher";
+                case 19:
+                    return "Coop_SakepuncherBulletSimpl";
+                case 20:
+                    return "Coop_SakepuncherBulletPunch";
+                case 21:
+                    return "Coop_Sakerocket";
+                case 22:
+                    return "Coop_SakerocketBullet";
+                default:
+                    return $"Unknown - Coop type ({id})";
+            }
         }
 
         private void UpdateVLiftRidingStatus(uint id, bool riding)
