@@ -134,6 +134,8 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                     }
                     else
                     {
+                        HasTrailingLostControlOfAreasInOvertime = false;
+
                         SetOvertimeTimeout(-1);
                     }
                 }
