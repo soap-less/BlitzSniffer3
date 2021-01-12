@@ -99,7 +99,7 @@ namespace BlitzSniffer.Tracker
             SetupEventCountdown = new CountdownEvent(SETUP_NECESSARY_SIGNALS);
 
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged += HandleSeqEventVersusSetting;
+            holder.CloneChanged += HandleSeqEventSetting;
             holder.CloneChanged += HandleSystemEvent;
             holder.CloneChanged += HandleCloneChanged;
 
@@ -180,7 +180,7 @@ namespace BlitzSniffer.Tracker
             }
         }
 
-        private void HandleSeqEventVersusSetting(object sender, CloneChangedEventArgs args)
+        private void HandleSeqEventSetting(object sender, CloneChangedEventArgs args)
         {
             if (args.CloneId != 2 || args.ElementId != 5)
             {
@@ -197,14 +197,11 @@ namespace BlitzSniffer.Tracker
             {
                 reader.ByteOrder = ByteOrder.LittleEndian;
 
-                reader.Seek(2);
+                bool isCoop = reader.ReadByte() == 0x1;
+
+                reader.Seek(1); // unknown
+
                 ushort stage = reader.ReadUInt16();
-                VersusRule rule = (VersusRule)reader.ReadUInt16();
-
-                reader.Seek(14, SeekOrigin.Begin);
-                uint teamBits = reader.ReadUInt32();
-
-                PlayerTracker.SetTeamBits(teamBits);
 
                 // TODO verify these
                 reader.Seek(52, SeekOrigin.Begin);
@@ -213,26 +210,37 @@ namespace BlitzSniffer.Tracker
                 reader.Seek(72, SeekOrigin.Begin);
                 Color4f bravo = new Color4f(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle(), 1.0f);
 
-                switch (rule)
+                if (!isCoop)
                 {
-                    case VersusRule.Pnt:
-                        GameStateTracker = new PaintVersusGameStateTracker(stage, alpha, bravo);
-                        break;
-                    case VersusRule.Vgl:
-                        GameStateTracker = new VGoalVersusGameStateTracker(stage, alpha, bravo);
-                        break;
-                    case VersusRule.Var:
-                        GameStateTracker = new VAreaVersusGameStateTracker(stage, alpha, bravo);
-                        break;
-                    case VersusRule.Vlf:
-                        GameStateTracker = new VLiftVersusGameStateTracker(stage, alpha, bravo);
-                        break;
-                    case VersusRule.Vcl:
-                        GameStateTracker = new VClamVersusGameStateTracker(stage, alpha, bravo);
-                        break;
-                    default:
-                        GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
-                        break;
+                    reader.Seek(14, SeekOrigin.Begin);
+
+                    uint teamBits = reader.ReadUInt32();
+                    PlayerTracker.SetTeamBits(teamBits);
+
+                    reader.Seek(4, SeekOrigin.Begin);
+
+                    VersusRule rule = (VersusRule)reader.ReadUInt16();
+                    switch (rule)
+                    {
+                        case VersusRule.Pnt:
+                            GameStateTracker = new PaintVersusGameStateTracker(stage, alpha, bravo);
+                            break;
+                        case VersusRule.Vgl:
+                            GameStateTracker = new VGoalVersusGameStateTracker(stage, alpha, bravo);
+                            break;
+                        case VersusRule.Var:
+                            GameStateTracker = new VAreaVersusGameStateTracker(stage, alpha, bravo);
+                            break;
+                        case VersusRule.Vlf:
+                            GameStateTracker = new VLiftVersusGameStateTracker(stage, alpha, bravo);
+                            break;
+                        case VersusRule.Vcl:
+                            GameStateTracker = new VClamVersusGameStateTracker(stage, alpha, bravo);
+                            break;
+                        default:
+                            GameStateTracker = new GenericVersusGameStateTracker(stage, rule, alpha, bravo);
+                            break;
+                    }
                 }
             }
         }
