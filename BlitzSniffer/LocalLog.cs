@@ -1,4 +1,4 @@
-using BlitzSniffer.Event;
+﻿using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
@@ -68,6 +68,9 @@ namespace BlitzSniffer
                             break;
                         case 2:
                             signal = "Booyah!";
+                            break;
+                        case 3:
+                            signal = "Help!";
                             break;
                         default:
                             signal = "Unknown signal";
