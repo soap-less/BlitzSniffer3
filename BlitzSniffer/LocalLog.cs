@@ -1,4 +1,4 @@
-﻿using BlitzSniffer.Event;
+using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
 using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
@@ -96,6 +96,21 @@ namespace BlitzSniffer
                 case PlayerLeftVLiftEvent leftEvent:
                     LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
 
+                    break;
+                case PlayerCoopRescuedEvent coopRescuedEvent:
+                    PlayerTracker coopRescuePlayerTracker = GameSession.Instance.PlayerTracker;
+                    Player coopVictimPlayer = coopRescuePlayerTracker.GetPlayer(coopRescuedEvent.PlayerIdx);
+                    Player coopSaviourPlayer = coopRescuedEvent.SaviourIdx != -1 ? coopRescuePlayerTracker.GetPlayer((uint)coopRescuedEvent.SaviourIdx) : null;
+
+                    if (coopSaviourPlayer != null)
+                    {
+                        LogContext.Information("PlayerCoopRescuedEvent: {VictimName} was rescued by {SaviourName}", coopVictimPlayer.Name, coopSaviourPlayer.Name);
+                    }
+                    else
+                    {
+                        LogContext.Information("PlayerCoopRescuedEvent: {VictimName} was automatically revived", coopVictimPlayer.Name);
+                    }
+                    
                     break;
                 case PaintFinishEvent paintFinishEvent:
                     LogContext.Information("PaintFinishEvent: game finish, {AlphaScore}p - {BravoScore}p", paintFinishEvent.AlphaPoints, paintFinishEvent.BravoPoints);
