@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using Nintendo.Sead;
 using Syroot.BinaryData;
@@ -182,6 +182,19 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             {
                 // These bytes are the "result left count", so convert them to score
                 HandleFinishEvent((uint)100 - reader.ReadByte(), (uint)100 - reader.ReadByte());
+            }
+            else if (eventType == 7) // Overtime start
+            {
+                if (AlphaScore == 0 && BravoScore == 0)
+                {
+                    // If nobody scores for the entire game, a special 3 minute Overtime starts.
+                    SetOvertimeTimeout(10800); 
+                }
+                else
+                {
+                    // Otherwise, the normal Overtime consisting of 20 seconds begins.
+                    SetOvertimeTimeout(1200);
+                }
             }
         }
 
