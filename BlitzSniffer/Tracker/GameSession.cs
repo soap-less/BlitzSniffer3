@@ -161,7 +161,14 @@ namespace BlitzSniffer.Tracker
 
                 IsSetup = true;
 
-                EventTracker.Instance.AddEvent(new SetupEvent());
+                if (GameStateTracker is VersusGameStateTracker)
+                {
+                    EventTracker.Instance.AddEvent(new SetupVersusEvent());
+                }
+                else
+                {
+                    throw new SnifferException("No setup event for GameStateTracker");
+                }
             }
             catch (OperationCanceledException)
             {
