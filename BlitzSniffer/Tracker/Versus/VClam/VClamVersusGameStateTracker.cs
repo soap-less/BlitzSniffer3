@@ -10,6 +10,8 @@ namespace BlitzSniffer.Tracker.Versus.VClam
     {
         public override VersusRule Rule => VersusRule.Vcl;
 
+        public override bool HasPenalties => true;
+
         private VClamBasket AlphaBasket;
         private VClamBasket BravoBasket;
         private VClamBasket CurrentBrokenBasket;

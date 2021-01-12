@@ -10,6 +10,11 @@ namespace BlitzSniffer.Tracker.Versus
 {
     abstract class GachiVersusGameStateTracker : VersusGameStateTracker
     {
+        public abstract bool HasPenalties
+        {
+            get;
+        }
+
         public uint AlphaScore
         {
             get;

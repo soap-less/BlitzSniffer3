@@ -14,6 +14,8 @@ namespace BlitzSniffer.Tracker.Versus.VLift
     {
         public override VersusRule Rule => VersusRule.Vlf;
 
+        public override bool HasPenalties => false;
+
         private VLiftRail Rail;
 
         public VLiftVersusGameStateTracker(ushort stage, Color4f alpha, Color4f bravo) : base(stage, alpha, bravo)

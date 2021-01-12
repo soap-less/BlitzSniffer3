@@ -16,6 +16,8 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
         public override VersusRule Rule => VersusRule.Var;
 
+        public override bool HasPenalties => true;
+
         private List<VAreaPaintTargetArea> PaintTargetAreas;
 
         private bool HasTrailingLostControlOfAreasInOvertime;

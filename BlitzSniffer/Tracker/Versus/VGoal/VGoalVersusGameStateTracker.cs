@@ -15,6 +15,8 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
     {
         public override VersusRule Rule => VersusRule.Vgl;
 
+        public override bool HasPenalties => false;
+
         private bool GachihokoHasBarrier;
         private uint GachihokoTimeout;
         private bool HasTimeoutEventFired;
