@@ -8,6 +8,7 @@ using BlitzSniffer.Event.Versus.VGoal;
 using BlitzSniffer.Event.Versus.VLift;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.Tracker.Player;
+using BlitzSniffer.Tracker.Versus;
 using Serilog;
 using Serilog.Core;
 using System.Text.Json;
@@ -101,7 +102,16 @@ namespace BlitzSniffer
 
                     break;
                 case GachiScoreUpdateEvent scoreUpdateEvent:
-                    LogContext.Information("GachiScoreUpdate: alpha {AlphaScore} + {AlphaPenalty}, bravo {BravoScore} + {BravoPenalty}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.AlphaPenalty, scoreUpdateEvent.BravoScore, scoreUpdateEvent.BravoPenalty);
+                    GachiVersusGameStateTracker gachiTracker = GameSession.Instance.GameStateTracker as GachiVersusGameStateTracker;
+                    
+                    if (gachiTracker.HasPenalties)
+                    {
+                        LogContext.Information("GachiScoreUpdate: alpha {AlphaScore} + {AlphaPenalty}, bravo {BravoScore} + {BravoPenalty}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.AlphaPenalty, scoreUpdateEvent.BravoScore, scoreUpdateEvent.BravoPenalty);
+                    }
+                    else
+                    {
+                        LogContext.Information("GachiScoreUpdate: alpha {AlphaScore}, bravo {BravoScore}", scoreUpdateEvent.AlphaScore, scoreUpdateEvent.BravoScore);
+                    }
                     
                     break;
                 case GachiOvertimeStartEvent overtimeStartEvent:
