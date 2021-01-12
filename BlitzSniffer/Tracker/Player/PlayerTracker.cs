@@ -32,10 +32,7 @@ namespace BlitzSniffer.Tracker.Player
             OffenseTracker = new PlayerOffenseTracker();
 
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged += UpdatePlayerDetails;
-            holder.CloneChanged += HandlePlayerEvent;
-            holder.CloneChanged += HandlePlayerNetState;
-            holder.CloneChanged += HandlePlayerSignalEvent;
+            holder.CloneChanged += UpdatePlayerDetails; // we need player info ASAP so don't use in-game clone event
 
             for (uint i = 0; i < 10; i++)
             {
@@ -44,18 +41,25 @@ namespace BlitzSniffer.Tracker.Player
                 Players[i] = new Player($"Player {i}");
             }
 
-            GameSession.Instance.GameTicked += HandleGameTick;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandlePlayerEvent;
+            session.InGameCloneChanged += HandlePlayerNetState;
+            session.InGameCloneChanged += HandlePlayerSignalEvent;
+
+            session.GameTicked += HandleGameTick;
         }
 
         public void Dispose()
         {
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged -= UpdatePlayerDetails;
-            holder.CloneChanged -= HandlePlayerEvent;
-            holder.CloneChanged -= HandlePlayerNetState;
-            holder.CloneChanged -= HandlePlayerSignalEvent;
 
-            GameSession.Instance.GameTicked -= HandleGameTick;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandlePlayerEvent;
+            session.InGameCloneChanged -= HandlePlayerNetState;
+            session.InGameCloneChanged -= HandlePlayerSignalEvent;
+
+            session.GameTicked -= HandleGameTick;
         }
 
         public Player GetPlayer(uint idx)

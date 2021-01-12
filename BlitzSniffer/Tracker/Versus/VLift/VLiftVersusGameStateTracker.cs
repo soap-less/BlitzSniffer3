@@ -55,15 +55,17 @@ namespace BlitzSniffer.Tracker.Versus.VLift
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(121);
-            holder.CloneChanged += HandleVLiftState;
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandleVLiftState;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleVLiftState;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandleVLiftState;
         }
 
         public List<List<uint>> BuildCheckpointListForSetup()

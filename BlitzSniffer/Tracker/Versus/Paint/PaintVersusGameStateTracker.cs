@@ -23,18 +23,20 @@ namespace BlitzSniffer.Tracker.Versus.Paint
             ResultTuples = new Dictionary<uint, Tuple<uint, uint>>();
 
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged += HandlePaintResult;
 
             for (uint i = 0; i < 10; i++)
             {
                 holder.RegisterClone(i + 101);
             }
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandlePaintResult;
         }
 
         public override void Dispose()
         {
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandlePaintResult;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandlePaintResult;
         }
 
         private void HandlePaintResult(object sender, CloneChangedEventArgs args)

@@ -26,11 +26,13 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             BravoBasket.OppositeBasket = AlphaBasket;
 
             CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged += HandleBasketBreak;
-            holder.CloneChanged += HandleBasketRepair;
-            holder.CloneChanged += HandleScoreEvent;
-
             holder.RegisterClone(134);
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandleBasketBreak;
+            session.InGameCloneChanged += HandleBasketRepair;
+            session.InGameCloneChanged += HandleScoreEvent;
+
         }
 
         public override void Dispose()
@@ -38,10 +40,10 @@ namespace BlitzSniffer.Tracker.Versus.VClam
             AlphaBasket.Dispose();
             BravoBasket.Dispose();
 
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleBasketBreak;
-            holder.CloneChanged -= HandleBasketRepair;
-            holder.CloneChanged -= HandleScoreEvent;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandleBasketBreak;
+            session.InGameCloneChanged -= HandleBasketRepair;
+            session.InGameCloneChanged -= HandleScoreEvent;
         }
 
         /* Master:

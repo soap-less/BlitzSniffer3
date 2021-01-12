@@ -29,15 +29,17 @@ namespace BlitzSniffer.Tracker.Versus.VGoal
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(121);
-            holder.CloneChanged += HandleGachihokoState;
-            holder.CloneChanged += HandleGachihokoEvent;
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandleGachihokoState;
+            session.InGameCloneChanged += HandleGachihokoEvent;
         }
 
         public override void Dispose()
         {
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleGachihokoState;
-            holder.CloneChanged -= HandleGachihokoEvent;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandleGachihokoState;
+            session.InGameCloneChanged -= HandleGachihokoEvent;
         }
 
         private void HandleGachihokoState(object sender, CloneChangedEventArgs args)

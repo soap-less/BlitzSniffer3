@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using static BlitzSniffer.Clone.CloneHolder;
 
 namespace BlitzSniffer.Tracker
 {
@@ -82,6 +83,8 @@ namespace BlitzSniffer.Tracker
         private uint StartClock;
         private uint CurrentClock;
 
+        public event CloneChangedEventHandler InGameCloneChanged;
+
         public delegate void GameTickedHandler(object sender, GameTickedEventArgs args);
         public event GameTickedHandler GameTicked;
 
@@ -98,6 +101,7 @@ namespace BlitzSniffer.Tracker
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleSeqEventVersusSetting;
             holder.CloneChanged += HandleSystemEvent;
+            holder.CloneChanged += HandleCloneChanged;
 
             holder.ClockChanged += HandleClockChanged;
 
@@ -256,6 +260,21 @@ namespace BlitzSniffer.Tracker
                     ClockReady = true;
                 }
             }
+        }
+
+        public void HandleCloneChanged(object sender, CloneChangedEventArgs args)
+        {
+            if (!IsSetup)
+            {
+                return;
+            }
+
+            if (CurrentClock < StartClock)
+            {
+                return;
+            }
+
+            InGameCloneChanged?.Invoke(sender, args);
         }
 
         public void HandleClockChanged(object sender, ClockChangedEventArgs args)

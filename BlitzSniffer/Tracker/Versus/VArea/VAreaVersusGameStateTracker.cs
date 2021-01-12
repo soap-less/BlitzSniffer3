@@ -46,15 +46,17 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(100);
-            holder.CloneChanged += HandleVAreaState;
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandleVAreaState;
         }
 
         public override void Dispose()
         {
             base.Dispose();
 
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleVAreaState;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandleVAreaState;
         }
 
         public int GetPaintTargetAreasCount()

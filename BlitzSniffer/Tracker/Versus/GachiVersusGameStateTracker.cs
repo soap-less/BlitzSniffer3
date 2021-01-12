@@ -69,13 +69,15 @@ namespace BlitzSniffer.Tracker.Versus
 
             CloneHolder holder = CloneHolder.Instance;
             holder.RegisterClone(100);
-            holder.CloneChanged += HandleSystemEventInternal;
+
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged += HandleSystemEventInternal;
         }
 
         public override void Dispose()
         {
-            CloneHolder holder = CloneHolder.Instance;
-            holder.CloneChanged -= HandleSystemEventInternal;
+            GameSession session = GameSession.Instance;
+            session.InGameCloneChanged -= HandleSystemEventInternal;
         }
 
         protected void UpdateScores(uint alphaScore, uint bravoScore, uint alphaPenalty = 0, uint bravoPenalty = 0)
