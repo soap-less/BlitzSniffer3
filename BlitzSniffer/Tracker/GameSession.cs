@@ -80,6 +80,14 @@ namespace BlitzSniffer.Tracker
             private set;
         }
 
+        public bool IsCoop
+        {
+            get
+            {
+                return GameStateTracker is CoopGameStateTracker;
+            }
+        }
+
         private bool ClockReady;
         private uint StartClock;
         private uint CurrentClock;
