@@ -1,4 +1,4 @@
-﻿using Blitz.Cmn.Def;
+using Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -250,6 +250,12 @@ namespace BlitzSniffer.Tracker.Player
                         break;
                     case 4: // Revival (after being splatted)
                     case 5: // Recover (after entering out of bounds or water)
+                        if (GameSession.Instance.IsCoop)
+                        {
+                            // During Coop, we listen for the rescue events instead.
+                            return;
+                        }
+                        
                         if (player.IsAlive)
                         {
                             return;
@@ -278,6 +284,23 @@ namespace BlitzSniffer.Tracker.Player
                             });
                         }
 
+                        break;
+                    case 52: // Coop_???
+                    case 53: // Coop_GetRescued
+                    case 54: // Coop_GetRescuedZombie
+                        if (player.IsAlive)
+                        {
+                            return;
+                        }
+
+                        player.IsAlive = true;
+
+                        EventTracker.Instance.AddEvent(new PlayerCoopRescuedEvent()
+                        {
+                            PlayerIdx = playerId,
+                            SaviourIdx = (int)unk10
+                        });
+                        
                         break;
                     default:
                         break;
