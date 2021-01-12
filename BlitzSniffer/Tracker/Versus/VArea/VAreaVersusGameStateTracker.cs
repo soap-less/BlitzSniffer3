@@ -258,6 +258,15 @@ namespace BlitzSniffer.Tracker.Versus.VArea
 
                 HandleFinishEvent(100 - alphaFinalScore, 100 - bravoFinalScore);
             }
+            else if (eventType == 7) // Overtime start
+            {
+                if (PaintTargetAreas.Any(x => x.ControllingTeam != GetTrailingTeam()))
+                {
+                    HasTrailingLostControlOfAreasInOvertime = true;
+
+                    SetOvertimeTimeout(OVERTIME_TIMEOUT_FRAMES);
+                }
+            }
         }
 
         // This appears in a lot of functions
