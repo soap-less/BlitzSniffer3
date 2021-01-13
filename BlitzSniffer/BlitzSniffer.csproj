@@ -32,7 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Blitz\Blitz.csproj" />
+    <ProjectReference Include="..\BlitzCommon\BlitzCommon.csproj" />
     <ProjectReference Include="..\NintendoNetcode\NintendoNetcode.csproj" />
   </ItemGroup>
 
