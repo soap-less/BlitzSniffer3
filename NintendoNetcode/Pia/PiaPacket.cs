@@ -1,6 +1,5 @@
 ﻿using BlitzCommon.Util;
 using NintendoNetcode.Pia.Encryption;
-using NintendoNetcode.Util;
 using Syroot.BinaryData;
 using System;
 using System.Collections.Generic;
