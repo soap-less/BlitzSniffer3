@@ -35,18 +35,25 @@ namespace BlitzSniffer
                     Player assisterPlayer = deathEvent.AssisterIdx != -1 ? tracker.GetPlayer((uint)deathEvent.AssisterIdx) : null;
 
                     string deathStr;
-                    if (attackerPlayer != null)
+                    if (!GameSession.Instance.IsCoop)
                     {
-                        deathStr = $"{victimPlayer.Name} was killed by {attackerPlayer.Name} using {deathEvent.Cause}";
+                        if (attackerPlayer != null)
+                        {
+                            deathStr = $"{victimPlayer.Name} was killed by {attackerPlayer.Name} using {deathEvent.Cause}";
+                        }
+                        else
+                        {
+                            deathStr = $"{victimPlayer.Name} died by {deathEvent.Cause}";
+                        }
+
+                        if (assisterPlayer != null)
+                        {
+                            deathStr += $" with help from {assisterPlayer.Name}";
+                        }
                     }
                     else
                     {
-                        deathStr = $"{victimPlayer.Name} died by {deathEvent.Cause}";
-                    }
-
-                    if (assisterPlayer != null)
-                    {
-                        deathStr += $" with help from {assisterPlayer.Name}";
+                        deathStr = $"{victimPlayer.Name} was killed by {deathEvent.Cause}";
                     }
 
                     LogContext.Information("PlayerDeath: {DeathString}", deathStr);
