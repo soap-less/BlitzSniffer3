@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BlitzCommon.Util;
+using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using Util;
 
 namespace Blitz
 {
