@@ -1,4 +1,5 @@
-﻿using BlitzSniffer.Config;
+﻿using BlitzCommon.Resources.Source;
+using BlitzSniffer.Config;
 using BlitzSniffer.Event;
 using BlitzSniffer.Receiver;
 using BlitzSniffer.Resources.Source;

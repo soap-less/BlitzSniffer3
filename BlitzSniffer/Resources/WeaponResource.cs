@@ -1,5 +1,4 @@
-﻿using Blitz;
-using BlitzSniffer.Resources.Source;
+﻿using BlitzCommon.Resources.Source;
 using Nintendo;
 using System.Collections.Generic;
 using System.IO;

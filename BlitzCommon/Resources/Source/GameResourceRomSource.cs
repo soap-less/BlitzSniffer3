@@ -5,9 +5,9 @@ using Nintendo.Switch;
 using System.Collections.Generic;
 using System.IO;
 
-namespace BlitzSniffer.Resources.Source
+namespace BlitzCommon.Resources.Source
 {
-    class GameResourceRomSource : GameResourceSource
+    public class GameResourceRomSource : GameResourceSource
     {
         private NcaWrapper NcaWrapper;
         private Dictionary<string, Sarc> PackFiles;

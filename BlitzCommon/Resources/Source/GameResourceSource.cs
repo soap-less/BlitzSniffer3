@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace BlitzSniffer.Resources.Source
+namespace BlitzCommon.Resources.Source
 {
-    abstract class GameResourceSource
+    public abstract class GameResourceSource
     {
         private static byte[] Yaz0MagicNumbers = Encoding.ASCII.GetBytes("Yaz0");
 
