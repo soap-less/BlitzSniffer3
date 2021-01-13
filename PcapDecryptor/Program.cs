@@ -1,4 +1,5 @@
 ﻿using NintendoNetcode.Pia;
+using NintendoNetcode.Pia.Encryption;
 using NintendoNetcode.Pia.Lan.Content.Browse;
 using PacketDotNet;
 using SharpPcap;
@@ -106,7 +107,8 @@ namespace PcapDecryptor
                     byte[] address = ipPacket.SourceAddress.GetAddressBytes();
                     try
                     {
-                        PiaPacket piaPacket = new PiaPacket(reader, SessionKey, BitConverter.ToUInt32(ipPacket.SourceAddress.GetAddressBytes()), false);
+                        PiaEncryptionArgs encryptionArgs = new PiaLanEncryptionArgs(SessionKey, ipPacket.SourceAddress.GetAddressBytes());
+                        PiaPacket piaPacket = new PiaPacket(reader, encryptionArgs, false);
                         piaPacket.IsEncrypted = false;
                         udpPacket.PayloadData = piaPacket.Serialize();
                     }
