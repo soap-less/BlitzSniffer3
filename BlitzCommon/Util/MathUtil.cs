@@ -1,4 +1,4 @@
-﻿namespace NintendoNetcode.Util
+﻿namespace BlitzCommon.Util
 {
     public static class MathUtil
     {

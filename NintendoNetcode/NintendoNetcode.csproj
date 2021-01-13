@@ -9,6 +9,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BlitzCommon\BlitzCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Syroot.BinaryData">
       <HintPath>..\Libraries\Syroot.BinaryData.dll</HintPath>
     </Reference>
