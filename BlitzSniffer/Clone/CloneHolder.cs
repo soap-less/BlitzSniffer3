@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BlitzSniffer.Clone
 {
@@ -71,9 +72,19 @@ namespace BlitzSniffer.Clone
         {
             if (Clones.TryGetValue(cloneId, out Dictionary<uint, byte[]> cloneData))
             {
+                bool isSimilar;
+                if (cloneData.TryGetValue(elementId, out byte[] elementData))
+                {
+                    isSimilar = elementData.SequenceEqual(data);
+                }
+                else
+                {
+                    isSimilar = false;
+                }
+
                 cloneData[elementId] = data;
 
-                CloneChanged(this, new CloneChangedEventArgs(cloneId, elementId, data, sourceId));
+                CloneChanged(this, new CloneChangedEventArgs(cloneId, elementId, data, isSimilar, sourceId));
             }
             else
             {
