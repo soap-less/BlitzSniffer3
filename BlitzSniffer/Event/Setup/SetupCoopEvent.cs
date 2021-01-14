@@ -1,4 +1,6 @@
-﻿namespace BlitzSniffer.Event.Setup
+﻿using BlitzSniffer.Event.Setup.Rule;
+
+namespace BlitzSniffer.Event.Setup
 {
     class SetupCoopEvent : SetupEvent
     {
@@ -6,7 +8,7 @@
 
         public SetupCoopEvent() : base()
         {
-            
+            RuleConfiguration = new SetupGenericRuleConfiguration();
         }
 
     }
