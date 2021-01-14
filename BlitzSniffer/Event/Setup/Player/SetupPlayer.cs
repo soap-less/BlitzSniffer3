@@ -20,5 +20,23 @@
             set;
         }
 
+        public SetupGear Headgear
+        {
+            get;
+            set;
+        }
+
+        public SetupGear Clothes
+        {
+            get;
+            set;
+        }
+
+        public SetupGear Shoes
+        {
+            get;
+            set;
+        }
+
     }
 }

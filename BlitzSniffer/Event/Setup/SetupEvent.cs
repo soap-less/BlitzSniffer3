@@ -1,4 +1,5 @@
 ﻿using Blitz.Cmn.Def;
+using BlitzCommon.Blitz.Cmn.Def;
 using BlitzSniffer.Event.Setup.Player;
 using BlitzSniffer.Event.Setup.Rule;
 using BlitzSniffer.Resources;
@@ -80,7 +81,10 @@ namespace BlitzSniffer.Event.Setup
                 {
                     Id = i,
                     Name = trackedPlayer.Name,
-                    Weapon = weapon
+                    Weapon = weapon,
+                    Headgear = new SetupGear(GearKind.Head, trackedPlayer.Headgear),
+                    Clothes = new SetupGear(GearKind.Clothes, trackedPlayer.Clothes),
+                    Shoes = new SetupGear(GearKind.Shoes, trackedPlayer.Shoes)
                 };
 
                 if (trackedPlayer.Team == Team.Alpha)
