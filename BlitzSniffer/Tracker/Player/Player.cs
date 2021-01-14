@@ -52,6 +52,12 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
+        public bool IsInSpecial
+        {
+            get;
+            set;
+        }
+
         public uint Kills
         {
             get;

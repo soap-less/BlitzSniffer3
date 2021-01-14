@@ -202,6 +202,7 @@ namespace BlitzSniffer.Tracker.Player
                         }
 
                         player.IsAlive = false;
+                        player.IsInSpecial = false;
                         player.Deaths++;
 
                         if (player.HasGachihoko)
@@ -283,13 +284,23 @@ namespace BlitzSniffer.Tracker.Player
                         break;
                     case 22: // PerformSpecial
                         // TODO: what happens when internal specials like BigLaser are activated?
-                        if (player.SpecialGaugeCharge == 100)
+                        
+                        if (player.IsInSpecial || !player.IsAlive)
                         {
-                            EventTracker.Instance.AddEvent(new PlayerSpecialActivateEvent()
-                            {
-                                PlayerIdx = playerId
-                            });
+                            return;
                         }
+
+                        if (player.SpecialGaugeCharge < 80)
+                        {
+                            return;
+                        }
+
+                        EventTracker.Instance.AddEvent(new PlayerSpecialActivateEvent()
+                        {
+                            PlayerIdx = playerId
+                        });
+
+                        player.IsInSpecial = true;
 
                         break;
                     case 52: // Coop_???
@@ -387,6 +398,11 @@ namespace BlitzSniffer.Tracker.Player
                 if (player.SpecialGaugeCharge != charge)
                 {
                     player.SpecialGaugeCharge = charge;
+
+                    if (charge == 0)
+                    {
+                        player.IsInSpecial = false;
+                    }
 
                     EventTracker.Instance.AddEvent(new PlayerGaugeUpdateEvent()
                     {
