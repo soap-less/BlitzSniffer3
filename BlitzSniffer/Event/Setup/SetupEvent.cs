@@ -1,6 +1,7 @@
 ﻿using Blitz.Cmn.Def;
 using BlitzSniffer.Event.Setup.Player;
 using BlitzSniffer.Event.Setup.Rule;
+using BlitzSniffer.Resources;
 using BlitzSniffer.Tracker;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace BlitzSniffer.Event.Setup
             get;
         }
 
-        public uint StageId
+        public string StageId
         {
             get;
             set;
@@ -58,7 +59,7 @@ namespace BlitzSniffer.Event.Setup
 
             GameStateTracker stateTracker = GameSession.Instance.GameStateTracker;
 
-            StageId = stateTracker.StageId;
+            StageId = StageResource.Instance.GetStageNameForId(stateTracker.StageId);
             Teams[0].Color = stateTracker.AlphaColor;
             Teams[1].Color = stateTracker.BravoColor;
 
