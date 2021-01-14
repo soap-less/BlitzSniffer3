@@ -1,5 +1,4 @@
-﻿using BlitzSniffer.Event.Setup.Player;
-using Nintendo.Sead;
+﻿using Nintendo.Sead;
 using System.Collections.Generic;
 
 namespace BlitzSniffer.Event.Setup
@@ -12,7 +11,9 @@ namespace BlitzSniffer.Event.Setup
             set;
         }
 
-        public List<SetupPlayer> Players
+        // Hack. Polymorphic serialization isn't supported. See SetupEvent. Honestly,
+        // I should just switch to Newtonsoft.Json at this point.
+        public List<object> Players
         {
             get;
             set;
@@ -20,7 +21,7 @@ namespace BlitzSniffer.Event.Setup
 
         public SetupTeam()
         {
-            Players = new List<SetupPlayer>();
+            Players = new List<object>();
         }
 
     }

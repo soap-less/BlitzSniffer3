@@ -1,10 +1,7 @@
 ﻿using Blitz.Cmn.Def;
-using BlitzCommon.Blitz.Cmn.Def;
 using BlitzSniffer.Event.Setup.Player;
 using BlitzSniffer.Event.Setup.Rule;
-using BlitzSniffer.Resources;
 using BlitzSniffer.Tracker;
-using BlitzSniffer.Tracker.Versus;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -69,23 +66,7 @@ namespace BlitzSniffer.Event.Setup
                     continue;
                 }
 
-                WeaponResource resource = WeaponResource.Instance;
-                SetupWeapon weapon = new SetupWeapon()
-                {
-                    Id = resource.GetMainWeapon((int)trackedPlayer.Weapon.Id),
-                    Sub = resource.GetSubWeapon((int)trackedPlayer.Weapon.SubId),
-                    Special = resource.GetSpecialWeapon((int)trackedPlayer.Weapon.SpecialId)
-                };
-
-                SetupPlayer setupPlayer = new SetupPlayer()
-                {
-                    Id = i,
-                    Name = trackedPlayer.Name,
-                    Weapon = weapon,
-                    Headgear = new SetupGear(GearKind.Head, trackedPlayer.Headgear),
-                    Clothes = new SetupGear(GearKind.Clothes, trackedPlayer.Clothes),
-                    Shoes = new SetupGear(GearKind.Shoes, trackedPlayer.Shoes)
-                };
+                SetupPlayer setupPlayer = GetSetupPlayer(i, trackedPlayer);
 
                 if (trackedPlayer.Team == Team.Alpha)
                 {
@@ -97,6 +78,8 @@ namespace BlitzSniffer.Event.Setup
                 }
             }
         }
+
+        protected abstract SetupPlayer GetSetupPlayer(uint playerId, Tracker.Player.Player player);
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using BlitzSniffer.Event.Setup.Rule;
+﻿using BlitzSniffer.Event.Setup.Player;
+using BlitzSniffer.Event.Setup.Rule;
 
 namespace BlitzSniffer.Event.Setup
 {
@@ -9,6 +10,15 @@ namespace BlitzSniffer.Event.Setup
         public SetupCoopEvent() : base()
         {
             RuleConfiguration = new SetupGenericRuleConfiguration();
+        }
+
+        protected override SetupPlayer GetSetupPlayer(uint playerId, Tracker.Player.Player player)
+        {
+            return new SetupPlayer()
+            {
+                Id = playerId,
+                Name = player.Name
+            };
         }
 
     }

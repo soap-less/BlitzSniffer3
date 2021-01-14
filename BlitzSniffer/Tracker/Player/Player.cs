@@ -3,7 +3,7 @@ using BlitzCommon.Blitz.Cmn.Def;
 
 namespace BlitzSniffer.Tracker.Player
 {
-    class Player
+    public class Player
     {
         public ulong SourceStationId
         {
