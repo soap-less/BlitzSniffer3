@@ -20,7 +20,7 @@ namespace BlitzSniffer.Tracker.Player
 {
     class PlayerTracker : IDisposable
     {
-        private static readonly uint SIGNAL_TIMEOUT = 20;
+        private static readonly uint SIGNAL_TIMEOUT = 40;
 
         private readonly Dictionary<uint, Player> Players;
         private readonly PlayerOffenseTracker OffenseTracker;
