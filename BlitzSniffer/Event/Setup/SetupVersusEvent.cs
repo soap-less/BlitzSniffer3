@@ -10,19 +10,37 @@ namespace BlitzSniffer.Event.Setup
 {
     public class SetupVersusEvent : SetupEvent
     {
-        public VersusRule Rule
+        private VersusRule _Rule;
+
+        public override string Rule
         {
-            get;
-            set;
+            get
+            {
+                switch (_Rule)
+                {
+                    case VersusRule.Pnt:
+                        return "Paint";
+                    case VersusRule.Vgl:
+                        return "VGoal";
+                    case VersusRule.Var:
+                        return "VArea";
+                    case VersusRule.Vlf:
+                        return "VLift";
+                    case VersusRule.Vcl:
+                        return "VClam";
+                    default:
+                        return "Unknown";
+                }
+            }
         }
 
         public SetupVersusEvent()
         {
             VersusGameStateTracker stateTracker = GameSession.Instance.GameStateTracker as VersusGameStateTracker;
 
-            Rule = stateTracker.Rule;
-            
-            switch (Rule)
+            _Rule = stateTracker.Rule;
+
+            switch (_Rule)
             {
                 case VersusRule.Var:
                     RuleConfiguration = new SetupVAreaRuleConfiguration();

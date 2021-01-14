@@ -11,6 +11,11 @@ namespace BlitzSniffer.Event.Setup
     {
         public override string Name => "Setup";
 
+        public abstract string Rule
+        {
+            get;
+        }
+
         public uint StageId
         {
             get;
