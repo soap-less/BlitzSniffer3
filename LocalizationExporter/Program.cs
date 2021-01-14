@@ -18,6 +18,7 @@ namespace LocalizationExporter
 
         private static Sarc CommonMsgSarc;
         private static Dictionary<string, string> LocalizedWeaponsDict = new Dictionary<string, string>();
+        private static Dictionary<string, string> LocalizedGearDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedCoopEnemiesDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedStagesDict = new Dictionary<string, string>();
 
@@ -52,6 +53,12 @@ namespace LocalizationExporter
 
             logContext.Information("Fetched weapon info");
 
+            LoadGearInfo("Head", "Hed");
+            LoadGearInfo("Clothes", "Clt");
+            LoadGearInfo("Shoes", "Shs");
+
+            logContext.Information("Fetched gear info");
+
             LoadCoopEnemies();
 
             logContext.Information("Fetched Coop enemies");
@@ -66,6 +73,7 @@ namespace LocalizationExporter
             };
 
             string weaponsJson = JsonSerializer.Serialize(LocalizedWeaponsDict, options);
+            string gearJson = JsonSerializer.Serialize(LocalizedGearDict, options);
             string coopEnemiesJson = JsonSerializer.Serialize(LocalizedCoopEnemiesDict, options);
             string stagesJson = JsonSerializer.Serialize(LocalizedStagesDict, options);
 
@@ -74,6 +82,7 @@ namespace LocalizationExporter
             Directory.CreateDirectory(outputDirectory);
 
             File.WriteAllText(Path.Combine(outputDirectory, "weapons.json"), weaponsJson);
+            File.WriteAllText(Path.Combine(outputDirectory, "gear.json"), gearJson);
             File.WriteAllText(Path.Combine(outputDirectory, "coop_enemies.json"), coopEnemiesJson);
             File.WriteAllText(Path.Combine(outputDirectory, "stages.json"), stagesJson);
 
@@ -106,6 +115,26 @@ namespace LocalizationExporter
                 if (msbt.ContainsKey(name))
                 {
                     LocalizedWeaponsDict.Add($"{namePrefix}_{name}", msbt.Get(name));
+                }
+            }
+        }
+
+        private static void LoadGearInfo(string type, string namePrefix)
+        {
+            string bymlPath = $"/Mush/GearInfo_{type}.release.byml";
+
+            Msbt msbt = new Msbt(CommonMsgSarc[$"GearName_{type}.msbt"]);
+
+            using Stream infoStream = GameResourceSource.Instance.GetFile(bymlPath);
+            dynamic infoByml = ByamlLoader.LoadByamlDynamic(infoStream);
+
+            foreach (Dictionary<string, dynamic> info in infoByml)
+            {
+                string name = info["Name"];
+
+                if (msbt.ContainsKey(name))
+                {
+                    LocalizedGearDict.Add($"{namePrefix}_{name}", msbt.Get(name));
                 }
             }
         }
