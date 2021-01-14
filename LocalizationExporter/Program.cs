@@ -19,6 +19,7 @@ namespace LocalizationExporter
         private static Sarc CommonMsgSarc;
         private static Dictionary<string, string> LocalizedWeaponsDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedGearDict = new Dictionary<string, string>();
+        private static Dictionary<string, string> LocalizedGearSkillsDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedCoopEnemiesDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedStagesDict = new Dictionary<string, string>();
 
@@ -59,6 +60,10 @@ namespace LocalizationExporter
 
             logContext.Information("Fetched gear info");
 
+            LoadGearSkills();
+
+            logContext.Information("Fetched gear skills");
+
             LoadCoopEnemies();
 
             logContext.Information("Fetched Coop enemies");
@@ -74,6 +79,7 @@ namespace LocalizationExporter
 
             string weaponsJson = JsonSerializer.Serialize(LocalizedWeaponsDict, options);
             string gearJson = JsonSerializer.Serialize(LocalizedGearDict, options);
+            string gearSkillsJson = JsonSerializer.Serialize(LocalizedGearSkillsDict, options);
             string coopEnemiesJson = JsonSerializer.Serialize(LocalizedCoopEnemiesDict, options);
             string stagesJson = JsonSerializer.Serialize(LocalizedStagesDict, options);
 
@@ -83,6 +89,7 @@ namespace LocalizationExporter
 
             File.WriteAllText(Path.Combine(outputDirectory, "weapons.json"), weaponsJson);
             File.WriteAllText(Path.Combine(outputDirectory, "gear.json"), gearJson);
+            File.WriteAllText(Path.Combine(outputDirectory, "gear_skills.json"), gearSkillsJson);
             File.WriteAllText(Path.Combine(outputDirectory, "coop_enemies.json"), coopEnemiesJson);
             File.WriteAllText(Path.Combine(outputDirectory, "stages.json"), stagesJson);
 
@@ -136,6 +143,16 @@ namespace LocalizationExporter
                 {
                     LocalizedGearDict.Add($"{namePrefix}_{name}", msbt.Get(name));
                 }
+            }
+        }
+
+        private static void LoadGearSkills()
+        {
+            Msbt msbt = new Msbt(CommonMsgSarc["GearSkillName.msbt"]);
+
+            foreach (string key in msbt.Keys)
+            {
+                LocalizedGearSkillsDict.Add(key, msbt.Get(key));
             }
         }
 
