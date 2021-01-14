@@ -1,4 +1,5 @@
 ﻿using Blitz.Cmn.Def;
+using BlitzCommon.Blitz.Cmn.Def;
 
 namespace BlitzSniffer.Tracker.Player
 {
@@ -35,6 +36,24 @@ namespace BlitzSniffer.Tracker.Player
         }
 
         public bool IsAlive
+        {
+            get;
+            set;
+        }
+
+        public Gear Headgear
+        {
+            get;
+            set;
+        }
+
+        public Gear Clothes
+        {
+            get;
+            set;
+        }
+
+        public Gear Shoes
         {
             get;
             set;

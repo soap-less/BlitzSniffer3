@@ -1,4 +1,5 @@
 using Blitz.Cmn.Def;
+using BlitzCommon.Blitz.Cmn.Def;
 using BlitzSniffer.Clone;
 using BlitzSniffer.Event;
 using BlitzSniffer.Event.Player;
@@ -164,6 +165,26 @@ namespace BlitzSniffer.Tracker.Player
                     weapon.TurfInked = reader.ReadUInt32();
 
                     player.Weapon = weapon;
+                    
+                    Gear ReadGear()
+                    {
+                        Gear gear = new Gear();
+                        gear.Id = reader.ReadUInt32();
+                        gear.MainSkill = (GearSkill)reader.ReadUInt16();
+                        gear.SecondarySkillOne = (GearSkill)reader.ReadUInt16();
+                        gear.SecondarySkillTwo = (GearSkill)reader.ReadUInt16();
+                        gear.SecondarySkillThree = (GearSkill)reader.ReadUInt16();
+                        gear.Unk1 = reader.ReadUInt16();
+                        gear.Unk2 = reader.ReadUInt16();
+                        gear.ExpPoints = 0; // not transmitted
+
+                        return gear;
+                    }
+
+                    reader.Seek(28, SeekOrigin.Begin);
+                    player.Shoes = ReadGear();
+                    player.Clothes = ReadGear();
+                    player.Headgear = ReadGear();
                 }
 
                 if (Players.Values.Where(p => p.IsActive && !p.IsDisconnected).Count() == tracker.ActivePlayerCount)
