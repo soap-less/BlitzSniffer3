@@ -1,20 +1,20 @@
 ﻿namespace BlitzSniffer.Event.Setup.Player
 {
-    public class SetupPlayer
+    public class SetupWeapon
     {
-        public uint Id
+        public string Id
         {
             get;
             set;
         }
 
-        public string Name
+        public string Sub
         {
             get;
             set;
         }
 
-        public SetupWeapon Weapon
+        public string Special
         {
             get;
             set;
