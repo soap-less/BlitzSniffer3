@@ -30,8 +30,10 @@
 
         public bool IsSetup
         {
-            get;
-            set;
+            get
+            {
+                return Name != null && PlayerInfo != null;
+            }
         }
 
         public Station(ulong ssid)
@@ -44,7 +46,6 @@
         {
             Name = DefaultName;
             SeqState = 0;
-            IsSetup = false;
         }
 
     }

@@ -189,10 +189,7 @@ namespace BlitzSniffer.Tracker.Station
             using (MemoryStream stream = new MemoryStream(args.Data))
             using (BinaryDataReader reader = new BinaryDataReader(stream))
             {
-                string name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
-                station.Name = name;
-
-                station.IsSetup = true;
+                station.Name = reader.ReadString(BinaryStringFormat.ZeroTerminated, Encoding.Unicode);
             }
         }
 
