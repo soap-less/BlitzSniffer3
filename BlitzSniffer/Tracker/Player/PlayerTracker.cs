@@ -152,6 +152,20 @@ namespace BlitzSniffer.Tracker.Player
                 player.SourceStationId = args.SourceStationId;
                 player.IsActive = true;
 
+                using (MemoryStream stream = new MemoryStream(station.PlayerInfo))
+                using (BinaryDataReader reader = new BinaryDataReader(stream))
+                {
+                    reader.Seek(8, SeekOrigin.Begin);
+
+                    Weapon weapon = new Weapon();
+                    weapon.Id = reader.ReadUInt32();
+                    weapon.SubId = reader.ReadUInt32();
+                    weapon.SpecialId = reader.ReadUInt32();
+                    weapon.TurfInked = reader.ReadUInt32();
+
+                    player.Weapon = weapon;
+                }
+
                 if (Players.Values.Where(p => p.IsActive && !p.IsDisconnected).Count() == tracker.ActivePlayerCount)
                 {
                     // Apply all team bits now that all players have been marked as active
