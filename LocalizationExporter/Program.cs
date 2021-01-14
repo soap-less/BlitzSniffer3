@@ -17,11 +17,13 @@ namespace LocalizationExporter
         private static readonly string LOG_FORMAT = "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}";
 
         private static Sarc CommonMsgSarc;
+        private static Sarc LayoutMsgSarc;
         private static Dictionary<string, string> LocalizedWeaponsDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedGearDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedGearSkillsDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedCoopEnemiesDict = new Dictionary<string, string>();
         private static Dictionary<string, string> LocalizedStagesDict = new Dictionary<string, string>();
+        private static Dictionary<string, string> LocalizedSignalsDict = new Dictionary<string, string>();
 
         static void Main(string baseNca, string updateNca, string language = "USen")
         {
@@ -45,6 +47,7 @@ namespace LocalizationExporter
             logContext.Information("Loaded ROM");
 
             CommonMsgSarc = new Sarc(GameResourceSource.Instance.GetFile($"/Message/CommonMsg_{language}.release.szs"));
+            LayoutMsgSarc = new Sarc(GameResourceSource.Instance.GetFile($"/Message/LayoutMsg_{language}.release.szs"));
 
             logContext.Information("Loaded CommonMsg from ROM");
 
@@ -72,6 +75,8 @@ namespace LocalizationExporter
 
             logContext.Information("Fetched stages");
 
+            LoadSignals();
+
             JsonSerializerOptions options = new JsonSerializerOptions()
             {
                 WriteIndented = true
@@ -82,6 +87,7 @@ namespace LocalizationExporter
             string gearSkillsJson = JsonSerializer.Serialize(LocalizedGearSkillsDict, options);
             string coopEnemiesJson = JsonSerializer.Serialize(LocalizedCoopEnemiesDict, options);
             string stagesJson = JsonSerializer.Serialize(LocalizedStagesDict, options);
+            string signalsJson = JsonSerializer.Serialize(LocalizedSignalsDict, options);
 
             string outputDirectory = $"{language}";
 
@@ -92,6 +98,7 @@ namespace LocalizationExporter
             File.WriteAllText(Path.Combine(outputDirectory, "gear_skills.json"), gearSkillsJson);
             File.WriteAllText(Path.Combine(outputDirectory, "coop_enemies.json"), coopEnemiesJson);
             File.WriteAllText(Path.Combine(outputDirectory, "stages.json"), stagesJson);
+            File.WriteAllText(Path.Combine(outputDirectory, "signals.json"), signalsJson);
 
             logContext.Information("Serialized to JSON");
 
@@ -203,6 +210,35 @@ namespace LocalizationExporter
                 }
 
                 LocalizedStagesDict[mapFileName] = msbt.Get(name);
+            }
+        }
+
+        private static void LoadSignals()
+        {
+            Msbt signalMsbt = new Msbt(LayoutMsgSarc["VS_ShoutBalloon_00.msbt"]);
+
+            foreach (string key in signalMsbt.Keys)
+            {
+                string newKey;
+                switch (key)
+                {
+                    case "000":
+                        newKey = "Booyah";
+                        break;
+                    case "001":
+                        newKey = "ThisWay";
+                        break;
+                    case "002":
+                        newKey = "Help";
+                        break;
+                    case "003":
+                        newKey = "Ouch";
+                        break;
+                    default:
+                        throw new Exception("Unknown signal");
+                }
+
+                LocalizedSignalsDict[newKey] = signalMsbt.Get(key);
             }
         }
 
