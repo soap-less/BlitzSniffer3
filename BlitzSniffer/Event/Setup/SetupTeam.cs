@@ -1,4 +1,5 @@
-﻿using Nintendo.Sead;
+﻿using BlitzSniffer.Event.Setup.Player;
+using Nintendo.Sead;
 using System.Collections.Generic;
 
 namespace BlitzSniffer.Event.Setup

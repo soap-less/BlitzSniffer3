@@ -1,4 +1,5 @@
 ﻿using Blitz.Cmn.Def;
+using BlitzSniffer.Event.Setup.Player;
 using BlitzSniffer.Event.Setup.Rule;
 using BlitzSniffer.Tracker;
 using BlitzSniffer.Tracker.Versus;

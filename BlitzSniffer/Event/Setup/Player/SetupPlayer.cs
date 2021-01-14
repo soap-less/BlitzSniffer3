@@ -1,4 +1,4 @@
-﻿namespace BlitzSniffer.Event.Setup
+﻿namespace BlitzSniffer.Event.Setup.Player
 {
     public class SetupPlayer
     {
