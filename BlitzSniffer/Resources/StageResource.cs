@@ -46,6 +46,11 @@ namespace BlitzSniffer.Resources
             }
         }
 
+        public string GetStageNameForId(int id)
+        {
+            return Stages[id];
+        }
+
         public dynamic LoadStageForId(int id)
         {
             using (Stream stream = GameResourceSource.Instance.GetFile($"/Map/{Stages[id]}.szs"))
