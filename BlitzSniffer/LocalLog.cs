@@ -67,16 +67,16 @@ namespace BlitzSniffer
                     string signal;
                     switch (signalEvent.SignalType)
                     {
-                        case 0:
+                        case "ThisWay":
                             signal = "This way!";
                             break;
-                        case 1:
-                            signal = "Ouch!";
+                        case "Ouch":
+                            signal = "Ouch...";
                             break;
-                        case 2:
+                        case "Booyah":
                             signal = "Booyah!";
                             break;
-                        case 3:
+                        case "Help":
                             signal = "Help!";
                             break;
                         default:

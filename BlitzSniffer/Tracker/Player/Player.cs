@@ -107,7 +107,7 @@ namespace BlitzSniffer.Tracker.Player
             set;
         }
 
-        public int LastSignalType
+        public PlayerSignal? LastSignalType
         {
             get;
             set;
@@ -134,7 +134,7 @@ namespace BlitzSniffer.Tracker.Player
             Assists = 0;
             HasGachihoko = false;
             IsOnVLift = false;
-            LastSignalType = -1;
+            LastSignalType = null;
             LastSignalExpirationTick = 0;
         }
 

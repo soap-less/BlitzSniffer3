@@ -4,7 +4,7 @@
     {
         public override string Name => "PlayerSignalEvent";
 
-        public int SignalType
+        public string SignalType
         {
             get;
             set;

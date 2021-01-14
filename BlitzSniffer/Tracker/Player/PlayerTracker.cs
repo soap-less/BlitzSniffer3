@@ -498,32 +498,31 @@ namespace BlitzSniffer.Tracker.Player
 
                 ushort gameSignalType = reader.ReadUInt16();
 
-                int eventSignalType;
+                PlayerSignal eventSignalType;
                 if (gameSignalType == 0)
                 {
                     if (player.IsAlive)
                     {
-                        // This way!
-                        eventSignalType = 0;
+                        eventSignalType = PlayerSignal.ThisWay;
                     }
                     else
                     {
                         if (GameSession.Instance.IsCoop)
                         {
                             // Help!
-                            eventSignalType = 3;
+                            eventSignalType = PlayerSignal.Help;
                         }
                         else
                         {
                             // Ouch!
-                            eventSignalType = 1;
+                            eventSignalType = PlayerSignal.Ouch;
                         }
                     }
                 }
                 else
                 {
                     // Booyah!
-                    eventSignalType = 2;
+                    eventSignalType = PlayerSignal.Booyah;
                 }
 
                 if (eventSignalType == player.LastSignalType)
@@ -537,18 +536,18 @@ namespace BlitzSniffer.Tracker.Player
                 EventTracker.Instance.AddEvent(new PlayerSignalEvent()
                 {
                     PlayerIdx = playerId,
-                    SignalType = eventSignalType
+                    SignalType = Enum.GetName(typeof(PlayerSignal), eventSignalType)
                 });
             }
         }
 
         private void HandleGameTick(object sender, GameTickedEventArgs args)
         {
-            foreach (Player player in Players.Values.Where(p => p.LastSignalType != -1))
+            foreach (Player player in Players.Values.Where(p => p.LastSignalType.HasValue))
             {
                 if (player.LastSignalExpirationTick <= args.ElapsedTicks)
                 {
-                    player.LastSignalType = -1;
+                    player.LastSignalType = null;
                     player.LastSignalExpirationTick = 0;
                 }
             }
