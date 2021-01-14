@@ -21,6 +21,13 @@
             set;
         }
 
+        // Cnet::PacketPlayerInfo
+        public byte[] PlayerInfo
+        {
+            get;
+            set;
+        }
+
         public bool IsSetup
         {
             get;

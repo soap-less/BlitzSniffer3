@@ -41,6 +41,7 @@ namespace BlitzSniffer.Tracker.Station
             CloneHolder holder = CloneHolder.Instance;
             holder.CloneChanged += HandleStationInfo;
             holder.CloneChanged += HandlePlayerName;
+            holder.CloneChanged += HandlePlayerInfo;
             holder.CloneChanged += HandleMasterSeqState;
 
             for (uint i = 0; i < 10; i++)
@@ -192,6 +193,28 @@ namespace BlitzSniffer.Tracker.Station
                 station.Name = name;
 
                 station.IsSetup = true;
+            }
+        }
+
+        private void HandlePlayerInfo(object sender, CloneChangedEventArgs args)
+        {
+            uint enlId = args.CloneId - 3;
+            if (enlId >= 10)
+            {
+                return;
+            }
+
+            if (args.ElementId != 2)
+            {
+                return;
+            }
+
+            Station station = GetStationForSsid(args.SourceStationId);
+
+            using (MemoryStream stream = new MemoryStream(args.Data))
+            using (BinaryDataReader reader = new BinaryDataReader(stream))
+            {
+                station.PlayerInfo = args.Data;
             }
         }
 
