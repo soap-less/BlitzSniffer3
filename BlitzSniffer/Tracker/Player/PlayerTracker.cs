@@ -614,8 +614,8 @@ namespace BlitzSniffer.Tracker.Player
                 case 6: // Squished
                     cause = WeaponResource.Instance.GetMainWeapon((int)id);
                     break;
-                case 7:
-                    cause = $"Wsp_Shachihoko_Explosion";
+                case 7: // Inksploded
+                    cause = WeaponResource.Instance.GetSpecialWeapon((int)id);
                     break;
                 case 9:
                 case 13:
