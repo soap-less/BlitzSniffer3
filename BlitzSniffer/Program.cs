@@ -102,22 +102,6 @@ namespace BlitzSniffer
 
             SnifferConfig.Instance.Save();
 
-#if !DEBUG
-            KeyInfoResult keyResult = Key.Activate(token: CRYPTOLENS_AUTH_TOKEN, parameters: new ActivateModel()
-            {
-                Key = SnifferConfig.Instance.Key,
-                ProductId = 8988,
-                Sign = true,
-                MachineCode = Helpers.GetMachineCodePI()
-            });
-
-            if (keyResult == null || keyResult.Result == ResultType.Error || !keyResult.LicenseKey.HasValidSignature(CRYPTOLENS_PUBLIC_KEY).IsValid())
-            {
-                Console.WriteLine("Please contact OatmealDome.");
-                return;
-            }
-#endif
-
             Console.Clear();
 
             Directory.CreateDirectory("Logs");
@@ -148,6 +132,22 @@ namespace BlitzSniffer
 
             localLogContext.Information("BlitzSniffer {Version} ({BuildType}) for EndGameTV / Catalyst Workshop", ThisAssembly.AssemblyFileVersion, buildType);
             localLogContext.Information("Copyright © 2020 - 2021 OatmealDome");
+
+#if !DEBUG
+            KeyInfoResult keyResult = Key.Activate(token: CRYPTOLENS_AUTH_TOKEN, parameters: new ActivateModel()
+            {
+                Key = SnifferConfig.Instance.Key,
+                ProductId = 8988,
+                Sign = true,
+                MachineCode = Helpers.GetMachineCodePI()
+            });
+
+            if (keyResult == null || keyResult.Result == ResultType.Error || !keyResult.LicenseKey.HasValidSignature(CRYPTOLENS_PUBLIC_KEY).IsValid())
+            {
+                localLogContext.Error("Program validation failed. Please contact OatmealDome.");
+                return;
+            }
+#endif
 
             if (useRom)
             {
