@@ -1,10 +1,12 @@
-﻿namespace BlitzSniffer.Event.Versus.VLift
+﻿using Blitz.Cmn.Def;
+
+namespace BlitzSniffer.Event.Versus.VLift
 {
     class VLiftCheckpointUpdateEvent : GameEvent
     {
         public override string Name => "VLiftCheckpointUpdate";
 
-        public uint Team
+        public Team Team
         {
             get;
             set;
