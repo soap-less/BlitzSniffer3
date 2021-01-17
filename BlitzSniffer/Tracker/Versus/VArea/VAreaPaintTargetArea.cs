@@ -59,7 +59,7 @@ namespace BlitzSniffer.Tracker.Versus.VArea
                 EventTracker.Instance.AddEvent(new VAreaPaintAreaControlChangeEvent()
                 {
                     AreaIdx = AreaIdx,
-                    Team = (uint)team
+                    Team = team
                 });
             }
 
