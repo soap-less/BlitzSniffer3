@@ -146,7 +146,7 @@ namespace BlitzSniffer.Tracker.Versus.VLift
 
                 EventTracker.Instance.AddEvent(new VLiftCheckpointUpdateEvent()
                 {
-                    Team = (uint)(team == Team.Alpha ? 0 : 1),
+                    Team = team,
                     Idx = UpdateCheckpoint,
                     Hp = checkpoint.Hp,
                     BestHp = checkpoint.BestHp
