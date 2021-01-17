@@ -1,4 +1,6 @@
-﻿namespace BlitzSniffer.Event.Versus.VArea
+﻿using Blitz.Cmn.Def;
+
+namespace BlitzSniffer.Event.Versus.VArea
 {
     class VAreaPaintAreaControlChangeEvent : GameEvent
     {
@@ -10,7 +12,7 @@
             set;
         }
 
-        public uint Team
+        public Team Team
         {
             get;
             set;
