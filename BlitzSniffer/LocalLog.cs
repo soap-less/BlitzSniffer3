@@ -189,7 +189,7 @@ namespace BlitzSniffer
 
                     break;
                 case VClamBasketVulnerabilityUpdateEvent basketVulnUpdateEvent:
-                    LogContext.Information("VClamBasketVulnerabilityUpdate: {Team}'s basket is now {BasketState}", basketVulnUpdateEvent.Team, basketVulnUpdateEvent.IsInvincible ? "vulnerable" : "invincible");
+                    LogContext.Information("VClamBasketVulnerabilityUpdate: {Team}'s basket is now {BasketState}", basketVulnUpdateEvent.Team, basketVulnUpdateEvent.IsInvincible ? "invincible" : "vulnerable");
 
                     break;
                 case PlayerGaugeUpdateEvent gaugeEvent:
