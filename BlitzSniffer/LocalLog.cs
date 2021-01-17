@@ -4,6 +4,7 @@ using BlitzSniffer.Event.Player.VGoal;
 using BlitzSniffer.Event.Player.VLift;
 using BlitzSniffer.Event.Versus;
 using BlitzSniffer.Event.Versus.VArea;
+using BlitzSniffer.Event.Versus.VClam;
 using BlitzSniffer.Event.Versus.VGoal;
 using BlitzSniffer.Event.Versus.VLift;
 using BlitzSniffer.Tracker;
@@ -173,6 +174,22 @@ namespace BlitzSniffer
                     break;
                 case VAreaPaintAreaControlChangeEvent changeEvent:
                     LogContext.Information("VAreaPaintAreaControlChange: area {AreaIndex}, controlled team {Team}", changeEvent.AreaIdx, changeEvent.Team);
+
+                    break;
+                case VClamBasketBreakEvent basketBreakEvent:
+                    LogContext.Information("VClamBasketBreak: {Team}'s basket was broken", basketBreakEvent.Team);
+
+                    break;
+                case VClamBasketClosedEvent basketClosedEvent:
+                    LogContext.Information("VClamBasketClosed: {Team}'s basket has closed", basketClosedEvent.Team);
+
+                    break;
+                case VClamBasketTimeoutUpdateEvent basketTimeoutEvent:
+                    LogContext.Information("VClamBasketTimeoutUpdate: {Team}'s basket will now close in {Ticks} ticks", basketTimeoutEvent.Team, basketTimeoutEvent.Timeout);
+
+                    break;
+                case VClamBasketVulnerabilityUpdateEvent basketVulnUpdateEvent:
+                    LogContext.Information("VClamBasketVulnerabilityUpdate: {Team}'s basket is now {BasketState}", basketVulnUpdateEvent.Team, basketVulnUpdateEvent.IsInvincible ? "vulnerable" : "invincible");
 
                     break;
                 case PlayerGaugeUpdateEvent gaugeEvent:
