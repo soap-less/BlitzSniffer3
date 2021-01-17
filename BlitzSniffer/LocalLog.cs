@@ -101,11 +101,11 @@ namespace BlitzSniffer
 
                     break;
                 case PlayerRidingVLiftEvent ridingEvent:
-                    LogContext.Information("PlayerRidingVLiftEvent: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
+                    LogContext.Information("PlayerRidingVLift: {Name} is riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(ridingEvent.PlayerIdx).Name);
 
                     break;
                 case PlayerLeftVLiftEvent leftEvent:
-                    LogContext.Information("PlayerLeftVLiftEvent: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
+                    LogContext.Information("PlayerLeftVLift: {Name} is no longer riding the Tower", GameSession.Instance.PlayerTracker.GetPlayer(leftEvent.PlayerIdx).Name);
 
                     break;
                 case PlayerCoopRescuedEvent coopRescuedEvent:
@@ -115,16 +115,16 @@ namespace BlitzSniffer
 
                     if (coopSaviourPlayer != null)
                     {
-                        LogContext.Information("PlayerCoopRescuedEvent: {VictimName} was rescued by {SaviourName}", coopVictimPlayer.Name, coopSaviourPlayer.Name);
+                        LogContext.Information("PlayerCoopRescued: {VictimName} was rescued by {SaviourName}", coopVictimPlayer.Name, coopSaviourPlayer.Name);
                     }
                     else
                     {
-                        LogContext.Information("PlayerCoopRescuedEvent: {VictimName} was automatically revived", coopVictimPlayer.Name);
+                        LogContext.Information("PlayerCoopRescued: {VictimName} was automatically revived", coopVictimPlayer.Name);
                     }
                     
                     break;
                 case PaintFinishEvent paintFinishEvent:
-                    LogContext.Information("PaintFinishEvent: game finish, {AlphaScore}p - {BravoScore}p", paintFinishEvent.AlphaPoints, paintFinishEvent.BravoPoints);
+                    LogContext.Information("PaintFinish: game finish, {AlphaScore}p - {BravoScore}p", paintFinishEvent.AlphaPoints, paintFinishEvent.BravoPoints);
 
                     break;
                 case GachiScoreUpdateEvent scoreUpdateEvent:
@@ -149,11 +149,11 @@ namespace BlitzSniffer
                     
                     break;
                 case GachiFinishEvent finishEvent:
-                    LogContext.Information("GachiFinishEvent: game finish, {AlphaScore} - {BravoScore}", finishEvent.AlphaScore, finishEvent.BravoScore);
+                    LogContext.Information("GachiFinish: game finish, {AlphaScore} - {BravoScore}", finishEvent.AlphaScore, finishEvent.BravoScore);
 
                     break;
                 case VGoalBarrierBreakEvent barrierBreakEvent:
-                    LogContext.Information("VGoalBarrierBreakEvent: Rainmaker barrier was broken by {Name}", GameSession.Instance.PlayerTracker.GetPlayer(barrierBreakEvent.BreakerPlayerIdx).Name);
+                    LogContext.Information("VGoalBarrierBreak: Rainmaker barrier was broken by {Name}", GameSession.Instance.PlayerTracker.GetPlayer(barrierBreakEvent.BreakerPlayerIdx).Name);
 
                     break;
                 /*case VLiftPositionUpdateEvent positionEvent:
