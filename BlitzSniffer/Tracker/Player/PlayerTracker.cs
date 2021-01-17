@@ -262,11 +262,9 @@ namespace BlitzSniffer.Tracker.Player
                             if (!GameSession.Instance.IsCoop)
                             {
                                 cause = GetDeathCauseForAttackedPlayer(type, id);
-
-                                // If this player was the Gachihoko holder and they died because of the timeout explosion,
-                                // don't set their their attacker. Otherwise, the death event will say that they were killed
-                                // by themselves, which isn't standard (for suicides, the attacker variable is never set).
-                                if (type != 3 || id != 4)
+                                
+                                // Only set the attacker ID if it isn't the victim player (i.e. don't do it for suicides).
+                                if ((int)unk10 != playerId)
                                 {
                                     attackerIdx = (int)unk10;
                                 }
