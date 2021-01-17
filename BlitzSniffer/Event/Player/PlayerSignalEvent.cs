@@ -2,7 +2,7 @@
 {
     class PlayerSignalEvent : PlayerEvent
     {
-        public override string Name => "PlayerSignalEvent";
+        public override string Name => "PlayerSignal";
 
         public string SignalType
         {
