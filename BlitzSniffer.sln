@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PcapDecryptor", "PcapDecryp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlitzCommon", "BlitzCommon\BlitzCommon.csproj", "{6184B73A-CB68-4A1C-8466-4E53F6CDE40C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalizationExporter", "LocalizationExporter\LocalizationExporter.csproj", "{793B4834-5B10-4F31-9AC6-068EE7A09A45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalizationExporter", "LocalizationExporter\LocalizationExporter.csproj", "{793B4834-5B10-4F31-9AC6-068EE7A09A45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnifferResourceEncryptor", "SnifferResourceEncryptor\SnifferResourceEncryptor.csproj", "{FAAF7581-BAE9-4F2F-A6BF-C7308E193C92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{793B4834-5B10-4F31-9AC6-068EE7A09A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{793B4834-5B10-4F31-9AC6-068EE7A09A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{793B4834-5B10-4F31-9AC6-068EE7A09A45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAAF7581-BAE9-4F2F-A6BF-C7308E193C92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAAF7581-BAE9-4F2F-A6BF-C7308E193C92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAAF7581-BAE9-4F2F-A6BF-C7308E193C92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAAF7581-BAE9-4F2F-A6BF-C7308E193C92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
