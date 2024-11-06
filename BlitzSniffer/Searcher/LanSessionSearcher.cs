@@ -58,7 +58,7 @@ namespace BlitzSniffer.Searcher
             Packet packet = Packet.ParsePacket(e.Packet.LinkLayerType, e.Packet.Data);
 
             UdpPacket udpPacket = packet.Extract<UdpPacket>();
-            if (udpPacket.DestinationPort != 30000)
+            if (udpPacket.DestinationPort != 35000)
             {
                 return;
             }
@@ -71,7 +71,7 @@ namespace BlitzSniffer.Searcher
                 if (firstByte == 0x1)
                 {
                     LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
-                    byte[] key = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, PiaEncryptionUtil.BlitzGameKey);
+                    byte[] key = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.NetworkProperty.SessionParam, PiaEncryptionUtil.BlitzGameKey);
 
                     NotifySessionDataFound(SessionFoundDataType.Key, key);
 
@@ -112,13 +112,13 @@ namespace BlitzSniffer.Searcher
             }
 
             IPAddress broadcastAddress = new IPAddress(ipv4Address);
-            IPEndPoint endPoint = new IPEndPoint(broadcastAddress, 30000);
+            IPEndPoint endPoint = new IPEndPoint(broadcastAddress, 35000);
 
             while (!BroadcastToken.IsCancellationRequested)
             {
                 try
                 {
-                    using (UdpClient client = new UdpClient(30000))
+                    using (UdpClient client = new UdpClient(35000))
                     {
                         client.EnableBroadcast = true;
 

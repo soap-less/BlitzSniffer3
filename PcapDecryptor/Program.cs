@@ -61,7 +61,7 @@ namespace PcapDecryptor
                 return;
             }
 
-            if (udpPacket.DestinationPort != 30000 && !(udpPacket.DestinationPort <= 49160 && udpPacket.DestinationPort >= 40000))
+            if (udpPacket.DestinationPort != 35000 && !(udpPacket.DestinationPort <= 49160 && udpPacket.DestinationPort >= 40000))
             {
                 return;
             }
@@ -71,14 +71,14 @@ namespace PcapDecryptor
             {
                 reader.ByteOrder = ByteOrder.BigEndian;
 
-                if (udpPacket.DestinationPort == 30000)
+                if (udpPacket.DestinationPort == 35000)
                 {
                     byte firstByte = reader.ReadByte();
 
                     if (firstByte == 0x1)
                     {
                         LanContentBrowseReply browseReply = new LanContentBrowseReply(reader);
-                        byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.SessionInfo.SessionParam, BlitzGameKey);
+                        byte[] newKey = PiaEncryptionUtil.GenerateLanSessionKey(browseReply.NetworkProperty.SessionParam, BlitzGameKey);
 
                         if (SessionKey != null && !newKey.SequenceEqual(SessionKey))
                         {
@@ -88,7 +88,7 @@ namespace PcapDecryptor
                         SessionKey = newKey;
                     }
                 }
-                else if (udpPacket.DestinationPort != 30000)
+                else if (udpPacket.DestinationPort != 35000)
                 {
                     if (SessionKey == null)
                     {

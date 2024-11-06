@@ -5,7 +5,7 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
 {
     public class LanContentBrowseReply : LanContent
     {
-        public LanSessionInfo SessionInfo
+        public LanNetworkProperty NetworkProperty
         {
             get;
             set;
@@ -19,8 +19,8 @@ namespace NintendoNetcode.Pia.Lan.Content.Browse
 
         public LanContentBrowseReply(BinaryDataReader reader) : base(reader)
         {
-            uint sessionInfoSize = reader.ReadUInt32();
-            SessionInfo = new LanSessionInfo(reader);
+            uint networkPropertySize = reader.ReadUInt32();
+            NetworkProperty = new LanNetworkProperty(reader);
             CryptoResponse = new LanCryptoContentResponse(reader);
         }
 

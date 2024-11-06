@@ -177,7 +177,7 @@ namespace BlitzSniffer.Receiver
 
                 try
                 {
-                    if (udpPacket.DestinationPort != 30000)
+                    if (udpPacket.DestinationPort != 35000)
                     {
                         using (reader.TemporarySeek())
                         {

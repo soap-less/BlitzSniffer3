@@ -30,7 +30,7 @@ namespace BlitzSniffer.Receiver
         {
             if (SessionType == PiaSessionType.Lan)
             {
-                Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 30000)";
+                Device.Filter = "ip and udp and (udp portrange 49150-49160 or udp port 35000)";
             }
             else
             {
